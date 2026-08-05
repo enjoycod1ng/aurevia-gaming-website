@@ -796,56 +796,257 @@ export const siteContent = {
     },
   },
   platformPage: {
-    label: "Casino platforms",
-    title:
-      "One configurable back office for the systems that run your product.",
-    description:
-      "The platform architecture can be tailored to your games, providers, payment flows and operating model while keeping permissions, auditability and performance visible.",
-    image: {
-      src: "/media/platforms/operator-dashboard.webp",
-      alt: "Casino operator dashboard showing revenue, players and system modules",
-      width: 1600,
-      height: 1000,
+    hero: {
+      label: "Operator infrastructure",
+      titleLines: ["Casino platforms", "built for", "control."],
+      description:
+        "Launch and operate a modern casino ecosystem with a responsive player experience, secure management tools, configurable RTP profiles and real-time business visibility.",
+      primaryAction: {
+        label: "Request a Platform Quote",
+        href: "/contact?project=Admin%20panel%20%2F%20operator%20platform",
+      },
+      secondaryAction: {
+        label: "Explore Admin Features",
+        href: "#admin-features",
+      },
+      overview: {
+        ariaLabel: "Operator overview dashboard preview",
+        brandMark: "A",
+        brandName: "Control",
+        navigationAriaLabel: "Operator overview navigation",
+        navigation: [
+          "Overview",
+          "Games",
+          "Players",
+          "Wallets",
+          "RTP",
+          "Bonuses",
+          "Reports",
+        ],
+        title: "Operator Overview",
+        description: "Live performance across connected products",
+        metrics: [
+          { label: "GGR today", value: "$284.7k", change: "+18.4%", changeTone: "positive" },
+          { label: "Players", value: "18,426", change: "+12.8%", changeTone: "positive" },
+          { label: "Avg RTP", value: "96.17%", change: "Stable", changeTone: "neutral" },
+        ],
+        chartTitle: "Revenue trend",
+        chartBars: [36, 54, 43, 68, 58, 86, 72, 104, 94, 121, 106, 132],
+        productsTitle: "Top products",
+        products: [
+          { name: "Fortune Vault", players: "4,820", revenue: "$74.2k" },
+          { name: "Neon Rush", players: "3,714", revenue: "$58.9k" },
+          { name: "Royal Reels", players: "2,980", revenue: "$46.1k" },
+        ],
+      },
     },
-    modulesHeading: "Core platform modules",
-    modules: [
-      {
-        title: "Player management",
-        description:
-          "Profiles, verification status, account controls, limits, activity and support context in one view.",
-      },
-      {
-        title: "Game & RTP controls",
-        description:
-          "Manage catalog availability, configurations and approved operational controls with audit history.",
-      },
-      {
-        title: "Payments & transactions",
-        description:
-          "Monitor wallet activity, deposits, withdrawals, adjustments and provider-level transaction states.",
-      },
-      {
-        title: "Promotions & retention",
-        description:
-          "Configure campaigns, bonuses, eligibility rules and lifecycle messaging around measurable outcomes.",
-      },
-      {
-        title: "Reporting & analytics",
-        description:
-          "Track product, game and player performance through focused dashboards and exportable reports.",
-      },
-      {
-        title: "Roles, audit & security",
-        description:
-          "Apply least-privilege access, trace material actions and integrate platform security controls.",
-      },
+    proofAriaLabel: "Casino platform product layers",
+    proofPoints: [
+      { number: "01", title: "Player experience", description: "Web · Mobile · Lobby" },
+      { number: "02", title: "Platform services", description: "Wallet · Bonus · Accounts" },
+      { number: "03", title: "Game layer", description: "Catalog · Math · RTP" },
+      { number: "04", title: "Operator control", description: "Admin · Analytics · Security" },
     ],
-    differentiators: [
-      "Architecture matched to your operating model",
-      "Source-code handoff and documented ownership",
-      "Responsive interfaces for operational teams",
-      "API-first integrations with providers and internal systems",
-    ],
+    modules: {
+      heading: {
+        label: "Platform modules",
+        title: "Every core workflow, connected.",
+        description:
+          "Choose the modules you need today and expand the ecosystem as your operation grows.",
+      },
+      items: [
+        {
+          icon: "devices",
+          tone: "gold",
+          title: "Player app & lobby",
+          description:
+            "Responsive game discovery, search, categories, favorites and personalized promotions.",
+          footer: "Included capabilities",
+        },
+        {
+          icon: "diamond",
+          tone: "blue",
+          title: "Account & wallet",
+          description:
+            "Registration, KYC touchpoints, balances, deposits, withdrawals and transaction history.",
+          footer: "Included capabilities",
+        },
+        {
+          icon: "spark",
+          tone: "violet",
+          title: "Bonus & loyalty",
+          description:
+            "Campaign rules, free spins, cashback, missions, tiers and segmented rewards.",
+          footer: "Included capabilities",
+        },
+        {
+          icon: "controls",
+          tone: "green",
+          title: "Game management",
+          description:
+            "Catalog control, providers, availability, market visibility and launch configuration.",
+          footer: "Included capabilities",
+        },
+        {
+          icon: "target",
+          tone: "gold",
+          title: "Payments & reporting",
+          description:
+            "Provider integrations, reconciliation, exports and financial monitoring.",
+          footer: "Included capabilities",
+        },
+        {
+          icon: "check",
+          tone: "red",
+          title: "Security & access",
+          description:
+            "Role-based permissions, audit trails, alerts and protected operator workflows.",
+          footer: "Included capabilities",
+        },
+      ],
+    },
+    admin: {
+      heading: {
+        label: "Admin panel",
+        title: "A control room for the entire operation.",
+        description:
+          "Designed around fast decisions, clear accountability and operational safety.",
+      },
+      tabsAriaLabel: "Admin panel capabilities",
+      tabs: ["Overview", "Players", "RTP Profiles", "Transactions", "Promotions"],
+      dashboard: {
+        ariaLabel: "Casino operator live dashboard preview",
+        brandName: "Aurevia",
+        brandLabel: "Operator suite",
+        navigationAriaLabel: "Operator dashboard navigation",
+        navigation: [
+          "Dashboard",
+          "Players",
+          "Games",
+          "RTP Profiles",
+          "Wallets",
+          "Transactions",
+          "Bonuses",
+          "Analytics",
+          "User Roles",
+          "Settings",
+        ],
+        title: "Live Dashboard",
+        description: "Updated moments ago",
+        actionLabel: "Export Report",
+        metrics: [
+          { label: "Net revenue", value: "$1.84M", change: "+16.2%", changeTone: "positive" },
+          { label: "Active users", value: "52,190", change: "+9.6%", changeTone: "positive" },
+          { label: "Deposits", value: "$624k", change: "+12.1%", changeTone: "positive" },
+          { label: "Withdrawals", value: "$318k", change: "-2.4%", changeTone: "negative" },
+        ],
+        chart: {
+          title: "Revenue and player activity",
+          period: "30 days",
+          points: [
+            [1, 74], [10, 84], [19, 66], [28, 70], [38, 50], [48, 62],
+            [57, 42], [67, 55], [76, 31], [85, 39], [94, 20],
+          ],
+        },
+        traffic: [
+          { label: "Organic", value: 62, tone: "gold" },
+          { label: "Campaigns", value: 24, tone: "blue" },
+          { label: "Affiliates", value: 14, tone: "violet" },
+        ],
+        activityTitle: "Recent activity",
+        activity: [
+          {
+            tone: "gold",
+            label: "RTP profile updated",
+            detail: "Fortune Vault · Profile EU-02",
+            time: "2 min ago",
+          },
+          {
+            tone: "green",
+            label: "Large withdrawal reviewed",
+            detail: "Player #A98241 · $4,800",
+            time: "8 min ago",
+          },
+          {
+            tone: "violet",
+            label: "Bonus campaign launched",
+            detail: "Weekend Cashback · Segment VIP",
+            time: "16 min ago",
+          },
+        ],
+      },
+    },
+    rtp: {
+      heading: {
+        label: "RTP control",
+        title: "Configure, test and govern game profiles.",
+        description:
+          "A controlled workflow for managing payout profiles, simulations and approvals without exposing unsafe system-level access.",
+      },
+      panel: {
+        ariaLabel: "RTP profile management preview",
+        profilesTitle: "RTP Profiles",
+        newProfileLabel: "+ New Profile",
+        profiles: [
+          { name: "EU Standard", value: "96.20%", status: "Active", statusTone: "active", selected: true },
+          { name: "LATAM Growth", value: "95.60%", status: "Active", statusTone: "active" },
+          { name: "High Value VIP", value: "97.10%", status: "Draft", statusTone: "draft" },
+          { name: "Test Environment", value: "94.00%", status: "Test", statusTone: "test" },
+        ],
+        title: "EU Standard",
+        description: "Profile ID RTP-EU-02 · Last approved Jul 30",
+        actionLabel: "Save Changes",
+        metrics: [
+          { label: "Target RTP", value: "96.20%" },
+          { label: "Volatility", value: "High" },
+          { label: "Max win", value: "10,000×" },
+          { label: "Bonus frequency", value: "1 in 120" },
+        ],
+        payoutTitle: "Payout distribution",
+        payouts: [
+          { label: "Base game", value: 58, tone: "gold" },
+          { label: "Free spins", value: 24, tone: "blue" },
+          { label: "Jackpot", value: 10, tone: "violet" },
+          { label: "Bonus feature", value: 8, tone: "green" },
+        ],
+        auditTitle: "Governance & audit trail",
+        audit: [
+          { tone: "gold", label: "Draft created", detail: "James O.", time: "Jul 28 · 10:24" },
+          { tone: "green", label: "Simulation passed", detail: "System", time: "Jul 29 · 13:16" },
+          { tone: "green", label: "Profile approved", detail: "Maria K.", time: "Jul 30 · 09:42" },
+        ],
+      },
+    },
+    integrations: {
+      heading: {
+        label: "Integrations & security",
+        title: "Connect the ecosystem without losing control.",
+        description:
+          "Payments, KYC, games and messaging connect through clear interfaces backed by role-based access and auditable workflows.",
+      },
+      capabilitiesAriaLabel: "Supported platform integrations",
+      capabilities: [
+        "Wallet API",
+        "Payment providers",
+        "KYC services",
+        "Game aggregators",
+        "CRM & messaging",
+        "Data warehouse",
+      ],
+      securityTitle: "Security by design",
+      securityItems: [
+        { tone: "gold", title: "Role-based access", description: "Granular permissions by team." },
+        { tone: "blue", title: "Audit trails", description: "Sensitive actions stay reviewable." },
+        { tone: "violet", title: "Protected changes", description: "Approvals for financial and RTP updates." },
+        { tone: "green", title: "Monitoring", description: "Operational alerts and health visibility." },
+      ],
+    },
+    cta: {
+      title: "Build the platform your operation needs.",
+      description: "Share your business model, modules and integration requirements.",
+      primaryAction: { label: "Request a Quote", href: "/contact" },
+      telegramLabel: "Telegram",
+    },
   },
   faq: [
     {

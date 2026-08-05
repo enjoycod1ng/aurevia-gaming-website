@@ -52,7 +52,7 @@ Edit `src/content/site-content.ts` to change:
 - Page titles, descriptions, CTAs and SEO keywords
 - Services and capability lists
 - Game catalog, filters, artwork themes, optional images and action URLs
-- Casino platform modules
+- Casino platform modules, dashboard data, RTP profiles, integrations and security controls
 - Process steps and FAQs
 - Screenshot paths, alt text and intrinsic dimensions
 
@@ -111,6 +111,26 @@ Each item under `siteContent.gamesPage.catalog.games` stores its actions and can
 ```
 
 When `image` is omitted, the card uses its configured `artworkTone` and `symbol` without adding an image request. External action URLs are detected automatically by the shared link component.
+
+## Configuring casino platform previews
+
+The Casino Platforms page renders its operator overview, admin dashboard and RTP panel as lightweight code-native previews by default. Their labels, metrics, charts, profiles and activity rows are stored under `siteContent.platformPage`.
+
+Each preview also accepts an optional optimized image override in `site-content.ts`:
+
+```ts
+overview: {
+  image: {
+    src: "/media/platforms/operator-overview-v2.webp",
+    alt: "Operator overview showing revenue, players and RTP",
+    width: 1600,
+    height: 1200
+  },
+  // Remaining preview content...
+}
+```
+
+The same `image` field is available on `platformPage.admin.dashboard` and `platformPage.rtp.panel`. When present, the shared platform visual component renders it with `next/image`, responsive `sizes` and intrinsic dimensions. When omitted, no image request is added.
 
 ## Contact form delivery
 

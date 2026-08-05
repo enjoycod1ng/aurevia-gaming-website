@@ -165,7 +165,46 @@ export interface DeliveryPillar {
   footer: string;
 }
 
+export type PlatformTone = ServiceTone | "red";
+
 export interface PlatformModule {
+  icon: ServiceIconName;
+  tone: PlatformTone;
+  title: string;
+  description: string;
+  footer: string;
+}
+
+export interface PlatformMetric {
+  label: string;
+  value: string;
+  change?: string;
+  changeTone?: "positive" | "negative" | "neutral";
+}
+
+export interface PlatformActivity {
+  tone: PlatformTone;
+  label: string;
+  detail: string;
+  time: string;
+}
+
+export interface PlatformRtpProfile {
+  name: string;
+  value: string;
+  status: string;
+  statusTone: "active" | "draft" | "test";
+  selected?: boolean;
+}
+
+export interface PlatformDistribution {
+  label: string;
+  value: number;
+  tone: PlatformTone;
+}
+
+export interface PlatformSecurityItem {
+  tone: PlatformTone;
   title: string;
   description: string;
 }
@@ -345,13 +384,93 @@ export interface SiteContent {
     cta: ProjectCta;
   };
   platformPage: {
-    label: string;
-    title: string;
-    description: string;
-    image: MediaAsset;
-    modulesHeading: string;
-    modules: readonly PlatformModule[];
-    differentiators: readonly string[];
+    hero: {
+      label: string;
+      titleLines: readonly string[];
+      description: string;
+      primaryAction: ActionLink;
+      secondaryAction: ActionLink;
+      overview: {
+        ariaLabel: string;
+        image?: MediaAsset;
+        brandMark: string;
+        brandName: string;
+        navigationAriaLabel: string;
+        navigation: readonly string[];
+        title: string;
+        description: string;
+        metrics: readonly PlatformMetric[];
+        chartTitle: string;
+        chartBars: readonly number[];
+        productsTitle: string;
+        products: readonly DashboardGame[];
+      };
+    };
+    proofAriaLabel: string;
+    proofPoints: readonly {
+      number: string;
+      title: string;
+      description: string;
+    }[];
+    modules: {
+      heading: SectionCopy;
+      items: readonly PlatformModule[];
+    };
+    admin: {
+      heading: SectionCopy;
+      tabsAriaLabel: string;
+      tabs: readonly string[];
+      dashboard: {
+        ariaLabel: string;
+        image?: MediaAsset;
+        brandName: string;
+        brandLabel: string;
+        navigationAriaLabel: string;
+        navigation: readonly string[];
+        title: string;
+        description: string;
+        actionLabel: string;
+        metrics: readonly PlatformMetric[];
+        chart: {
+          title: string;
+          period: string;
+          points: readonly (readonly [number, number])[];
+        };
+        traffic: readonly {
+          label: string;
+          value: number;
+          tone: PlatformTone;
+        }[];
+        activityTitle: string;
+        activity: readonly PlatformActivity[];
+      };
+    };
+    rtp: {
+      heading: SectionCopy;
+      panel: {
+        ariaLabel: string;
+        image?: MediaAsset;
+        profilesTitle: string;
+        newProfileLabel: string;
+        profiles: readonly PlatformRtpProfile[];
+        title: string;
+        description: string;
+        actionLabel: string;
+        metrics: readonly PlatformMetric[];
+        payoutTitle: string;
+        payouts: readonly PlatformDistribution[];
+        auditTitle: string;
+        audit: readonly PlatformActivity[];
+      };
+    };
+    integrations: {
+      heading: SectionCopy;
+      capabilitiesAriaLabel: string;
+      capabilities: readonly string[];
+      securityTitle: string;
+      securityItems: readonly PlatformSecurityItem[];
+    };
+    cta: ProjectCta;
   };
   faq: readonly FaqItem[];
   contactPage: {
