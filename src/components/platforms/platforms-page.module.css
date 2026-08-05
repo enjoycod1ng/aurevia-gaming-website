@@ -473,7 +473,7 @@
 }
 
 .moduleCard {
-  min-height: 390px;
+  min-height: 330px;
   display: flex;
   flex-direction: column;
   padding: var(--card-padding);
@@ -1127,7 +1127,7 @@
 @media (max-width: 760px) {
   .hero {
     min-height: auto;
-    padding: 58px 0 68px;
+    padding: 1rem;
   }
 
   .hero h1 span {
@@ -1224,7 +1224,7 @@
   }
 
   .moduleCard {
-    min-height: 330px;
+    min-height: 280px;
   }
 
   .adminTabs {

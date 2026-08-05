@@ -905,7 +905,7 @@ img {
 
 @media (max-width: 760px) {
   :root {
-    --section-spacing: var(--space-20);
+    --section-spacing: var(--space-10);
     --section-spacing-compact: var(--space-16);
     --card-padding: var(--space-6);
   }
@@ -1497,9 +1497,10 @@ h3 {
   background: var(--surface);
 }
 
-.home-service-card.is-featured {
-  border: 2px solid var(--accent);
-  padding: calc(var(--card-padding) - 1px);
+.home-service-card:hover {
+  border: 1px solid var(--accent);
+  border-color: color-mix(in srgb, var(--accent), transparent 12%);
+  transform: translateY(-4px);
 }
 
 .home-service-card__icon {
@@ -1549,7 +1550,7 @@ h3 {
   font-weight: 720;
 }
 
-.home-service-card.is-featured > a {
+.home-service-card:hover > a {
   color: var(--accent-bright);
 }
 
