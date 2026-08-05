@@ -43,9 +43,20 @@ export interface HomeProofPoint {
   label: string;
 }
 
+export type ServiceIconName =
+  | "spark"
+  | "devices"
+  | "diamond"
+  | "controls"
+  | "shield"
+  | "target"
+  | "check";
+
+export type ServiceTone = "gold" | "blue" | "violet" | "green";
+
 export interface HomeService {
   number: string;
-  icon: "spark" | "devices" | "diamond" | "controls";
+  icon: ServiceIconName;
   title: string;
   description: string;
   action: ActionLink;
@@ -83,11 +94,34 @@ export interface DashboardGame {
 export interface ServiceItem {
   id: string;
   number: string;
+  tone: ServiceTone;
   title: string;
-  summary: string;
   description: string;
   capabilities: readonly string[];
   image: MediaAsset;
+}
+
+export interface ServiceLayer {
+  icon: ServiceIconName;
+  tone: ServiceTone;
+  title: string;
+  detail: string;
+  progress: number;
+}
+
+export interface ServicePrinciple {
+  icon: ServiceIconName;
+  tone: ServiceTone;
+  title: string;
+  description: string;
+}
+
+export interface ProjectCta {
+  title: string;
+  description: string;
+  primaryAction: ActionLink;
+  telegramLabel: string;
+  phoneLabel?: string;
 }
 
 export interface DemoItem {
@@ -207,21 +241,34 @@ export interface SiteContent {
       heading: SectionCopy;
       items: readonly HomeReason[];
     };
-    cta: {
+    cta: ProjectCta & { phoneLabel: string };
+  };
+  servicesPage: {
+    hero: {
+      label: string;
       title: string;
       description: string;
       primaryAction: ActionLink;
-      telegramLabel: string;
-      phoneLabel: string;
+      secondaryAction: ActionLink;
+      layersAriaLabel: string;
+      layers: readonly ServiceLayer[];
+      proofAriaLabel: string;
+      proofPoints: readonly HomeProofPoint[];
     };
-    processHeading: SectionCopy;
+    offerings: {
+      heading: SectionCopy;
+      items: readonly ServiceItem[];
+    };
+    process: {
+      heading: SectionCopy;
+      steps: readonly ProcessStep[];
+    };
+    principles: {
+      heading: SectionCopy;
+      items: readonly ServicePrinciple[];
+    };
+    cta: ProjectCta;
   };
-  servicesPage: {
-    label: string;
-    title: string;
-    description: string;
-  };
-  services: readonly ServiceItem[];
   demosPage: {
     label: string;
     title: string;
@@ -238,7 +285,6 @@ export interface SiteContent {
     modules: readonly PlatformModule[];
     differentiators: readonly string[];
   };
-  process: readonly ProcessStep[];
   faq: readonly FaqItem[];
   contactPage: {
     label: string;

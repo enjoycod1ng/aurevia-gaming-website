@@ -22,7 +22,7 @@ export const siteContent = {
   navigation: [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
-    { label: "Demo Games", href: "/demo-games" },
+    { label: "Games", href: "/games" },
     { label: "Casino Platforms", href: "/casino-platforms" },
     { label: "Contact", href: "/contact" },
   ],
@@ -112,8 +112,8 @@ export const siteContent = {
         href: "/contact",
       },
       secondaryAction: {
-        label: "Explore Demo Games",
-        href: "/demo-games",
+        label: "Explore Games",
+        href: "/games",
       },
       detailsAriaLabel: "Aurevia delivery highlights",
       details: [
@@ -260,9 +260,24 @@ export const siteContent = {
         title: "Operator Overview",
         description: "Live data across all connected products",
         stats: [
-          { label: "GGR today", value: "$284,720", change: "+18.4%", tone: "positive" },
-          { label: "Active players", value: "18,426", change: "+12.8%", tone: "positive" },
-          { label: "Avg. RTP", value: "96.17%", change: "Stable", tone: "neutral" },
+          {
+            label: "GGR today",
+            value: "$284,720",
+            change: "+18.4%",
+            tone: "positive",
+          },
+          {
+            label: "Active players",
+            value: "18,426",
+            change: "+12.8%",
+            tone: "positive",
+          },
+          {
+            label: "Avg. RTP",
+            value: "96.17%",
+            change: "Stable",
+            tone: "neutral",
+          },
         ],
         chart: {
           title: "Gross gaming revenue",
@@ -325,107 +340,226 @@ export const siteContent = {
       telegramLabel: "Telegram",
       phoneLabel: "Call",
     },
-    processHeading: {
-      label: "Delivery process",
-      title: "A clear path from product brief to production release.",
-      description:
-        "Every phase has visible outputs, review points and a handoff that keeps your team in control.",
-    },
   },
   servicesPage: {
-    label: "Services",
-    title:
-      "Casino software built as a cohesive product—not disconnected features.",
-    description:
-      "Choose a focused game build or an end-to-end platform engagement. The architecture, visual system and operational tools are planned together so the result remains fast and maintainable.",
+    hero: {
+      label: "Full-service development",
+      title: "Engineering every layer of the casino experience.",
+      description:
+        "From original game mathematics and responsive player interfaces to operator websites and secure control panels, Aurevia Gaming delivers complete products—not disconnected pieces.",
+      primaryAction: { label: "Request a Quote", href: "/contact" },
+      secondaryAction: { label: "View Games", href: "/games" },
+      layersAriaLabel: "Casino product layers",
+      layers: [
+        {
+          icon: "spark",
+          tone: "gold",
+          title: "Game engine",
+          detail: "Math · Features · Bonuses",
+          progress: 78,
+        },
+        {
+          icon: "devices",
+          tone: "blue",
+          title: "Player UI",
+          detail: "Web · Android · iOS",
+          progress: 90,
+        },
+        {
+          icon: "diamond",
+          tone: "violet",
+          title: "Casino site",
+          detail: "Wallet · Promo · Payments",
+          progress: 68,
+        },
+        {
+          icon: "controls",
+          tone: "green",
+          title: "Admin control",
+          detail: "RTP · Users · Analytics",
+          progress: 92,
+        },
+      ],
+      proofAriaLabel: "Aurevia service delivery standards",
+      proofPoints: [
+        { number: "01", label: "Original game IP" },
+        { number: "02", label: "Secure integrations" },
+        { number: "03", label: "Responsive delivery" },
+        { number: "04", label: "Operator ownership" },
+      ],
+    },
+    offerings: {
+      heading: {
+        label: "Our core services",
+        title: "One partner. Four critical product layers.",
+        description:
+          "Each service can be delivered independently or combined into one coordinated platform roadmap.",
+      },
+      items: [
+        {
+          id: "slot-betting-games",
+          number: "01",
+          tone: "gold",
+          title: "Betting & slot game development",
+          description:
+            "Original mechanics, math models and memorable player experiences built for production environments.",
+          capabilities: [
+            "RNG and probability logic",
+            "Bonus rounds and free spins",
+            "Jackpot and tournament systems",
+            "WebGL / HTML5 responsive UI",
+          ],
+          image: {
+            src: "/media/services/slot-development.webp",
+            alt: "Slot game development interface with reels and game controls",
+            width: 1200,
+            height: 800,
+          },
+        },
+        {
+          id: "web-mobile",
+          number: "02",
+          tone: "blue",
+          title: "Web & mobile casino games",
+          description:
+            "Fast, device-aware products that keep interaction quality consistent from desktop browsers to mobile screens.",
+          capabilities: [
+            "Browser, Android and iOS",
+            "Touch-first interaction design",
+            "Low-bandwidth optimization",
+            "Wallet and account integration",
+          ],
+          image: {
+            src: "/media/services/web-mobile-casino.webp",
+            alt: "Responsive casino product shown on mobile and desktop screens",
+            width: 1200,
+            height: 800,
+          },
+        },
+        {
+          id: "casino-websites",
+          number: "03",
+          tone: "violet",
+          title: "Casino website development",
+          description:
+            "Conversion-focused operator experiences covering acquisition, account journeys and real-money workflows.",
+          capabilities: [
+            "Registration and KYC flows",
+            "Wallet, deposits and withdrawals",
+            "Promotions and loyalty tools",
+            "Game lobby and search",
+          ],
+          image: {
+            src: "/media/services/casino-website.webp",
+            alt: "Premium dark casino website interface with featured games",
+            width: 1200,
+            height: 800,
+          },
+        },
+        {
+          id: "admin-platforms",
+          number: "04",
+          tone: "green",
+          title: "Admin panel development",
+          description:
+            "A secure control layer for managing games, players, transactions, reporting and configurable RTP profiles.",
+          capabilities: [
+            "RTP profile management",
+            "Player and wallet controls",
+            "Campaign and bonus tools",
+            "Real-time performance analytics",
+          ],
+          image: {
+            src: "/media/services/admin-platform.webp",
+            alt: "Casino operator admin panel with analytics and management tables",
+            width: 1200,
+            height: 800,
+          },
+        },
+      ],
+    },
+    process: {
+      heading: {
+        label: "Delivery process",
+        title: "A clear path from idea to launch.",
+        description:
+          "Transparent milestones keep product, design and engineering aligned from day one.",
+      },
+      steps: [
+        {
+          number: "01",
+          title: "Discovery",
+          description: "Product goals, markets and operating constraints",
+        },
+        {
+          number: "02",
+          title: "Game math & UX",
+          description: "Mechanics, flows, wireframes and RTP planning",
+        },
+        {
+          number: "03",
+          title: "Build",
+          description: "Frontend, backend, integrations and admin tools",
+        },
+        {
+          number: "04",
+          title: "QA & hardening",
+          description: "Device testing, security checks and performance",
+        },
+        {
+          number: "05",
+          title: "Launch & handover",
+          description: "Deployment, documentation and complete source code",
+        },
+      ],
+    },
+    principles: {
+      heading: {
+        label: "Built for production",
+        title: "Quality, control and ownership by default.",
+        description: "",
+      },
+      items: [
+        {
+          icon: "spark",
+          tone: "gold",
+          title: "Performance",
+          description:
+            "Responsive interfaces, optimized asset delivery and scalable services.",
+        },
+        {
+          icon: "shield",
+          tone: "blue",
+          title: "Security",
+          description:
+            "Role-based access, protected integrations and audited transaction flows.",
+        },
+        {
+          icon: "target",
+          tone: "violet",
+          title: "Transparency",
+          description:
+            "Clear game logic, configurable RTP profiles and readable documentation.",
+        },
+        {
+          icon: "check",
+          tone: "green",
+          title: "Handover",
+          description:
+            "Full source code, deployment guidance and maintainable architecture.",
+        },
+      ],
+    },
+    cta: {
+      title: "Let’s plan the right product architecture.",
+      description:
+        "Share your scope and receive a practical delivery plan and quote.",
+      primaryAction: { label: "Request a Quote", href: "/contact" },
+      telegramLabel: "Telegram",
+    },
   },
-  services: [
-    {
-      id: "slot-betting-games",
-      number: "01",
-      title: "Slot & betting game development",
-      summary:
-        "Custom mechanics, math integration and polished real-time gameplay.",
-      description:
-        "We build responsive slot and betting experiences with reusable game architecture, configurable rules, animation systems and integration-ready APIs.",
-      capabilities: [
-        "Slot and instant-win mechanics",
-        "Betting flows and odds presentation",
-        "Configurable RTP and game rules",
-        "Wallet, session and provider integrations",
-      ],
-      image: {
-        src: "/media/services/slot-development.webp",
-        alt: "Slot game development interface with reels and game controls",
-        width: 1200,
-        height: 800,
-      },
-    },
-    {
-      id: "web-mobile",
-      number: "02",
-      title: "Web & mobile casino experiences",
-      summary:
-        "Fast, touch-friendly products across phones, tablets and desktop browsers.",
-      description:
-        "We design responsive interfaces around real device constraints, efficient asset delivery and clear player journeys instead of shrinking a desktop layout onto mobile.",
-      capabilities: [
-        "Responsive web applications",
-        "Mobile-first interaction design",
-        "Progressive loading and asset optimization",
-        "Cross-browser and device QA",
-      ],
-      image: {
-        src: "/media/services/web-mobile-casino.webp",
-        alt: "Responsive casino product shown on mobile and desktop screens",
-        width: 1200,
-        height: 800,
-      },
-    },
-    {
-      id: "casino-websites",
-      number: "03",
-      title: "Casino website development",
-      summary:
-        "High-conversion frontends connected to the systems behind the brand.",
-      description:
-        "We build performant marketing and player-facing casino websites with reusable content sections, game discovery, account flows and production-grade deployment.",
-      capabilities: [
-        "Brand and marketing websites",
-        "Game lobbies and discovery",
-        "Authentication and account areas",
-        "CMS or configuration-driven content",
-      ],
-      image: {
-        src: "/media/services/casino-website.webp",
-        alt: "Premium dark casino website interface with featured games",
-        width: 1200,
-        height: 800,
-      },
-    },
-    {
-      id: "admin-platforms",
-      number: "04",
-      title: "Admin panel & operator platform development",
-      summary: "Operational control without a maze of disconnected dashboards.",
-      description:
-        "We create role-aware back-office tools for players, games, transactions, reporting, promotions and configurable platform controls.",
-      capabilities: [
-        "Player and role management",
-        "Game, RTP and content controls",
-        "Transactions and reporting",
-        "Audit trails and operational alerts",
-      ],
-      image: {
-        src: "/media/services/admin-platform.webp",
-        alt: "Casino operator admin panel with analytics and management tables",
-        width: 1200,
-        height: 800,
-      },
-    },
-  ],
   demosPage: {
-    label: "Demo games",
+    label: "Games",
     title: "A configurable showcase for game and platform builds.",
     description:
       "Each card is driven by TypeScript content configuration. Replace the included WebP samples and add a live demo URL without changing the component markup.",
@@ -541,32 +675,6 @@ export const siteContent = {
       "API-first integrations with providers and internal systems",
     ],
   },
-  process: [
-    {
-      number: "01",
-      title: "Product discovery",
-      description:
-        "Define the users, mechanics, integrations, constraints and commercial priorities that shape the build.",
-    },
-    {
-      number: "02",
-      title: "UX, system & delivery plan",
-      description:
-        "Turn the brief into approved flows, architecture, milestones, acceptance criteria and an asset plan.",
-    },
-    {
-      number: "03",
-      title: "Iterative development",
-      description:
-        "Deliver reviewable product slices with testing, performance checks and visible progress throughout.",
-    },
-    {
-      number: "04",
-      title: "Launch & handoff",
-      description:
-        "Deploy the production build, document operations and transfer the agreed source code and assets.",
-    },
-  ],
   faq: [
     {
       question: "Do you provide the full source code?",

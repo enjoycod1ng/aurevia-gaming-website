@@ -1,45 +1,39 @@
-import { CtaBand } from "@/components/cta-band";
-import { PageHero } from "@/components/page-hero";
+import { HomeCtaSection } from "@/components/home/home-cta-section";
 import { SectionHeading } from "@/components/section-heading";
 import { ServiceCard } from "@/components/service-card";
+import { ServicesHeroSection } from "@/components/services/services-hero-section";
+import { ServicesPrinciplesSection } from "@/components/services/services-principles-section";
+import { ServicesProcessSection } from "@/components/services/services-process-section";
 import { siteContent } from "@/content/site-content";
 import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata = createPageMetadata(siteContent.seo.services);
 
 export default function ServicesPage() {
+  const { contact, servicesPage } = siteContent;
+
   return (
-    <main id="main-content">
-      <PageHero
-        {...siteContent.servicesPage}
-        primaryAction={siteContent.primaryCta}
-        secondaryAction={siteContent.secondaryCta}
-      />
+    <main id="main-content" className="services-page">
+      <ServicesHeroSection content={servicesPage.hero} />
 
-      <section className="section section--tight-top">
-        <div className="container service-detail-list">
-          {siteContent.services.map((service) => (
-            <ServiceCard service={service} key={service.id} />
-          ))}
-        </div>
-      </section>
-
-      <section className="section section--surface section--content-visibility">
+      <section className="services-offerings section--content-visibility">
         <div className="container">
-          <SectionHeading {...siteContent.home.processHeading} align="center" />
-          <div className="process-grid">
-            {siteContent.process.map((step) => (
-              <article className="process-card" key={step.number}>
-                <span>{step.number}</span>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </article>
+          <SectionHeading {...servicesPage.offerings.heading} />
+          <div className="services-offerings__grid">
+            {servicesPage.offerings.items.map((service) => (
+              <ServiceCard service={service} key={service.id} />
             ))}
           </div>
         </div>
       </section>
 
-      <CtaBand title="Choose the product scope. Keep one accountable engineering partner." />
+      <ServicesProcessSection content={servicesPage.process} />
+      <ServicesPrinciplesSection content={servicesPage.principles} />
+      <HomeCtaSection
+        className="services-page__cta"
+        content={servicesPage.cta}
+        contact={contact}
+      />
     </main>
   );
 }

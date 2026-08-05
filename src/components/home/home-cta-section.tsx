@@ -1,14 +1,15 @@
 import { ButtonLink } from "@/components/button-link";
-import type { SiteContent } from "@/types/content";
+import type { ProjectCta, SiteContent } from "@/types/content";
 
 interface HomeCtaSectionProps {
-  content: SiteContent["home"]["cta"];
+  content: ProjectCta;
   contact: SiteContent["contact"];
+  className?: string;
 }
 
-export function HomeCtaSection({ content, contact }: HomeCtaSectionProps) {
+export function HomeCtaSection({ content, contact, className = "" }: HomeCtaSectionProps) {
   return (
-    <section className="home-cta-section">
+    <section className={`home-cta-section ${className}`.trim()}>
       <div className="container">
         <div className="home-cta">
           <div>
@@ -20,9 +21,11 @@ export function HomeCtaSection({ content, contact }: HomeCtaSectionProps) {
             <a href={contact.telegramUrl} target="_blank" rel="noreferrer">
               {content.telegramLabel} {contact.telegramHandle}
             </a>
-            <a href={contact.phoneHref}>
-              {content.phoneLabel} {contact.phoneDisplay}
-            </a>
+            {content.phoneLabel ? (
+              <a href={contact.phoneHref}>
+                {content.phoneLabel} {contact.phoneDisplay}
+              </a>
+            ) : null}
           </div>
         </div>
       </div>

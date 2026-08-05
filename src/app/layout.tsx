@@ -69,7 +69,7 @@ const organizationJsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`${manrope.variable} ${sora.variable}`}>
         <a className="skip-link" href="#main-content">
           Skip to content
