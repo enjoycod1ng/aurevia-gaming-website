@@ -38,7 +38,7 @@ export const siteContent = {
   },
   seo: {
     home: {
-      title: "Casino Game & Platform Development",
+      title: "Home",
       description:
         "Aurevia Gaming develops slot and betting games, casino websites, mobile experiences and operator admin platforms with source-code ownership and configurable RTP controls.",
       path: "/",
@@ -51,7 +51,7 @@ export const siteContent = {
       ],
     },
     services: {
-      title: "Casino Development Services",
+      title: "Our Services",
       description:
         "Explore Aurevia Gaming services for slot games, betting products, casino websites, mobile gaming and operator admin panels.",
       path: "/services",
@@ -64,7 +64,7 @@ export const siteContent = {
       ],
     },
     games: {
-      title: "Casino Game Development Portfolio",
+      title: "Games",
       description:
         "Explore Aurevia Gaming concepts for premium slots, crash games, instant-win formats and table-inspired casino experiences.",
       path: "/games",
@@ -77,7 +77,7 @@ export const siteContent = {
       ],
     },
     platforms: {
-      title: "Casino Platform & Admin Panel Development",
+      title: "Casino Platforms",
       description:
         "Build a tailored casino platform with player management, games, reporting, payments, promotions, RTP controls and operational dashboards.",
       path: "/casino-platforms",
@@ -90,7 +90,7 @@ export const siteContent = {
       ],
     },
     contact: {
-      title: "Request a Casino Development Quote",
+      title: "Contact",
       description:
         "Contact Aurevia Gaming to discuss a slot game, betting product, casino website, mobile experience or operator platform.",
       path: "/contact",
@@ -105,7 +105,7 @@ export const siteContent = {
     hero: {
       label: "Casino-tech studio",
       title: "Casino games",
-      highlightedTitle: "built to win.",
+      highlightedTitle: "built to win",
       description:
         "Aurevia Gaming designs and develops high-performance slot, betting and casino products for web and mobile — with precise RTP control and complete source-code ownership.",
       primaryAction: {
@@ -208,7 +208,10 @@ export const siteContent = {
           symbol: "7",
           theme: "fortune",
           primaryAction: { label: "Play Demo", href: "/games#fortune-vault" },
-          secondaryAction: { label: "View Details", href: "/games#fortune-vault" },
+          secondaryAction: {
+            label: "View Details",
+            href: "/games#fortune-vault",
+          },
         },
         {
           title: "Neon Rush",
@@ -224,7 +227,10 @@ export const siteContent = {
           symbol: "\u265B",
           theme: "royal",
           primaryAction: { label: "Play Demo", href: "/games#royal-reels" },
-          secondaryAction: { label: "View Details", href: "/games#royal-reels" },
+          secondaryAction: {
+            label: "View Details",
+            href: "/games#royal-reels",
+          },
         },
       ],
     },
@@ -345,7 +351,7 @@ export const siteContent = {
   servicesPage: {
     hero: {
       label: "Full-service development",
-      title: "Engineering every layer of the casino experience.",
+      title: "Engineering every layer of the casino experience",
       description:
         "From original game mathematics and responsive player interfaces to operator websites and secure control panels, Aurevia Gaming delivers complete products—not disconnected pieces.",
       primaryAction: { label: "Request a Quote", href: "/contact" },
@@ -562,10 +568,7 @@ export const siteContent = {
   gamesPage: {
     hero: {
       label: "Playable concepts",
-      titleLines: [
-        "Games that look great,",
-        "feel fast, and play fair.",
-      ],
+      titleLines: ["Games that look great,", "feel fast, and play fair"],
       description:
         "Original formats. Every title can be adapted to your brand, market and operator stack.",
       primaryAction: { label: "Browse All Games", href: "#game-library" },
@@ -769,7 +772,14 @@ export const siteContent = {
         },
       ],
       processAriaLabel: "Aurevia game delivery process",
-      processSteps: ["Concept", "Math", "Prototype", "Production", "QA", "Release"],
+      processSteps: [
+        "Concept",
+        "Math",
+        "Prototype",
+        "Production",
+        "QA",
+        "Release",
+      ],
     },
     deployment: {
       label: "Demo to deployment",
@@ -798,7 +808,7 @@ export const siteContent = {
   platformPage: {
     hero: {
       label: "Operator infrastructure",
-      titleLines: ["Casino platforms", "built for", "control."],
+      titleLines: ["Casino platforms", "built for", "control"],
       description:
         "Launch and operate a modern casino ecosystem with a responsive player experience, secure management tools, configurable RTP profiles and real-time business visibility.",
       primaryAction: {
@@ -826,9 +836,24 @@ export const siteContent = {
         title: "Operator Overview",
         description: "Live performance across connected products",
         metrics: [
-          { label: "GGR today", value: "$284.7k", change: "+18.4%", changeTone: "positive" },
-          { label: "Players", value: "18,426", change: "+12.8%", changeTone: "positive" },
-          { label: "Avg RTP", value: "96.17%", change: "Stable", changeTone: "neutral" },
+          {
+            label: "GGR today",
+            value: "$284.7k",
+            change: "+18.4%",
+            changeTone: "positive",
+          },
+          {
+            label: "Players",
+            value: "18,426",
+            change: "+12.8%",
+            changeTone: "positive",
+          },
+          {
+            label: "Avg RTP",
+            value: "96.17%",
+            change: "Stable",
+            changeTone: "neutral",
+          },
         ],
         chartTitle: "Revenue trend",
         chartBars: [36, 54, 43, 68, 58, 86, 72, 104, 94, 121, 106, 132],
@@ -842,10 +867,26 @@ export const siteContent = {
     },
     proofAriaLabel: "Casino platform product layers",
     proofPoints: [
-      { number: "01", title: "Player experience", description: "Web · Mobile · Lobby" },
-      { number: "02", title: "Platform services", description: "Wallet · Bonus · Accounts" },
-      { number: "03", title: "Game layer", description: "Catalog · Math · RTP" },
-      { number: "04", title: "Operator control", description: "Admin · Analytics · Security" },
+      {
+        number: "01",
+        title: "Player experience",
+        description: "Web · Mobile · Lobby",
+      },
+      {
+        number: "02",
+        title: "Platform services",
+        description: "Wallet · Bonus · Accounts",
+      },
+      {
+        number: "03",
+        title: "Game layer",
+        description: "Catalog · Math · RTP",
+      },
+      {
+        number: "04",
+        title: "Operator control",
+        description: "Admin · Analytics · Security",
+      },
     ],
     modules: {
       heading: {
@@ -913,7 +954,13 @@ export const siteContent = {
           "Designed around fast decisions, clear accountability and operational safety.",
       },
       tabsAriaLabel: "Admin panel capabilities",
-      tabs: ["Overview", "Players", "RTP Profiles", "Transactions", "Promotions"],
+      tabs: [
+        "Overview",
+        "Players",
+        "RTP Profiles",
+        "Transactions",
+        "Promotions",
+      ],
       dashboard: {
         ariaLabel: "Casino operator live dashboard preview",
         brandName: "Aurevia",
@@ -935,17 +982,46 @@ export const siteContent = {
         description: "Updated moments ago",
         actionLabel: "Export Report",
         metrics: [
-          { label: "Net revenue", value: "$1.84M", change: "+16.2%", changeTone: "positive" },
-          { label: "Active users", value: "52,190", change: "+9.6%", changeTone: "positive" },
-          { label: "Deposits", value: "$624k", change: "+12.1%", changeTone: "positive" },
-          { label: "Withdrawals", value: "$318k", change: "-2.4%", changeTone: "negative" },
+          {
+            label: "Net revenue",
+            value: "$1.84M",
+            change: "+16.2%",
+            changeTone: "positive",
+          },
+          {
+            label: "Active users",
+            value: "52,190",
+            change: "+9.6%",
+            changeTone: "positive",
+          },
+          {
+            label: "Deposits",
+            value: "$624k",
+            change: "+12.1%",
+            changeTone: "positive",
+          },
+          {
+            label: "Withdrawals",
+            value: "$318k",
+            change: "-2.4%",
+            changeTone: "negative",
+          },
         ],
         chart: {
           title: "Revenue and player activity",
           period: "30 days",
           points: [
-            [1, 74], [10, 84], [19, 66], [28, 70], [38, 50], [48, 62],
-            [57, 42], [67, 55], [76, 31], [85, 39], [94, 20],
+            [1, 74],
+            [10, 84],
+            [19, 66],
+            [28, 70],
+            [38, 50],
+            [48, 62],
+            [57, 42],
+            [67, 55],
+            [76, 31],
+            [85, 39],
+            [94, 20],
           ],
         },
         traffic: [
@@ -988,10 +1064,31 @@ export const siteContent = {
         profilesTitle: "RTP Profiles",
         newProfileLabel: "+ New Profile",
         profiles: [
-          { name: "EU Standard", value: "96.20%", status: "Active", statusTone: "active", selected: true },
-          { name: "LATAM Growth", value: "95.60%", status: "Active", statusTone: "active" },
-          { name: "High Value VIP", value: "97.10%", status: "Draft", statusTone: "draft" },
-          { name: "Test Environment", value: "94.00%", status: "Test", statusTone: "test" },
+          {
+            name: "EU Standard",
+            value: "96.20%",
+            status: "Active",
+            statusTone: "active",
+            selected: true,
+          },
+          {
+            name: "LATAM Growth",
+            value: "95.60%",
+            status: "Active",
+            statusTone: "active",
+          },
+          {
+            name: "High Value VIP",
+            value: "97.10%",
+            status: "Draft",
+            statusTone: "draft",
+          },
+          {
+            name: "Test Environment",
+            value: "94.00%",
+            status: "Test",
+            statusTone: "test",
+          },
         ],
         title: "EU Standard",
         description: "Profile ID RTP-EU-02 · Last approved Jul 30",
@@ -1011,9 +1108,24 @@ export const siteContent = {
         ],
         auditTitle: "Governance & audit trail",
         audit: [
-          { tone: "gold", label: "Draft created", detail: "James O.", time: "Jul 28 · 10:24" },
-          { tone: "green", label: "Simulation passed", detail: "System", time: "Jul 29 · 13:16" },
-          { tone: "green", label: "Profile approved", detail: "Maria K.", time: "Jul 30 · 09:42" },
+          {
+            tone: "gold",
+            label: "Draft created",
+            detail: "James O.",
+            time: "Jul 28 · 10:24",
+          },
+          {
+            tone: "green",
+            label: "Simulation passed",
+            detail: "System",
+            time: "Jul 29 · 13:16",
+          },
+          {
+            tone: "green",
+            label: "Profile approved",
+            detail: "Maria K.",
+            time: "Jul 30 · 09:42",
+          },
         ],
       },
     },
@@ -1035,15 +1147,32 @@ export const siteContent = {
       ],
       securityTitle: "Security by design",
       securityItems: [
-        { tone: "gold", title: "Role-based access", description: "Granular permissions by team." },
-        { tone: "blue", title: "Audit trails", description: "Sensitive actions stay reviewable." },
-        { tone: "violet", title: "Protected changes", description: "Approvals for financial and RTP updates." },
-        { tone: "green", title: "Monitoring", description: "Operational alerts and health visibility." },
+        {
+          tone: "gold",
+          title: "Role-based access",
+          description: "Granular permissions by team.",
+        },
+        {
+          tone: "blue",
+          title: "Audit trails",
+          description: "Sensitive actions stay reviewable.",
+        },
+        {
+          tone: "violet",
+          title: "Protected changes",
+          description: "Approvals for financial and RTP updates.",
+        },
+        {
+          tone: "green",
+          title: "Monitoring",
+          description: "Operational alerts and health visibility.",
+        },
       ],
     },
     cta: {
       title: "Build the platform your operation needs.",
-      description: "Share your business model, modules and integration requirements.",
+      description:
+        "Share your business model, modules and integration requirements.",
       primaryAction: { label: "Request a Quote", href: "/contact" },
       telegramLabel: "Telegram",
     },
@@ -1073,7 +1202,7 @@ export const siteContent = {
   contactPage: {
     hero: {
       label: "Start a project",
-      title: "Let’s build something players want to open.",
+      title: "Let’s build something players want to open",
       description:
         "Tell us what you want to launch — a game, casino website, admin package or complete operator platform. We will respond with a clear scope, timeline and quote path.",
       telegramDescription: "Fastest way to start",
@@ -1092,11 +1221,23 @@ export const siteContent = {
           label: "Email or Telegram",
           placeholder: "you@company.com or @handle",
         },
-        company: { label: "Company / brand", placeholder: "Company or product name" },
-        targetMarket: { label: "Target market", placeholder: "Countries or regions" },
+        company: {
+          label: "Company / brand",
+          placeholder: "Company or product name",
+        },
+        targetMarket: {
+          label: "Target market",
+          placeholder: "Countries or regions",
+        },
         projectTypeLabel: "Project type",
-        budget: { label: "Budget range", placeholder: "Select approximate budget" },
-        timeline: { label: "Target timeline", placeholder: "When do you want to launch?" },
+        budget: {
+          label: "Budget range",
+          placeholder: "Select approximate budget",
+        },
+        timeline: {
+          label: "Target timeline",
+          placeholder: "When do you want to launch?",
+        },
         details: {
           label: "Project details",
           placeholder:
@@ -1122,11 +1263,13 @@ export const siteContent = {
       statusMessages: {
         success: {
           tone: "success",
-          message: "Thank you. Your project request was delivered successfully.",
+          message:
+            "Thank you. Your project request was delivered successfully.",
         },
         invalid: {
           tone: "error",
-          message: "Please check the required fields and submit the form again.",
+          message:
+            "Please check the required fields and submit the form again.",
         },
         unavailable: {
           tone: "warning",
@@ -1135,7 +1278,8 @@ export const siteContent = {
         },
         error: {
           tone: "error",
-          message: "The message could not be delivered. Please use Telegram or phone instead.",
+          message:
+            "The message could not be delivered. Please use Telegram or phone instead.",
         },
         "rate-limited": {
           tone: "warning",
@@ -1243,7 +1387,8 @@ export const siteContent = {
       heading: {
         label: "Before you send",
         title: "The details that help us quote well.",
-        description: "A concise brief is enough. These details make the first reply more useful.",
+        description:
+          "A concise brief is enough. These details make the first reply more useful.",
       },
       checklistAriaLabel: "Helpful project brief details",
       checklist: [
@@ -1266,7 +1411,8 @@ export const siteContent = {
         },
         {
           question: "Do you work globally?",
-          answer: "Yes. Projects are coordinated remotely without a public office address.",
+          answer:
+            "Yes. Projects are coordinated remotely without a public office address.",
         },
       ],
     },
