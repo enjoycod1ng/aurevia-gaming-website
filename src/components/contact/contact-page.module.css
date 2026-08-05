@@ -3,7 +3,10 @@
 }
 
 .hero {
-  padding: 76px 0 58px;
+  padding: 1rem;
+  min-height: calc(100svh - var(--header-height));
+  display: flex;
+  align-items: center;
   background:
     radial-gradient(
       circle at 88% 18%,
@@ -16,7 +19,7 @@
 .heroGrid {
   display: grid;
   grid-template-columns: minmax(0, 0.96fr) minmax(580px, 1.04fr);
-  align-items: start;
+  align-items: center;
   gap: clamp(52px, 6vw, 86px);
 }
 

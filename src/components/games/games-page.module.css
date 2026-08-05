@@ -27,7 +27,10 @@
 
 .hero {
   position: relative;
-  padding: 46px 0 88px;
+  min-height: calc(100svh - var(--header-height));
+  display: flex;
+  align-items: center;
+  padding: 1rem;
 }
 
 .hero::after {

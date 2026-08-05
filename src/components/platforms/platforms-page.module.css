@@ -28,10 +28,10 @@
 
 .hero {
   position: relative;
-  min-height: 760px;
-  display: grid;
+  min-height: calc(100svh - var(--header-height));
+  display: flex;
   align-items: center;
-  padding: 50px 0 58px;
+  padding: 1rem;
 }
 
 .hero::after {
@@ -43,7 +43,11 @@
   height: 660px;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.12), transparent 69%);
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.12),
+    transparent 69%
+  );
 }
 
 .heroGrid {
@@ -293,7 +297,11 @@
   align-items: end;
   gap: 8px;
   padding: 14px 6px 0;
-  background: repeating-linear-gradient(to bottom, transparent 0 43px, #293340 44px 45px);
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 43px,
+    #293340 44px 45px
+  );
 }
 
 .barChart span {
@@ -1025,7 +1033,11 @@
 .ctaSection :global(.home-cta) {
   min-height: 342px;
   background:
-    radial-gradient(circle at 92% 28%, rgba(212, 175, 55, 0.16), transparent 26rem),
+    radial-gradient(
+      circle at 92% 28%,
+      rgba(212, 175, 55, 0.16),
+      transparent 26rem
+    ),
     linear-gradient(110deg, #2c2109, #080c12 78%);
 }
 

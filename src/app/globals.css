@@ -1164,8 +1164,10 @@ h3 {
 
 .home-hero {
   position: relative;
-  min-height: 744px;
-  padding: 58px 0 120px;
+  min-height: calc(100svh - var(--header-height));
+  display: flex;
+  align-items: center;
+  padding: 1rem;
 }
 
 .home-hero::after {
@@ -1188,10 +1190,6 @@ h3 {
   grid-template-columns: minmax(0, 1fr) minmax(520px, 1fr);
   align-items: center;
   gap: clamp(44px, 4vw, 58px);
-}
-
-.home-hero__content {
-  align-self: start;
 }
 
 .home-kicker {
@@ -2455,7 +2453,7 @@ h3 {
 
 .services-hero {
   position: relative;
-  min-height: 720px;
+  min-height: calc(100svh - var(--header-height));
   display: grid;
   align-items: center;
   padding: 94px 0 104px;
