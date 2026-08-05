@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { siteContent } from "@/content/site-content";
 
 export function SiteFooter() {
@@ -7,8 +8,9 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="container site-footer__grid">
         <div className="site-footer__brand">
-          <Link href="/" aria-label={`${siteContent.brand.name} home`}>
-            {siteContent.brand.name}
+          <Link className="footer-brand-lockup" href="/" aria-label={`${siteContent.brand.name} home`}>
+            <BrandLogo className="footer-brand-lockup__symbol" aria-hidden="true" />
+            <span>{siteContent.brand.name}</span>
           </Link>
           <p>{siteContent.footer.description}</p>
         </div>

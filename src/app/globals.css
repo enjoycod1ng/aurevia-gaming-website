@@ -80,7 +80,9 @@ h1 {
 }
 
 h2 {
-  font-size: clamp(2.15rem, 4.3vw, 4.3rem);
+  font-size: 48px;
+  line-height: 1.08;
+  text-transform: uppercase;
 }
 
 h3 {
@@ -173,19 +175,6 @@ img {
   display: inline-flex;
   align-items: center;
   width: fit-content;
-}
-
-.brand__logo {
-  height: auto;
-  display: block;
-}
-
-.brand__logo--horizontal {
-  width: 210px;
-}
-
-.brand__logo--stacked {
-  width: 180px;
 }
 
 .desktop-nav {
@@ -885,10 +874,6 @@ img {
   max-width: 760px;
 }
 
-.cta-band h2 {
-  font-size: clamp(2rem, 4vw, 4rem);
-}
-
 .cta-band p:not(.eyebrow) {
   max-width: 650px;
   margin-top: 20px;
@@ -981,10 +966,6 @@ img {
   padding: 50px 0 82px;
 }
 
-.platform-feature__aside h2 {
-  font-size: clamp(2rem, 3.6vw, 3.5rem);
-}
-
 .platform-feature__aside .check-list {
   margin-top: 30px;
 }
@@ -1023,11 +1004,6 @@ img {
   border: 1px solid var(--line);
   border-radius: var(--radius-medium);
   background: var(--surface);
-}
-
-.contact-panel h2,
-.contact-form-wrap h2 {
-  font-size: clamp(1.9rem, 3vw, 3rem);
 }
 
 .contact-panel > p:not(.eyebrow),
@@ -1392,7 +1368,7 @@ img {
   }
 
   h2 {
-    font-size: clamp(2rem, 9vw, 3.4rem);
+    font-size: 40px;
   }
 
   .hero {
@@ -1472,10 +1448,6 @@ img {
 }
 
 @media (max-width: 520px) {
-  .brand__logo--horizontal {
-    width: 176px;
-  }
-
   .button-row {
     align-items: stretch;
     flex-direction: column;
@@ -1541,9 +1513,9 @@ img {
   --muted: #a6abb6;
   --line: #252d38;
   --line-strong: #343e4c;
-  --accent: #ff7500;
-  --accent-bright: #ff9a3d;
-  --accent-soft: #ffb867;
+  --accent: #b8891f;
+  --accent-bright: #d4af37;
+  --accent-soft: #efd77e;
   --success: #45d594;
   --shadow: 0 26px 70px rgba(0, 0, 0, 0.34);
   --radius-small: 12px;
@@ -1561,7 +1533,7 @@ body {
 body {
   color: var(--text);
   background:
-    radial-gradient(circle at 86% 4%, rgba(255, 122, 0, 0.045), transparent 28rem),
+    radial-gradient(circle at 86% 4%, rgba(212, 175, 55, 0.065), transparent 28rem),
     var(--background);
 }
 
@@ -1589,43 +1561,25 @@ h3 {
 .brand__lockup {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  color: var(--accent-bright);
 }
 
-.brand__mark {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  border-radius: 13px;
-  background: linear-gradient(135deg, var(--accent-bright), var(--accent));
-}
-
-.brand__mark i {
-  width: 15px;
-  height: 15px;
+.brand__symbol {
+  width: 45px;
+  height: 42px;
   display: block;
-  background: #fff2e5;
+  flex: 0 0 auto;
 }
 
-.brand__type {
-  display: grid;
-  gap: 2px;
+.brand__name {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 1rem;
+  font-weight: 760;
+  letter-spacing: 0.015em;
   line-height: 1;
   text-transform: uppercase;
-}
-
-.brand__type strong {
-  font-family: var(--font-sora), sans-serif;
-  font-size: 1.02rem;
-  letter-spacing: 0.01em;
-}
-
-.brand__type small {
-  color: var(--accent-bright);
-  font-size: 0.64rem;
-  font-weight: 760;
-  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .desktop-nav {
@@ -1665,18 +1619,18 @@ h3 {
   padding: 0 26px;
   gap: 0;
   border-radius: 12px;
-  font-size: 0.89rem;
+  font-size: 1rem;
   font-weight: 680;
 }
 
 .button--primary {
   color: #fffaf4;
   background: linear-gradient(105deg, var(--accent), var(--accent-bright));
-  box-shadow: 0 16px 34px rgba(255, 112, 0, 0.24);
+  box-shadow: 0 16px 34px rgba(212, 175, 55, 0.22);
 }
 
 .button--primary:hover {
-  background: linear-gradient(105deg, #ff8317, #ffa34d);
+  background: linear-gradient(105deg, #b8891f, #d4af37);
 }
 
 .button--secondary {
@@ -1710,7 +1664,7 @@ h3 {
   height: 640px;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 116, 0, 0.1), transparent 68%);
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 68%);
 }
 
 .home-hero__grid {
@@ -1748,7 +1702,7 @@ h3 {
 
 .home-hero h1 {
   max-width: 650px;
-  font-size: clamp(4rem, 5.2vw, 4.65rem);
+  font-size: clamp(3.5rem, 5.2vw, 4.5rem);
   line-height: 1.08;
   text-transform: uppercase;
 }
@@ -1763,8 +1717,8 @@ h3 {
   max-width: 650px;
   margin: 42px 0 38px;
   color: var(--muted);
-  font-size: 1.08rem;
-  line-height: 1.72;
+  font-size: 1.125rem;
+  line-height: 1.5;
 }
 
 .home-hero__actions {
@@ -1781,7 +1735,7 @@ h3 {
 
 .home-hero__details span {
   color: var(--accent-bright);
-  font-size: 0.64rem;
+  font-size: 0.875rem;
   font-weight: 780;
   line-height: 1;
   text-transform: uppercase;
@@ -1790,7 +1744,7 @@ h3 {
 .home-hero__details p {
   margin-top: 11px;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   line-height: 1.4;
 }
 
@@ -1809,18 +1763,18 @@ h3 {
   position: relative;
   min-height: 500px;
   padding: 54px 42px 34px;
-  border: 1px solid #743000;
+  border: 1px solid #6f5518;
   border-radius: 22px;
   background:
-    radial-gradient(circle at 45% 48%, rgba(255, 136, 0, 0.18), transparent 38%),
-    #401504;
+    radial-gradient(circle at 45% 48%, rgba(212, 175, 55, 0.18), transparent 38%),
+    #2f260c;
 }
 
 .home-game-panel__heading {
   display: grid;
   justify-items: center;
   gap: 11px;
-  color: #ffc366;
+  color: #efd77e;
   font-family: var(--font-sora), sans-serif;
   line-height: 1;
   text-transform: uppercase;
@@ -1861,9 +1815,9 @@ h3 {
 }
 
 .home-game-reels span.is-active {
-  color: #ffc56d;
+  color: #efd77e;
   border-color: var(--accent);
-  background: #5b2106;
+  background: #3d2f0d;
 }
 
 .home-jackpot {
@@ -2001,7 +1955,6 @@ h3 {
 .home-section-heading h2,
 .home-platform h2,
 .home-cta h2 {
-  font-size: clamp(2.8rem, 3.65vw, 3.25rem);
   line-height: 1.08;
   text-transform: uppercase;
 }
@@ -2043,7 +1996,7 @@ h3 {
   margin: 50px 0 40px;
   color: #fff;
   border-radius: 15px;
-  background: linear-gradient(135deg, var(--accent-bright), #cf4b00);
+  background: linear-gradient(135deg, var(--accent-bright), #9a6e10);
 }
 
 .home-service-card__icon svg {
@@ -2132,8 +2085,8 @@ h3 {
 
 .home-demo-card__visual--fortune {
   background:
-    radial-gradient(circle at 46% 36%, rgba(255, 123, 0, 0.52), transparent 34%),
-    linear-gradient(110deg, #bb5200, #210b08);
+    radial-gradient(circle at 46% 36%, rgba(212, 175, 55, 0.42), transparent 34%),
+    linear-gradient(110deg, #9a6a0d, #211a08);
 }
 
 .home-demo-card__visual--neon {
@@ -2204,10 +2157,6 @@ h3 {
 
 .home-platform__content .home-kicker {
   margin-bottom: 45px;
-}
-
-.home-platform h2 {
-  font-size: clamp(3rem, 3.75vw, 3.4rem);
 }
 
 .home-platform h2 span {
@@ -2303,7 +2252,7 @@ h3 {
 
 .operator-dashboard__sidebar nav span.is-current {
   color: var(--text);
-  background: #381505;
+  background: #2c220a;
 }
 
 .operator-dashboard__sidebar nav i {
@@ -2465,7 +2414,7 @@ h3 {
   width: 620px;
   height: 420px;
   pointer-events: none;
-  background: radial-gradient(circle at 0 0, rgba(255, 94, 0, 0.12), transparent 68%);
+  background: radial-gradient(circle at 0 0, rgba(212, 175, 55, 0.12), transparent 68%);
 }
 
 .home-reasons .container {
@@ -2475,10 +2424,6 @@ h3 {
 .home-reasons .home-section-heading {
   max-width: none;
   margin-bottom: 50px;
-}
-
-.home-reasons .home-section-heading h2 {
-  font-size: clamp(2.75rem, 3.35vw, 3rem);
 }
 
 .home-reason-grid {
@@ -2531,16 +2476,15 @@ h3 {
   gap: 80px;
   padding: 60px 54px;
   overflow: hidden;
-  border: 1px solid #743000;
+  border: 1px solid #6f5518;
   border-radius: 26px;
   background:
-    radial-gradient(circle at 93% 10%, rgba(255, 110, 0, 0.34), transparent 28%),
-    linear-gradient(110deg, #351206, #080c12 76%);
+    radial-gradient(circle at 93% 10%, rgba(212, 175, 55, 0.3), transparent 28%),
+    linear-gradient(110deg, #2c2109, #080c12 76%);
 }
 
 .home-cta h2 {
   max-width: 700px;
-  font-size: clamp(2.55rem, 3.7vw, 3.65rem);
 }
 
 .home-cta > div:first-child > p {
@@ -2593,6 +2537,20 @@ h3 {
   font-size: 1.04rem;
   font-weight: 760;
   text-transform: uppercase;
+}
+
+.footer-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent-bright);
+  line-height: 1;
+}
+
+.footer-brand-lockup__symbol {
+  width: 35px;
+  height: 33px;
+  flex: 0 0 auto;
 }
 
 .site-footer__brand p,
@@ -2680,9 +2638,9 @@ h3 {
     grid-template-columns: 1fr auto;
   }
 
-  .brand__mark {
-    width: 43px;
-    height: 43px;
+  .brand__symbol {
+    width: 40px;
+    height: 38px;
   }
 
   .home-hero {
@@ -2763,8 +2721,8 @@ h3 {
     width: min(calc(100% - 32px), var(--container));
   }
 
-  .brand__type strong {
-    font-size: 0.92rem;
+  .brand__name {
+    font-size: 0.86rem;
   }
 
   .home-hero {
@@ -2854,12 +2812,6 @@ h3 {
 
   .home-section-heading {
     margin-bottom: 46px;
-  }
-
-  .home-section-heading h2,
-  .home-platform h2,
-  .home-cta h2 {
-    font-size: clamp(2.15rem, 10vw, 3rem);
   }
 
   .home-service-grid,

@@ -1,0 +1,17 @@
+import type { SVGProps } from "react";
+
+export function BrandLogo(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="50 8 330 308"
+      role="img"
+      aria-label="Aurevia AG monogram"
+      {...props}
+    >
+      <path
+        fill="currentColor"
+        d="M223 20 108 261c-10 18-26 33-45 39 19 6 39 4 58-2 21-7 43-22 66-42 15 25 38 44 65 47 26 2 72 1 114 1l-37-74h-65l13 24h29l12 25h-58c-19 0-36-15-46-36 31-22 65-38 97-41 15-1 29 0 40 2-19-11-38-19-52-21-23-4-43 1-69 9-33 11-65 36-85 56-8 7-16 12-24 13 16-10 30-26 41-45 14-25 40-77 61-122l37 73 37 2-9-18L223 20Z"
+      />
+    </svg>
+  );
+}

@@ -1,29 +1,30 @@
+"use client";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { ButtonLink } from "@/components/button-link";
 import { siteContent } from "@/content/site-content";
 
 function Brand() {
-  const brandDescriptor = siteContent.brand.name.slice(siteContent.brand.shortName.length).trim();
-
   return (
     <span className="brand__lockup" aria-hidden="true">
-      <span className="brand__mark">
-        <i />
-      </span>
-      <span className="brand__type">
-        <strong>{siteContent.brand.shortName}</strong>
-        <small>{brandDescriptor}</small>
-      </span>
+      <BrandLogo className="brand__symbol" />
+      <span className="brand__name">{siteContent.brand.name}</span>
     </span>
   );
 }
 
 export function SiteHeader() {
+  const pathname = usePathname();
   return (
     <header className="site-header">
       <div className="container site-header__inner">
-        <Link className="brand" href="/" aria-label={`${siteContent.brand.name} home`}>
+        <Link
+          className="brand"
+          href="/"
+          aria-label={`${siteContent.brand.name} home`}
+        >
           <Brand />
         </Link>
 
@@ -32,7 +33,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className={item.href === "/" ? "is-current" : undefined}
+              className={item.href === pathname ? "is-current" : undefined}
             >
               {item.label}
             </Link>
