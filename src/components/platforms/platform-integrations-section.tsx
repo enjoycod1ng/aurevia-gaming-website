@@ -5,7 +5,11 @@ import styles from "./platforms-page.module.css";
 
 type IntegrationsContent = SiteContent["platformPage"]["integrations"];
 
-export function PlatformIntegrationsSection({ content }: { content: IntegrationsContent }) {
+export function PlatformIntegrationsSection({
+  content,
+}: {
+  content: IntegrationsContent;
+}) {
   return (
     <section className={styles.integrations}>
       <div className={`container ${styles.integrationsGrid}`}>
@@ -13,7 +17,10 @@ export function PlatformIntegrationsSection({ content }: { content: Integrations
           <div className={styles.sectionHeading}>
             <SectionHeading {...content.heading} />
           </div>
-          <ul className={styles.capabilities} aria-label={content.capabilitiesAriaLabel}>
+          <ul
+            className={styles.capabilities}
+            aria-label={content.capabilitiesAriaLabel}
+          >
             {content.capabilities.map((capability) => (
               <li key={capability}>{capability}</li>
             ))}

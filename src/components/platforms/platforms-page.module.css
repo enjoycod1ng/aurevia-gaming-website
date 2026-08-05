@@ -19,7 +19,7 @@
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: var(--surface);
-  font-size: 0.65rem;
+  font-size: var(--font-size-xs);
   font-weight: 760;
   letter-spacing: 0.02em;
   line-height: 1;
@@ -73,7 +73,7 @@
   max-width: 660px;
   margin-top: 28px;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1.7;
 }
 
@@ -125,7 +125,7 @@
 
 .previewBrand > strong {
   color: var(--accent-bright);
-  font-size: 1.65rem;
+  font-size: var(--font-size-2xl);
 }
 
 .previewBrand > span {
@@ -136,13 +136,13 @@
 
 .previewBrand b {
   overflow: hidden;
-  font-size: 0.74rem;
+  font-size: var(--font-size-xs);
   text-overflow: ellipsis;
 }
 
 .previewBrand small {
   color: var(--accent-bright);
-  font-size: 0.5rem;
+  font-size: var(--font-size-xs);
   font-weight: 760;
 }
 
@@ -162,7 +162,7 @@
   padding: 0 12px;
   color: #a3abb7;
   border-radius: 9px;
-  font-size: 0.62rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -190,7 +190,7 @@
 }
 
 .overviewContent > header h2 {
-  font-size: 1.45rem;
+  font-size: var(--font-size-2xl);
   line-height: 1.1;
   text-transform: none;
 }
@@ -199,7 +199,7 @@
 .dashboardHeader p {
   margin-top: 7px;
   color: #9ca4b0;
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
 }
 
 .overviewMetrics,
@@ -219,8 +219,8 @@
   min-height: 110px;
   display: grid;
   align-content: center;
-  gap: 9px;
-  padding: 15px;
+  gap: var(--space-2);
+  padding: var(--space-4);
   border: 1px solid #2a3442;
   border-radius: 14px;
   background: #171d27;
@@ -229,7 +229,7 @@
 .metricCard > span {
   overflow: hidden;
   color: #9ca4b0;
-  font-size: 0.57rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -238,12 +238,12 @@
 
 .metricCard > strong {
   font-family: var(--font-sora), sans-serif;
-  font-size: 1.12rem;
+  font-size: var(--font-size-lg);
   line-height: 1;
 }
 
 .metricCard > small {
-  font-size: 0.56rem;
+  font-size: var(--font-size-xs);
   font-weight: 760;
 }
 
@@ -284,7 +284,7 @@
 .activityPanel > strong,
 .payoutPanel > strong,
 .auditPanel > strong {
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
 }
 
 .barChart > div {
@@ -325,7 +325,7 @@
   align-items: center;
   gap: 18px;
   border-bottom: 1px solid #293340;
-  font-size: 0.59rem;
+  font-size: var(--font-size-xs);
 }
 
 .productList li:last-child {
@@ -357,7 +357,7 @@
 .visualImage figcaption {
   padding: 12px 18px;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
 }
 
 .proof {
@@ -385,18 +385,18 @@
 
 .proof article > span {
   color: var(--accent-bright);
-  font-size: 0.62rem;
+  font-size: var(--font-size-xs);
   font-weight: 760;
 }
 
 .proof h2 {
-  font-size: 0.88rem;
+  font-size: var(--font-size-sm);
   line-height: 1.2;
 }
 
 .proof p {
   color: #9ca4b0;
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
 }
 
 .modules,
@@ -407,7 +407,7 @@
 }
 
 .modules {
-  padding: 108px 0 132px;
+  padding: var(--section-spacing) 0;
   contain-intrinsic-size: 1043px;
 }
 
@@ -425,7 +425,7 @@
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: var(--surface);
-  font-size: 0.65rem;
+  font-size: var(--font-size-xs);
   letter-spacing: 0.02em;
 }
 
@@ -433,15 +433,15 @@
   max-width: 840px;
   margin-top: 19px;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   line-height: 1.65;
 }
 
 .moduleGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 28px 24px;
-  margin-top: 74px;
+  gap: var(--card-grid-gap);
+  margin-top: var(--space-16);
 }
 
 .tone--gold {
@@ -468,15 +468,15 @@
   min-height: 390px;
   display: flex;
   flex-direction: column;
-  padding: 26px;
+  padding: var(--card-padding);
   border: 1px solid #2a3442;
   border-radius: 20px;
   background: #11161f;
 }
 
 .moduleIcon {
-  width: 48px;
-  height: 48px;
+  width: var(--card-icon-size);
+  height: var(--card-icon-size);
   display: grid;
   place-items: center;
   color: #fff;
@@ -495,29 +495,29 @@
 }
 
 .moduleCard h3 {
-  margin-top: 32px;
-  font-size: 1.25rem;
+  margin-top: var(--space-6);
+  font-size: var(--font-size-xl);
   line-height: 1.2;
   text-transform: uppercase;
 }
 
 .moduleCard p {
-  margin-top: 31px;
+  margin-top: var(--card-content-gap);
   color: #9ca4b0;
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   line-height: 1.65;
 }
 
 .moduleCard > strong {
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: var(--space-6);
   color: var(--tone);
   border-top: 1px solid #293340;
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
 }
 
 .admin {
-  padding: 90px 0 113px;
+  padding: var(--section-spacing) 0;
   scroll-margin-top: var(--header-height);
   contain-intrinsic-size: 1080px;
   border-top: 1px solid var(--line);
@@ -543,7 +543,7 @@
   border: 1px solid #2a3442;
   border-radius: 11px;
   background: #171d27;
-  font-size: 0.79rem;
+  font-size: var(--font-size-xs);
   font-weight: 680;
 }
 
@@ -574,7 +574,7 @@
 }
 
 .dashboardHeader h3 {
-  font-size: 1.42rem;
+  font-size: var(--font-size-2xl);
   line-height: 1.1;
 }
 
@@ -590,7 +590,7 @@
   border: 1px solid #2a3442;
   border-radius: 12px;
   background: #171d27;
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   font-weight: 680;
 }
 
@@ -619,7 +619,7 @@
 
 .lineChartPanel header small {
   color: #9ca4b0;
-  font-size: 0.62rem;
+  font-size: var(--font-size-xs);
 }
 
 .lineChart {
@@ -704,7 +704,7 @@
 
 .trafficDonut > strong {
   font-family: var(--font-sora), sans-serif;
-  font-size: 1.35rem;
+  font-size: var(--font-size-xl);
 }
 
 .trafficLegend {
@@ -720,7 +720,7 @@
   grid-template-columns: 9px 1fr auto;
   align-items: center;
   gap: 8px;
-  font-size: 0.61rem;
+  font-size: var(--font-size-xs);
 }
 
 .trafficLegend li > span {
@@ -754,7 +754,7 @@
   align-items: center;
   gap: 14px;
   border-bottom: 1px solid #293340;
-  font-size: 0.62rem;
+  font-size: var(--font-size-xs);
 }
 
 .activityPanel li:last-child,
@@ -783,7 +783,7 @@
 }
 
 .rtp {
-  padding: 70px 0 86px;
+  padding: var(--section-spacing) 0;
   contain-intrinsic-size: 945px;
 }
 
@@ -810,7 +810,7 @@
 }
 
 .rtpSidebar header > strong {
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   text-transform: uppercase;
 }
 
@@ -822,8 +822,8 @@
 
 .profileList {
   display: grid;
-  gap: 14px;
-  margin-top: 34px;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
 }
 
 .profileList article {
@@ -831,8 +831,8 @@
   min-height: 105px;
   display: grid;
   align-content: center;
-  gap: 9px;
-  padding: 17px;
+  gap: var(--space-2);
+  padding: var(--space-4);
   border: 1px solid #2a3442;
   border-radius: 13px;
   background: #171d27;
@@ -844,12 +844,12 @@
 }
 
 .profileList article > span {
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
 }
 
 .profileList article > strong {
   font-family: var(--font-sora), sans-serif;
-  font-size: 1.15rem;
+  font-size: var(--font-size-lg);
 }
 
 .profileList article > small {
@@ -859,7 +859,7 @@
   min-width: 68px;
   padding: 5px 9px;
   border-radius: 999px;
-  font-size: 0.46rem;
+  font-size: var(--font-size-xs);
   font-weight: 760;
   text-align: center;
   text-transform: uppercase;
@@ -909,7 +909,7 @@
   grid-template-columns: 105px 1fr 38px;
   align-items: center;
   gap: 16px;
-  font-size: 0.62rem;
+  font-size: var(--font-size-xs);
 }
 
 .payoutPanel li > b {
@@ -932,7 +932,7 @@
 }
 
 .integrations {
-  padding: 24px 0 16px;
+  padding: var(--section-spacing) 0;
   contain-intrinsic-size: 330px;
   border-top: 1px solid var(--line);
   background: #0d1117;
@@ -972,7 +972,7 @@
   border: 1px solid #2a3442;
   border-radius: 11px;
   background: #171d27;
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   font-weight: 650;
 }
 
@@ -981,22 +981,22 @@
 }
 
 .securityPanel {
-  padding: 24px;
+  padding: var(--card-padding);
   border: 1px solid #2a3442;
   border-radius: 20px;
   background: #11161f;
 }
 
 .securityPanel h3 {
-  font-size: 1.15rem;
+  font-size: var(--font-size-lg);
   text-transform: uppercase;
 }
 
 .securityPanel ul {
   display: grid;
-  gap: 14px;
+  gap: var(--space-4);
   padding: 0;
-  margin: 20px 0 0;
+  margin: var(--card-content-gap) 0 0;
   list-style: none;
 }
 
@@ -1008,13 +1008,13 @@
 }
 
 .securityPanel li > strong {
-  font-size: 0.68rem;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
 }
 
 .securityPanel li > p {
   color: #9ca4b0;
-  font-size: 0.65rem;
+  font-size: var(--font-size-xs);
 }
 
 .ctaSection {
@@ -1183,7 +1183,7 @@
   .admin,
   .rtp,
   .integrations {
-    padding-block: 86px;
+    padding-block: var(--section-spacing);
   }
 
   .modules {

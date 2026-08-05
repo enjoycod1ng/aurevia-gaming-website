@@ -9,6 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: new URL(path, siteContent.brand.url).toString(),
     lastModified: new Date(),
     changeFrequency: path === "/" ? "weekly" : "monthly",
-    priority: index === 0 ? 1 : path === "/contact" ? 0.8 : 0.7
+    priority: index === 0 ? 1 : path === "/contact" ? 0.8 : 0.7,
   }));
 }

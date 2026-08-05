@@ -1,7 +1,11 @@
 import { SectionHeading } from "@/components/section-heading";
 import type { SiteContent } from "@/types/content";
 
-import { PlatformLineChart, PlatformMetricCard, PlatformSidebar } from "./platform-ui";
+import {
+  PlatformLineChart,
+  PlatformMetricCard,
+  PlatformSidebar,
+} from "./platform-ui";
 import { PlatformVisual } from "./platform-visual";
 import styles from "./platforms-page.module.css";
 
@@ -11,12 +15,17 @@ type AdminDashboardContent = AdminContent["dashboard"];
 function TrafficChart({ items }: { items: AdminDashboardContent["traffic"] }) {
   const segments = items.map((item, index) => ({
     item,
-    offset: items.slice(0, index).reduce((total, segment) => total + segment.value, 0),
+    offset: items
+      .slice(0, index)
+      .reduce((total, segment) => total + segment.value, 0),
   }));
 
   return (
     <div className={styles.trafficLayout}>
-      <div className={styles.trafficDonut} aria-label={`${items[0]?.value ?? 0}% organic traffic`}>
+      <div
+        className={styles.trafficDonut}
+        aria-label={`${items[0]?.value ?? 0}% organic traffic`}
+      >
         <svg viewBox="0 0 42 42" aria-hidden="true">
           <circle className={styles.trafficTrack} cx="21" cy="21" r="15.9" />
           {segments.map(({ item, offset }) => {
@@ -77,7 +86,10 @@ function AdminDashboard({ content }: { content: AdminDashboardContent }) {
               <strong>{content.chart.title}</strong>
               <small>{content.chart.period}</small>
             </header>
-            <PlatformLineChart points={content.chart.points} label={content.chart.title} />
+            <PlatformLineChart
+              points={content.chart.points}
+              label={content.chart.title}
+            />
           </section>
           <section className={styles.trafficPanel}>
             <strong>Traffic mix</strong>
@@ -88,7 +100,10 @@ function AdminDashboard({ content }: { content: AdminDashboardContent }) {
           <strong>{content.activityTitle}</strong>
           <ul>
             {content.activity.map((activity) => (
-              <li className={styles[`tone--${activity.tone}`]} key={activity.label}>
+              <li
+                className={styles[`tone--${activity.tone}`]}
+                key={activity.label}
+              >
                 <span aria-hidden="true">✓</span>
                 <b>{activity.label}</b>
                 <small>{activity.detail}</small>
@@ -121,7 +136,10 @@ export function PlatformAdminSection({ content }: { content: AdminContent }) {
         </div>
         <ul className={styles.adminTabs} aria-label={content.tabsAriaLabel}>
           {content.tabs.map((tab, index) => (
-            <li className={index === 0 ? styles.activeTab : undefined} key={tab}>
+            <li
+              className={index === 0 ? styles.activeTab : undefined}
+              key={tab}
+            >
               {tab}
             </li>
           ))}

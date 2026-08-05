@@ -4,7 +4,11 @@ import type { SiteContent } from "@/types/content";
 
 type HomePlatformContent = SiteContent["home"]["platform"];
 
-export function HomePlatformSection({ content }: { content: HomePlatformContent }) {
+export function HomePlatformSection({
+  content,
+}: {
+  content: HomePlatformContent;
+}) {
   return (
     <section className="home-section home-platform">
       <div className="container home-platform__grid">
@@ -15,7 +19,9 @@ export function HomePlatformSection({ content }: { content: HomePlatformContent 
             <span>{content.highlightedTitle}</span>
           </h2>
           <p>{content.heading.description}</p>
-          <ButtonLink href={content.action.href}>{content.action.label}</ButtonLink>
+          <ButtonLink href={content.action.href}>
+            {content.action.label}
+          </ButtonLink>
           <ul>
             {content.features.map((item) => (
               <li key={item}>

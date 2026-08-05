@@ -5,13 +5,20 @@ import styles from "./contact-page.module.css";
 
 type ContactBriefContent = SiteContent["contactPage"]["brief"];
 
-export function ContactBriefSection({ content }: { content: ContactBriefContent }) {
+export function ContactBriefSection({
+  content,
+}: {
+  content: ContactBriefContent;
+}) {
   return (
     <section className={styles.brief}>
       <div className={`container ${styles.briefGrid}`}>
         <div>
           <SectionHeading {...content.heading} />
-          <ul className={styles.checklist} aria-label={content.checklistAriaLabel}>
+          <ul
+            className={styles.checklist}
+            aria-label={content.checklistAriaLabel}
+          >
             {content.checklist.map((item) => (
               <li key={item}>
                 <span aria-hidden="true">✓</span>

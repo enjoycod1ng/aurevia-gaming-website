@@ -15,15 +15,22 @@ export function HomeDemosSection({ content }: { content: HomeDemosContent }) {
         <div className="home-demo-grid">
           {content.items.map((demo) => (
             <article className="home-demo-card" key={demo.title}>
-              <div className={`home-demo-card__visual home-demo-card__visual--${demo.theme}`}>
+              <div
+                className={`home-demo-card__visual home-demo-card__visual--${demo.theme}`}
+              >
                 <span>{demo.symbol}</span>
                 <strong>{demo.title}</strong>
               </div>
               <h3>{demo.title}</h3>
               <p>{demo.description}</p>
               <div className="button-row">
-                <ButtonLink href={demo.primaryAction.href}>{demo.primaryAction.label}</ButtonLink>
-                <ButtonLink href={demo.secondaryAction.href} variant="secondary">
+                <ButtonLink href={demo.primaryAction.href}>
+                  {demo.primaryAction.label}
+                </ButtonLink>
+                <ButtonLink
+                  href={demo.secondaryAction.href}
+                  variant="secondary"
+                >
                   {demo.secondaryAction.label}
                 </ButtonLink>
               </div>

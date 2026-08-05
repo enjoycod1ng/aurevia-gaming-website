@@ -6,7 +6,10 @@ interface ServicesLayerPanelProps {
   layers: readonly ServiceLayer[];
 }
 
-export function ServicesLayerPanel({ ariaLabel, layers }: ServicesLayerPanelProps) {
+export function ServicesLayerPanel({
+  ariaLabel,
+  layers,
+}: ServicesLayerPanelProps) {
   return (
     <aside className="services-layer-panel" aria-label={ariaLabel}>
       <div className="services-layer-panel__grid">

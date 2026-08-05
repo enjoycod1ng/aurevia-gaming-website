@@ -13,7 +13,9 @@ type ActiveFilter = GameFilter["value"];
 
 function GameArtwork({ game }: { game: GameCatalogItem }) {
   return (
-    <div className={`${styles.artwork} ${styles[`artwork--${game.artworkTone}`]}`}>
+    <div
+      className={`${styles.artwork} ${styles[`artwork--${game.artworkTone}`]}`}
+    >
       {game.image ? (
         <Image
           className={styles.artworkImage}
@@ -36,7 +38,9 @@ function GameCard({ game }: { game: GameCatalogItem }) {
   return (
     <article className={styles.gameCard} id={game.id}>
       <GameArtwork game={game} />
-      <p className={`${styles.gameCategory} ${styles[`gameCategory--${game.artworkTone}`]}`}>
+      <p
+        className={`${styles.gameCategory} ${styles[`gameCategory--${game.artworkTone}`]}`}
+      >
         {game.categoryLabel}
       </p>
       <h3>{game.title}</h3>
@@ -75,12 +79,20 @@ export function GameCatalogSection({ content }: { content: CatalogContent }) {
   return (
     <section className={styles.catalog} id="game-library">
       <div className="container">
-        <div className={styles.filterBar} aria-label={content.ariaLabel} role="group">
+        <div
+          className={styles.filterBar}
+          aria-label={content.ariaLabel}
+          role="group"
+        >
           <span className={styles.filterLabel}>{content.filterLabel}</span>
           <div className={styles.filters}>
             {content.filters.map((filter) => (
               <button
-                className={activeFilter === filter.value ? styles.activeFilter : undefined}
+                className={
+                  activeFilter === filter.value
+                    ? styles.activeFilter
+                    : undefined
+                }
                 type="button"
                 aria-pressed={activeFilter === filter.value}
                 key={filter.value}
@@ -99,7 +111,8 @@ export function GameCatalogSection({ content }: { content: CatalogContent }) {
         </div>
 
         <p className="sr-only" role="status" aria-live="polite">
-          Showing {visibleGames.length} {visibleGames.length === 1 ? "game" : "games"}.
+          Showing {visibleGames.length}{" "}
+          {visibleGames.length === 1 ? "game" : "games"}.
         </p>
         <div className={styles.gameGrid}>
           {visibleGames.map((game) => (

@@ -16,7 +16,10 @@ export default function HomePage() {
   return (
     <main id="main-content" className="home-page">
       <HomeHeroSection content={home.hero} />
-      <HomeProofSection ariaLabel={home.proofAriaLabel} points={home.proofPoints} />
+      <HomeProofSection
+        ariaLabel={home.proofAriaLabel}
+        points={home.proofPoints}
+      />
       <HomeServicesSection content={home.services} />
       <HomeDemosSection content={home.demos} />
       <HomePlatformSection content={home.platform} />

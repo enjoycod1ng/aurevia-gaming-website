@@ -16,12 +16,17 @@ export function HomeHeroSection({ content }: { content: HomeHeroContent }) {
           </h1>
           <p className="home-hero__description">{content.description}</p>
           <div className="button-row home-hero__actions">
-            <ButtonLink href={content.primaryAction.href}>{content.primaryAction.label}</ButtonLink>
+            <ButtonLink href={content.primaryAction.href}>
+              {content.primaryAction.label}
+            </ButtonLink>
             <ButtonLink href={content.secondaryAction.href} variant="secondary">
               {content.secondaryAction.label}
             </ButtonLink>
           </div>
-          <div className="home-hero__details" aria-label={content.detailsAriaLabel}>
+          <div
+            className="home-hero__details"
+            aria-label={content.detailsAriaLabel}
+          >
             {content.details.map((detail) => (
               <div key={detail.label}>
                 <span>{detail.label}</span>

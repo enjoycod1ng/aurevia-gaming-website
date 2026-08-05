@@ -5,7 +5,11 @@ import styles from "./games-page.module.css";
 
 type DeliveryContent = SiteContent["gamesPage"]["delivery"];
 
-export function GamesDeliverySection({ content }: { content: DeliveryContent }) {
+export function GamesDeliverySection({
+  content,
+}: {
+  content: DeliveryContent;
+}) {
   return (
     <section className={styles.delivery}>
       <div className="container">
@@ -17,7 +21,10 @@ export function GamesDeliverySection({ content }: { content: DeliveryContent }) 
 
         <div className={styles.pillarGrid}>
           {content.pillars.map((pillar) => (
-            <article className={`${styles.pillar} ${styles[`pillar--${pillar.tone}`]}`} key={pillar.title}>
+            <article
+              className={`${styles.pillar} ${styles[`pillar--${pillar.tone}`]}`}
+              key={pillar.title}
+            >
               <span className={styles.pillarIcon}>
                 <ServiceIcon name={pillar.icon} />
               </span>

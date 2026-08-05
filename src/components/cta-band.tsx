@@ -8,7 +8,7 @@ interface CtaBandProps {
 
 export function CtaBand({
   title = "Ready to turn the product brief into a working build?",
-  description = "Share the scope, target platforms and integrations. We will use that context to plan the first technical conversation."
+  description = "Share the scope, target platforms and integrations. We will use that context to plan the first technical conversation.",
 }: CtaBandProps) {
   return (
     <section className="section section--compact">

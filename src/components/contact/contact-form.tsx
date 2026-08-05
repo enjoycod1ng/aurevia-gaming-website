@@ -22,7 +22,11 @@ function getStatusToneClass(tone: ContactStatusMessage["tone"]) {
   return styles.statusError;
 }
 
-export function ContactForm({ content, requestedProject, status }: ContactFormProps) {
+export function ContactForm({
+  content,
+  requestedProject,
+  status,
+}: ContactFormProps) {
   const selectedProject = content.projectTypes.includes(requestedProject)
     ? requestedProject
     : content.projectTypes[0];
@@ -45,7 +49,13 @@ export function ContactForm({ content, requestedProject, status }: ContactFormPr
       <form className={styles.form} action="/api/contact" method="post">
         <div className={styles.honeypot} aria-hidden="true">
           <label htmlFor="website">Website</label>
-          <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+          <input
+            id="website"
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+          />
         </div>
 
         {requestedProject ? (
@@ -161,7 +171,10 @@ export function ContactForm({ content, requestedProject, status }: ContactFormPr
           <span>{content.consentLabel}</span>
         </label>
 
-        <button className={`button button--primary ${styles.submitButton}`} type="submit">
+        <button
+          className={`button button--primary ${styles.submitButton}`}
+          type="submit"
+        >
           <span>{content.submitLabel}</span>
         </button>
       </form>

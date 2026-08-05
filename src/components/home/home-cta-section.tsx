@@ -7,7 +7,11 @@ interface HomeCtaSectionProps {
   className?: string;
 }
 
-export function HomeCtaSection({ content, contact, className = "" }: HomeCtaSectionProps) {
+export function HomeCtaSection({
+  content,
+  contact,
+  className = "",
+}: HomeCtaSectionProps) {
   return (
     <section className={`home-cta-section ${className}`.trim()}>
       <div className="container">
@@ -17,7 +21,9 @@ export function HomeCtaSection({ content, contact, className = "" }: HomeCtaSect
             <p>{content.description}</p>
           </div>
           <div className="home-cta__actions">
-            <ButtonLink href={content.primaryAction.href}>{content.primaryAction.label}</ButtonLink>
+            <ButtonLink href={content.primaryAction.href}>
+              {content.primaryAction.label}
+            </ButtonLink>
             <a href={contact.telegramUrl} target="_blank" rel="noreferrer">
               {content.telegramLabel} {contact.telegramHandle}
             </a>

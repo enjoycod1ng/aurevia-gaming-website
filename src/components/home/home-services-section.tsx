@@ -5,7 +5,11 @@ import type { SiteContent } from "@/types/content";
 
 type HomeServicesContent = SiteContent["home"]["services"];
 
-export function HomeServicesSection({ content }: { content: HomeServicesContent }) {
+export function HomeServicesSection({
+  content,
+}: {
+  content: HomeServicesContent;
+}) {
   return (
     <section className="home-section home-services">
       <div className="container">
@@ -17,10 +21,16 @@ export function HomeServicesSection({ content }: { content: HomeServicesContent 
         <div className="home-service-grid">
           {content.items.map((service, index) => (
             <article
-              className={index === 0 ? "home-service-card is-featured" : "home-service-card"}
+              className={
+                index === 0
+                  ? "home-service-card is-featured"
+                  : "home-service-card"
+              }
               key={service.number}
             >
-              <span className="home-service-card__number">{service.number}</span>
+              <span className="home-service-card__number">
+                {service.number}
+              </span>
               <span className="home-service-card__icon">
                 <ServiceIcon name={service.icon} />
               </span>

@@ -7,14 +7,23 @@ type GamesHeroContent = SiteContent["gamesPage"]["hero"];
 
 function FeaturedGame({ content }: { content: GamesHeroContent["featured"] }) {
   return (
-    <article className={styles.featuredGame} aria-labelledby="featured-game-title">
+    <article
+      className={styles.featuredGame}
+      aria-labelledby="featured-game-title"
+    >
       <p className={styles.featuredLabel}>{content.label}</p>
       <h2 id="featured-game-title">{content.title}</h2>
       <p className={styles.featuredDescription}>{content.description}</p>
 
-      <div className={styles.reels} aria-label={`${content.title} reel preview`}>
+      <div
+        className={styles.reels}
+        aria-label={`${content.title} reel preview`}
+      >
         {content.reels.map((reel, index) => (
-          <span className={reel.active ? styles.activeReel : undefined} key={`${reel.symbol}-${index}`}>
+          <span
+            className={reel.active ? styles.activeReel : undefined}
+            key={`${reel.symbol}-${index}`}
+          >
             {reel.symbol}
           </span>
         ))}

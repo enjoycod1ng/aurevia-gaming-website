@@ -7,7 +7,11 @@ import styles from "./platforms-page.module.css";
 
 type PlatformHeroContent = SiteContent["platformPage"]["hero"];
 
-function OperatorOverview({ content }: { content: PlatformHeroContent["overview"] }) {
+function OperatorOverview({
+  content,
+}: {
+  content: PlatformHeroContent["overview"];
+}) {
   const panel = (
     <aside className={styles.overviewPanel} aria-label={content.ariaLabel}>
       <PlatformSidebar
@@ -63,7 +67,11 @@ function OperatorOverview({ content }: { content: PlatformHeroContent["overview"
   );
 }
 
-export function PlatformHeroSection({ content }: { content: PlatformHeroContent }) {
+export function PlatformHeroSection({
+  content,
+}: {
+  content: PlatformHeroContent;
+}) {
   return (
     <section className={styles.hero}>
       <div className={`container ${styles.heroGrid}`}>

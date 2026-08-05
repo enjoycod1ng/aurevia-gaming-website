@@ -2,7 +2,11 @@ import type { SiteContent } from "@/types/content";
 
 type OperatorDashboardContent = SiteContent["home"]["platform"]["dashboard"];
 
-export function OperatorDashboard({ content }: { content: OperatorDashboardContent }) {
+export function OperatorDashboard({
+  content,
+}: {
+  content: OperatorDashboardContent;
+}) {
   const chartPath = `M${content.chart.points.map(([x, y]) => `${x} ${y}`).join(" ")}`;
 
   return (
@@ -31,7 +35,9 @@ export function OperatorDashboard({ content }: { content: OperatorDashboardConte
             <div key={stat.label}>
               <span>{stat.label}</span>
               <strong>{stat.value}</strong>
-              <small className={stat.tone === "neutral" ? "is-neutral" : undefined}>
+              <small
+                className={stat.tone === "neutral" ? "is-neutral" : undefined}
+              >
                 {stat.change}
               </small>
             </div>
@@ -42,7 +48,11 @@ export function OperatorDashboard({ content }: { content: OperatorDashboardConte
             <strong>{content.chart.title}</strong>
             <span>{content.chart.period}</span>
           </div>
-          <svg aria-hidden="true" viewBox="0 0 500 180" preserveAspectRatio="none">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 500 180"
+            preserveAspectRatio="none"
+          >
             <path className="grid-line" d="M0 35H500M0 90H500M0 145H500" />
             <path className="chart-line" d={chartPath} />
             {content.chart.points.map(([cx, cy]) => (

@@ -20,7 +20,7 @@ export function PageHero({
   title,
   description,
   primaryAction,
-  secondaryAction
+  secondaryAction,
 }: PageHeroProps) {
   return (
     <section className="page-hero">
@@ -31,7 +31,9 @@ export function PageHero({
         {primaryAction || secondaryAction ? (
           <div className="button-row">
             {primaryAction ? (
-              <ButtonLink href={primaryAction.href}>{primaryAction.label}</ButtonLink>
+              <ButtonLink href={primaryAction.href}>
+                {primaryAction.label}
+              </ButtonLink>
             ) : null}
             {secondaryAction ? (
               <ButtonLink

@@ -2,7 +2,11 @@ import type { SiteContent } from "@/types/content";
 
 type HomeReasonsContent = SiteContent["home"]["reasons"];
 
-export function HomeReasonsSection({ content }: { content: HomeReasonsContent }) {
+export function HomeReasonsSection({
+  content,
+}: {
+  content: HomeReasonsContent;
+}) {
   return (
     <section className="home-section home-reasons">
       <div className="container">

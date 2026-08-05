@@ -7,12 +7,12 @@ export function GET() {
     {
       status: "ok",
       service: "aurevia-gaming",
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     },
     {
       headers: {
-        "Cache-Control": "no-store"
-      }
-    }
+        "Cache-Control": "no-store",
+      },
+    },
   );
 }

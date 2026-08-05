@@ -6,7 +6,11 @@ import styles from "./platforms-page.module.css";
 
 type ModulesContent = SiteContent["platformPage"]["modules"];
 
-export function PlatformModulesSection({ content }: { content: ModulesContent }) {
+export function PlatformModulesSection({
+  content,
+}: {
+  content: ModulesContent;
+}) {
   return (
     <section className={styles.modules}>
       <div className="container">

@@ -11,20 +11,20 @@ import "./globals.css";
 const sora = Sora({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-sora"
+  variable: "--font-sora",
 });
 
 const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-manrope"
+  variable: "--font-manrope",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteContent.brand.url),
   title: {
     default: `${siteContent.seo.home.title} | ${siteContent.brand.name}`,
-    template: `%s | ${siteContent.brand.name}`
+    template: `%s | ${siteContent.brand.name}`,
   },
   description: siteContent.brand.description,
   applicationName: siteContent.brand.name,
@@ -34,20 +34,26 @@ export const metadata: Metadata = {
   formatDetection: {
     email: false,
     address: false,
-    telephone: false
+    telephone: false,
   },
   icons: {
-    icon: "/icon.png",
-    apple: "/apple-icon.png"
+    icon: {
+      url: "/logo.svg",
+      type: "image/svg+xml",
+    },
+    apple: {
+      url: "/logo.svg",
+      type: "image/svg+xml",
+    },
   },
-  manifest: "/manifest.webmanifest"
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#0b0908",
-  colorScheme: "dark"
+  colorScheme: "dark",
 };
 
 const organizationJsonLd = {
@@ -61,13 +67,15 @@ const organizationJsonLd = {
       "@type": "ContactPoint",
       telephone: siteContent.contact.phoneDisplay,
       contactType: "sales",
-      availableLanguage: ["English"]
-    }
+      availableLanguage: ["English"],
+    },
   ],
-  sameAs: [siteContent.contact.telegramUrl]
+  sameAs: [siteContent.contact.telegramUrl],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className={`${manrope.variable} ${sora.variable}`}>

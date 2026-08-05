@@ -4,7 +4,11 @@ import type { SiteContent } from "@/types/content";
 
 type ServicesHeroContent = SiteContent["servicesPage"]["hero"];
 
-export function ServicesHeroSection({ content }: { content: ServicesHeroContent }) {
+export function ServicesHeroSection({
+  content,
+}: {
+  content: ServicesHeroContent;
+}) {
   return (
     <>
       <section className="services-hero">
@@ -17,12 +21,18 @@ export function ServicesHeroSection({ content }: { content: ServicesHeroContent 
               <ButtonLink href={content.primaryAction.href}>
                 {content.primaryAction.label}
               </ButtonLink>
-              <ButtonLink href={content.secondaryAction.href} variant="secondary">
+              <ButtonLink
+                href={content.secondaryAction.href}
+                variant="secondary"
+              >
                 {content.secondaryAction.label}
               </ButtonLink>
             </div>
           </div>
-          <ServicesLayerPanel ariaLabel={content.layersAriaLabel} layers={content.layers} />
+          <ServicesLayerPanel
+            ariaLabel={content.layersAriaLabel}
+            layers={content.layers}
+          />
         </div>
       </section>
 

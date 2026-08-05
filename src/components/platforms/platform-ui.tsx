@@ -20,7 +20,9 @@ export function PlatformSidebar({
   compact = false,
 }: PlatformSidebarProps) {
   return (
-    <aside className={`${styles.previewSidebar} ${compact ? styles.previewSidebarCompact : ""}`}>
+    <aside
+      className={`${styles.previewSidebar} ${compact ? styles.previewSidebarCompact : ""}`}
+    >
       <div className={styles.previewBrand}>
         {brandMark ? <strong>{brandMark}</strong> : null}
         <span>
@@ -31,7 +33,10 @@ export function PlatformSidebar({
       <nav aria-label={ariaLabel}>
         <ul>
           {items.map((item, index) => (
-            <li className={index === 0 ? styles.previewNavActive : undefined} key={item}>
+            <li
+              className={index === 0 ? styles.previewNavActive : undefined}
+              key={item}
+            >
               <span aria-hidden="true" />
               {item}
             </li>
@@ -48,7 +53,9 @@ export function PlatformMetricCard({ metric }: { metric: PlatformMetric }) {
       <span>{metric.label}</span>
       <strong>{metric.value}</strong>
       {metric.change ? (
-        <small className={styles[`metricChange--${metric.changeTone ?? "neutral"}`]}>
+        <small
+          className={styles[`metricChange--${metric.changeTone ?? "neutral"}`]}
+        >
           {metric.change}
         </small>
       ) : null}
@@ -65,7 +72,12 @@ export function PlatformLineChart({ points, label }: PlatformLineChartProps) {
   const polyline = points.map(([x, y]) => `${x},${y}`).join(" ");
 
   return (
-    <svg className={styles.lineChart} viewBox="0 0 100 100" role="img" aria-label={label}>
+    <svg
+      className={styles.lineChart}
+      viewBox="0 0 100 100"
+      role="img"
+      aria-label={label}
+    >
       <path d="M0 25H100M0 50H100M0 75H100" className={styles.chartGrid} />
       <polyline points={polyline} className={styles.chartLine} />
       {points.map(([x, y], index) => (

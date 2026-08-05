@@ -36,7 +36,11 @@ export function HeroProductMockup({ content }: { content: HeroMockupContent }) {
             {typeof metric.progress === "number" ? (
               <i
                 aria-hidden="true"
-                style={{ "--metric-progress": `${metric.progress}%` } as CSSProperties}
+                style={
+                  {
+                    "--metric-progress": `${metric.progress}%`,
+                  } as CSSProperties
+                }
               />
             ) : null}
             {metric.change ? <small>{metric.change}</small> : null}

@@ -7,7 +7,10 @@ interface ServiceCardProps {
 
 export function ServiceCard({ service }: ServiceCardProps) {
   return (
-    <article className={`services-card services-card--${service.tone}`} id={service.id}>
+    <article
+      className={`services-card services-card--${service.tone}`}
+      id={service.id}
+    >
       <span className="services-card__number">{service.number}</span>
       <div className="services-card__content">
         <h3>{service.title}</h3>

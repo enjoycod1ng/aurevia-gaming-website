@@ -41,7 +41,10 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
         requestedProject={requestedProject}
         status={status}
       />
-      <ContactProof ariaLabel={contactPage.proofAriaLabel} points={contactPage.proofPoints} />
+      <ContactProof
+        ariaLabel={contactPage.proofAriaLabel}
+        points={contactPage.proofPoints}
+      />
       <ContactScopeSection content={contactPage.scopes} />
       <ContactProcessSection content={contactPage.process} />
       <ContactBriefSection content={contactPage.brief} />

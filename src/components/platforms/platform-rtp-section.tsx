@@ -18,10 +18,15 @@ function RtpPanel({ content }: { content: RtpPanelContent }) {
         </header>
         <div className={styles.profileList}>
           {content.profiles.map((profile) => (
-            <article className={profile.selected ? styles.selectedProfile : undefined} key={profile.name}>
+            <article
+              className={profile.selected ? styles.selectedProfile : undefined}
+              key={profile.name}
+            >
               <span>{profile.name}</span>
               <strong>{profile.value}</strong>
-              <small className={styles[`profileStatus--${profile.statusTone}`]}>{profile.status}</small>
+              <small className={styles[`profileStatus--${profile.statusTone}`]}>
+                {profile.status}
+              </small>
             </article>
           ))}
         </div>
@@ -57,7 +62,10 @@ function RtpPanel({ content }: { content: RtpPanelContent }) {
           <strong>{content.auditTitle}</strong>
           <ul>
             {content.audit.map((activity) => (
-              <li className={styles[`tone--${activity.tone}`]} key={activity.label}>
+              <li
+                className={styles[`tone--${activity.tone}`]}
+                key={activity.label}
+              >
                 <span aria-hidden="true">✓</span>
                 <b>{activity.label}</b>
                 <small>{activity.detail}</small>

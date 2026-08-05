@@ -15,7 +15,7 @@ export function MediaFrame({
   sizes,
   preload = false,
   showCaption = false,
-  className = ""
+  className = "",
 }: MediaFrameProps) {
   return (
     <figure className={`media-frame ${className}`.trim()}>
@@ -32,7 +32,9 @@ export function MediaFrame({
         />
       </div>
       {showCaption && image.caption ? (
-        <figcaption className="media-frame__caption">{image.caption}</figcaption>
+        <figcaption className="media-frame__caption">
+          {image.caption}
+        </figcaption>
       ) : null}
     </figure>
   );

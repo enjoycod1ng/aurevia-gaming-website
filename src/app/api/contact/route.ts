@@ -47,7 +47,10 @@ function isRateLimited(clientIp: string): boolean {
   const current = rateLimitStore.get(clientIp);
 
   if (!current || current.resetAt <= now) {
-    rateLimitStore.set(clientIp, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    rateLimitStore.set(clientIp, {
+      count: 1,
+      resetAt: now + RATE_LIMIT_WINDOW_MS,
+    });
     return false;
   }
 
@@ -56,7 +59,11 @@ function isRateLimited(clientIp: string): boolean {
   return current.count > RATE_LIMIT_MAX_REQUESTS;
 }
 
-function readField(formData: FormData, field: string, maxLength: number): string {
+function readField(
+  formData: FormData,
+  field: string,
+  maxLength: number,
+): string {
   const value = formData.get(field);
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 }
@@ -88,7 +95,7 @@ function formatMessage(payload: QuoteRequest): string {
     `Timeline: ${payload.timeline || "Not provided"}`,
     "",
     "Brief:",
-    payload.message
+    payload.message,
   ].join("\n");
 }
 
@@ -100,19 +107,22 @@ async function deliverToTelegram(payload: QuoteRequest): Promise<boolean> {
     return false;
   }
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
+  const response = await fetch(
+    `https://api.telegram.org/bot${token}/sendMessage`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: formatMessage(payload),
+        disable_web_page_preview: true,
+      }),
+      signal: AbortSignal.timeout(8000),
+      cache: "no-store",
     },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: formatMessage(payload),
-      disable_web_page_preview: true
-    }),
-    signal: AbortSignal.timeout(8000),
-    cache: "no-store"
-  });
+  );
 
   return response.ok;
 }
@@ -129,15 +139,15 @@ async function deliverToWebhook(payload: QuoteRequest): Promise<boolean> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(bearerToken ? { Authorization: `Bearer ${bearerToken}` } : {})
+      ...(bearerToken ? { Authorization: `Bearer ${bearerToken}` } : {}),
     },
     body: JSON.stringify({
       source: siteContent.brand.url,
       submittedAt: new Date().toISOString(),
-      ...payload
+      ...payload,
     }),
     signal: AbortSignal.timeout(8000),
-    cache: "no-store"
+    cache: "no-store",
   });
 
   return response.ok;
@@ -150,9 +160,16 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin");
   const canonicalOrigin = new URL(siteContent.brand.url).origin;
-  const allowedOrigins = new Set([canonicalOrigin, canonicalOrigin.replace("://", "://www.")]);
+  const allowedOrigins = new Set([
+    canonicalOrigin,
+    canonicalOrigin.replace("://", "://www."),
+  ]);
 
-  if (process.env.NODE_ENV === "production" && origin && !allowedOrigins.has(origin)) {
+  if (
+    process.env.NODE_ENV === "production" &&
+    origin &&
+    !allowedOrigins.has(origin)
+  ) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
@@ -173,7 +190,7 @@ export async function POST(request: Request) {
     project: readField(formData, "project", 120),
     budget: readField(formData, "budget", 120),
     timeline: readField(formData, "timeline", 120),
-    message: readField(formData, "message", 4000)
+    message: readField(formData, "message", 4000),
   };
   const consent = readField(formData, "consent", 20);
 
@@ -189,7 +206,7 @@ export async function POST(request: Request) {
 
   const hasDeliveryConfig = Boolean(
     (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) ||
-      process.env.CONTACT_WEBHOOK_URL
+    process.env.CONTACT_WEBHOOK_URL,
   );
 
   if (!hasDeliveryConfig) {
@@ -198,9 +215,14 @@ export async function POST(request: Request) {
 
   try {
     const telegramDelivered = await deliverToTelegram(payload);
-    const webhookDelivered = telegramDelivered ? false : await deliverToWebhook(payload);
+    const webhookDelivered = telegramDelivered
+      ? false
+      : await deliverToWebhook(payload);
 
-    return redirectToContact(request, telegramDelivered || webhookDelivered ? "success" : "error");
+    return redirectToContact(
+      request,
+      telegramDelivered || webhookDelivered ? "success" : "error",
+    );
   } catch {
     return redirectToContact(request, "error");
   }
