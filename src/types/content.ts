@@ -1,7 +1,7 @@
 export type SitePath =
   | "/"
   | "/services"
-  | "/demo-games"
+  | "/games"
   | "/casino-platforms"
   | "/contact";
 
@@ -124,14 +124,45 @@ export interface ProjectCta {
   phoneLabel?: string;
 }
 
-export interface DemoItem {
+export type GameCategory =
+  | "slots"
+  | "crash"
+  | "instant-win"
+  | "table-inspired";
+
+export type GameArtworkTone =
+  | "fortune"
+  | "neon"
+  | "royal"
+  | "treasure"
+  | "cosmic"
+  | "table";
+
+export interface GameCatalogItem {
   id: string;
   title: string;
-  category: string;
+  category: GameCategory;
+  categoryLabel: string;
   description: string;
-  image: MediaAsset;
-  tags: readonly string[];
-  demoUrl?: string;
+  metric: string;
+  symbol: string;
+  artworkTone: GameArtworkTone;
+  image?: MediaAsset;
+  primaryAction: ActionLink;
+  secondaryAction: ActionLink;
+}
+
+export interface GameFilter {
+  label: string;
+  value: "all" | GameCategory;
+}
+
+export interface DeliveryPillar {
+  icon: ServiceIconName;
+  tone: ServiceTone;
+  title: string;
+  description: string;
+  footer: string;
 }
 
 export interface PlatformModule {
@@ -169,7 +200,7 @@ export interface SiteContent {
   seo: {
     home: SeoEntry;
     services: SeoEntry;
-    demos: SeoEntry;
+    games: SeoEntry;
     platforms: SeoEntry;
     contact: SeoEntry;
   };
@@ -269,13 +300,50 @@ export interface SiteContent {
     };
     cta: ProjectCta;
   };
-  demosPage: {
-    label: string;
-    title: string;
-    description: string;
-    note: string;
+  gamesPage: {
+    hero: {
+      label: string;
+      titleLines: readonly string[];
+      description: string;
+      primaryAction: ActionLink;
+      secondaryAction: ActionLink;
+      featured: {
+        label: string;
+        title: string;
+        description: string;
+        reels: readonly { symbol: string; active?: boolean }[];
+        primaryAction: ActionLink;
+        secondaryAction: ActionLink;
+        metric: string;
+        volatility: string;
+      };
+    };
+    catalog: {
+      ariaLabel: string;
+      filterLabel: string;
+      label: string;
+      title: string;
+      description: string;
+      filters: readonly GameFilter[];
+      games: readonly GameCatalogItem[];
+    };
+    delivery: {
+      label: string;
+      title: string;
+      description: string;
+      pillars: readonly DeliveryPillar[];
+      processAriaLabel: string;
+      processSteps: readonly string[];
+    };
+    deployment: {
+      label: string;
+      title: string;
+      description: string;
+      capabilitiesAriaLabel: string;
+      capabilities: readonly string[];
+    };
+    cta: ProjectCta;
   };
-  demos: readonly DemoItem[];
   platformPage: {
     label: string;
     title: string;

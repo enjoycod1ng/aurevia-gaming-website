@@ -63,16 +63,17 @@ export const siteContent = {
         "casino backend development",
       ],
     },
-    demos: {
-      title: "Demo Casino Games & Interfaces",
+    games: {
+      title: "Casino Game Development Portfolio",
       description:
-        "Preview representative slot, betting and operator interface concepts, then request access to live demo builds.",
-      path: "/demo-games",
+        "Explore Aurevia Gaming concepts for premium slots, crash games, instant-win formats and table-inspired casino experiences.",
+      path: "/games",
       keywords: [
-        "slot game demos",
+        "casino game development",
+        "slot game portfolio",
         "casino game portfolio",
-        "betting UI demo",
-        "casino admin demo",
+        "crash game development",
+        "custom casino games",
       ],
     },
     platforms: {
@@ -206,24 +207,24 @@ export const siteContent = {
           description: "Classic slots \u00B7 96.2% RTP",
           symbol: "7",
           theme: "fortune",
-          primaryAction: { label: "Play Demo", href: "/demo-games" },
-          secondaryAction: { label: "View Details", href: "/demo-games" },
+          primaryAction: { label: "Play Demo", href: "/games#fortune-vault" },
+          secondaryAction: { label: "View Details", href: "/games#fortune-vault" },
         },
         {
           title: "Neon Rush",
           description: "Crash game \u00B7 Real-time",
           symbol: "\u00D7",
           theme: "neon",
-          primaryAction: { label: "Play Demo", href: "/demo-games" },
-          secondaryAction: { label: "View Details", href: "/demo-games" },
+          primaryAction: { label: "Play Demo", href: "/games#neon-rush" },
+          secondaryAction: { label: "View Details", href: "/games#neon-rush" },
         },
         {
           title: "Royal Reels",
           description: "Premium slots \u00B7 Bonus rounds",
           symbol: "\u265B",
           theme: "royal",
-          primaryAction: { label: "Play Demo", href: "/demo-games" },
-          secondaryAction: { label: "View Details", href: "/demo-games" },
+          primaryAction: { label: "Play Demo", href: "/games#royal-reels" },
+          secondaryAction: { label: "View Details", href: "/games#royal-reels" },
         },
       ],
     },
@@ -558,71 +559,242 @@ export const siteContent = {
       telegramLabel: "Telegram",
     },
   },
-  demosPage: {
-    label: "Games",
-    title: "A configurable showcase for game and platform builds.",
-    description:
-      "Each card is driven by TypeScript content configuration. Replace the included WebP samples and add a live demo URL without changing the component markup.",
-    note: "The bundled images are lightweight sample assets because the Figma file could not be exported through its current MCP plan limit.",
+  gamesPage: {
+    hero: {
+      label: "Playable concepts",
+      titleLines: [
+        "Games that look great,",
+        "feel fast, and play fair.",
+      ],
+      description:
+        "Original formats. Every title can be adapted to your brand, market and operator stack.",
+      primaryAction: { label: "Browse All Games", href: "#game-library" },
+      secondaryAction: {
+        label: "Discuss a Custom Game",
+        href: "/contact?project=Custom%20casino%20game",
+      },
+      featured: {
+        label: "Featured demo",
+        title: "Fortune Vault",
+        description:
+          "A premium five-reel slot concept with expanding symbols, free spins and configurable jackpot mechanics.",
+        reels: [
+          { symbol: "7" },
+          { symbol: "★" },
+          { symbol: "■" },
+          { symbol: "♛" },
+          { symbol: "BAR" },
+          { symbol: "7", active: true },
+          { symbol: "■" },
+          { symbol: "★" },
+          { symbol: "♛" },
+          { symbol: "7" },
+          { symbol: "★" },
+          { symbol: "BAR" },
+        ],
+        primaryAction: {
+          label: "Play Demo",
+          href: "/contact?project=Fortune%20Vault%20demo",
+        },
+        secondaryAction: {
+          label: "Game Details",
+          href: "#fortune-vault",
+        },
+        metric: "RTP 96.20%",
+        volatility: "High volatility",
+      },
+    },
+    catalog: {
+      ariaLabel: "Filter the Aurevia game library",
+      filterLabel: "Game library",
+      label: "Demo showcase",
+      title: "A flexible game portfolio.",
+      description:
+        "Use these titles as a starting point or commission a completely original concept.",
+      filters: [
+        { label: "All Games", value: "all" },
+        { label: "Slots", value: "slots" },
+        { label: "Crash", value: "crash" },
+        { label: "Instant Win", value: "instant-win" },
+        { label: "Table Inspired", value: "table-inspired" },
+      ],
+      games: [
+        {
+          id: "fortune-vault",
+          title: "Fortune Vault",
+          category: "slots",
+          categoryLabel: "Premium slots",
+          description: "5 reels · Free spins",
+          metric: "96.20%",
+          symbol: "7",
+          artworkTone: "fortune",
+          primaryAction: {
+            label: "Play Demo",
+            href: "/contact?project=Fortune%20Vault%20demo",
+          },
+          secondaryAction: {
+            label: "Details",
+            href: "/contact?project=Fortune%20Vault",
+          },
+        },
+        {
+          id: "neon-rush",
+          title: "Neon Rush",
+          category: "crash",
+          categoryLabel: "Crash game",
+          description: "Real-time multiplier",
+          metric: "Configurable",
+          symbol: "×",
+          artworkTone: "neon",
+          primaryAction: {
+            label: "Play Demo",
+            href: "/contact?project=Neon%20Rush%20demo",
+          },
+          secondaryAction: {
+            label: "Details",
+            href: "/contact?project=Neon%20Rush",
+          },
+        },
+        {
+          id: "royal-reels",
+          title: "Royal Reels",
+          category: "slots",
+          categoryLabel: "Premium slots",
+          description: "Bonus wheel · Wilds",
+          metric: "95.80%",
+          symbol: "♛",
+          artworkTone: "royal",
+          primaryAction: {
+            label: "Play Demo",
+            href: "/contact?project=Royal%20Reels%20demo",
+          },
+          secondaryAction: {
+            label: "Details",
+            href: "/contact?project=Royal%20Reels",
+          },
+        },
+        {
+          id: "dragon-treasure",
+          title: "Dragon Treasure",
+          category: "slots",
+          categoryLabel: "Adventure slots",
+          description: "Cascades · Multipliers",
+          metric: "96.00%",
+          symbol: "◆",
+          artworkTone: "treasure",
+          primaryAction: {
+            label: "Play Demo",
+            href: "/contact?project=Dragon%20Treasure%20demo",
+          },
+          secondaryAction: {
+            label: "Details",
+            href: "/contact?project=Dragon%20Treasure",
+          },
+        },
+        {
+          id: "cosmic-drop",
+          title: "Cosmic Drop",
+          category: "instant-win",
+          categoryLabel: "Instant win",
+          description: "Risk ladder · Quick play",
+          metric: "96.10%",
+          symbol: "✦",
+          artworkTone: "cosmic",
+          primaryAction: {
+            label: "Play Demo",
+            href: "/contact?project=Cosmic%20Drop%20demo",
+          },
+          secondaryAction: {
+            label: "Details",
+            href: "/contact?project=Cosmic%20Drop",
+          },
+        },
+        {
+          id: "black-table",
+          title: "Black Table",
+          category: "table-inspired",
+          categoryLabel: "Table inspired",
+          description: "Classic cards · Live feel",
+          metric: "99.00%",
+          symbol: "A",
+          artworkTone: "table",
+          primaryAction: {
+            label: "Play Demo",
+            href: "/contact?project=Black%20Table%20demo",
+          },
+          secondaryAction: {
+            label: "Details",
+            href: "/contact?project=Black%20Table",
+          },
+        },
+      ],
+    },
+    delivery: {
+      label: "Behind the experience",
+      title: "More than a beautiful game screen.",
+      description:
+        "Aurevia combines creative direction, game mathematics, production engineering and operator controls in one delivery team.",
+      pillars: [
+        {
+          icon: "spark",
+          tone: "gold",
+          title: "Game concept & UX",
+          description:
+            "Theme, narrative, symbols, sound direction, player flows and responsive interaction design.",
+          footer: "Included in delivery",
+        },
+        {
+          icon: "target",
+          tone: "green",
+          title: "Math & RTP models",
+          description:
+            "Probability tables, volatility, payout distribution, bonus logic and configurable operating profiles.",
+          footer: "Included in delivery",
+        },
+        {
+          icon: "devices",
+          tone: "blue",
+          title: "Production engineering",
+          description:
+            "HTML5 and WebGL clients, secure services, wallet hooks, telemetry and deployment-ready packaging.",
+          footer: "Included in delivery",
+        },
+        {
+          icon: "controls",
+          tone: "violet",
+          title: "Operator tooling",
+          description:
+            "Analytics, game configuration, player controls, campaigns, reporting and performance monitoring.",
+          footer: "Included in delivery",
+        },
+      ],
+      processAriaLabel: "Aurevia game delivery process",
+      processSteps: ["Concept", "Math", "Prototype", "Production", "QA", "Release"],
+    },
+    deployment: {
+      label: "Demo to deployment",
+      title: "Ready for your brand, wallet and platform.",
+      description:
+        "From a single game to a catalog of games or a fully integrated casino experience with operator tooling.",
+      capabilitiesAriaLabel: "Deployment capabilities",
+      capabilities: [
+        "Custom branding",
+        "Wallet API",
+        "Game aggregator",
+        "Bonus engine",
+        "RTP profiles",
+        "Telemetry",
+        "Multi-language",
+      ],
+    },
+    cta: {
+      title: "Have a game idea? Let's make it playable.",
+      description:
+        "Share your theme, mechanics or market goals and receive a development plan.",
+      primaryAction: { label: "Request a Quote", href: "/contact" },
+      telegramLabel: "Telegram",
+    },
   },
-  demos: [
-    {
-      id: "neon-forge",
-      title: "Neon Forge",
-      category: "Slot game concept",
-      description:
-        "A high-contrast reel experience demonstrating scalable game framing, controls and responsive asset treatment.",
-      image: {
-        src: "/media/demos/neon-forge.webp",
-        alt: "Neon Forge slot game demo interface",
-        width: 1200,
-        height: 760,
-      },
-      tags: ["Web", "Mobile", "Configurable RTP"],
-    },
-    {
-      id: "royal-vault",
-      title: "Royal Vault",
-      category: "Premium slot concept",
-      description:
-        "A luxury visual direction for bonus-led mechanics, branded symbols and event-based game states.",
-      image: {
-        src: "/media/demos/royal-vault.webp",
-        alt: "Royal Vault premium slot game demo interface",
-        width: 1200,
-        height: 760,
-      },
-      tags: ["Slots", "Bonus States", "Responsive"],
-    },
-    {
-      id: "velocity-bet",
-      title: "Velocity Bet",
-      category: "Sports betting concept",
-      description:
-        "A compact betting interface focused on clear market hierarchy, fast selection and readable live states.",
-      image: {
-        src: "/media/demos/velocity-bet.webp",
-        alt: "Velocity Bet sportsbook demo interface",
-        width: 1200,
-        height: 760,
-      },
-      tags: ["Sportsbook", "Live Markets", "Mobile First"],
-    },
-    {
-      id: "control-center",
-      title: "Aurevia Control Center",
-      category: "Operator admin concept",
-      description:
-        "A role-aware operational view for player activity, game controls, revenue reporting and platform health.",
-      image: {
-        src: "/media/demos/control-center.webp",
-        alt: "Aurevia casino operator control center dashboard",
-        width: 1200,
-        height: 760,
-      },
-      tags: ["Admin", "Reporting", "RTP Controls"],
-    },
-  ],
   platformPage: {
     label: "Casino platforms",
     title:

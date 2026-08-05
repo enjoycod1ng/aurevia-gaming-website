@@ -1,33 +1,25 @@
-import { CtaBand } from "@/components/cta-band";
-import { DemoCard } from "@/components/demo-card";
-import { PageHero } from "@/components/page-hero";
+import { GameCatalogSection } from "@/components/games/game-catalog-section";
+import { GamesCtaSection } from "@/components/games/games-cta-section";
+import { GamesDeliverySection } from "@/components/games/games-delivery-section";
+import { GamesDeploymentSection } from "@/components/games/games-deployment-section";
+import { GamesHeroSection } from "@/components/games/games-hero-section";
 import { siteContent } from "@/content/site-content";
 import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata = createPageMetadata(siteContent.seo.demos);
+import styles from "@/components/games/games-page.module.css";
 
-export default function DemoGamesPage() {
+export const metadata = createPageMetadata(siteContent.seo.games);
+
+export default function GamesPage() {
+  const { contact, gamesPage } = siteContent;
+
   return (
-    <main id="main-content">
-      <PageHero
-        label={siteContent.demosPage.label}
-        title={siteContent.demosPage.title}
-        description={siteContent.demosPage.description}
-        primaryAction={siteContent.primaryCta}
-      />
-
-      <section className="section section--tight-top">
-        <div className="container demo-grid demo-grid--all">
-          {siteContent.demos.map((demo) => (
-            <DemoCard demo={demo} key={demo.id} />
-          ))}
-        </div>
-      </section>
-
-      <CtaBand
-        title="Have a mechanic or visual direction in mind?"
-        description="Send the reference, target device and core gameplay requirements. We will turn that context into a scoped build plan."
-      />
+    <main id="main-content" className={styles.page}>
+      <GamesHeroSection content={gamesPage.hero} />
+      <GameCatalogSection content={gamesPage.catalog} />
+      <GamesDeliverySection content={gamesPage.delivery} />
+      <GamesDeploymentSection content={gamesPage.deployment} />
+      <GamesCtaSection content={gamesPage.cta} contact={contact} />
     </main>
   );
 }

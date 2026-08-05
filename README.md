@@ -9,7 +9,7 @@ The project uses the Next.js App Router, React Server Components, TypeScript, lo
 - Next.js 16.2.11
 - React 19.2.8
 - TypeScript
-- Plain global CSS with design tokens; no runtime CSS library
+- Global company design tokens plus scoped CSS Modules; no runtime CSS library
 - Sharp for self-hosted image optimization and the included WebP conversion script
 - Node.js 24 LTS on the VPS
 - Caddy for HTTPS, HTTP/2/HTTP/3, reverse proxying and compression
@@ -51,7 +51,7 @@ Edit `src/content/site-content.ts` to change:
 - Header and footer navigation
 - Page titles, descriptions, CTAs and SEO keywords
 - Services and capability lists
-- Demo cards and live demo URLs
+- Game catalog, filters, artwork themes, optional images and action URLs
 - Casino platform modules
 - Process steps and FAQs
 - Screenshot paths, alt text and intrinsic dimensions
@@ -88,20 +88,29 @@ Always use the real exported pixel width and height. Next.js uses them to reserv
 
 Keep true UI icons as small vector/CSS assets when appropriate. Use WebP for screenshot-like material—game scenes, admin panels, product interfaces and large decorative raster artwork—not for tiny icons that need infinite scaling.
 
-## Adding live demo links
+## Configuring game artwork and demo links
 
-Each item under `siteContent.demos` accepts an optional `demoUrl`:
+Each item under `siteContent.gamesPage.catalog.games` stores its actions and can optionally replace the lightweight themed artwork with an optimized image:
 
 ```ts
 {
-  id: "neon-forge",
-  title: "Neon Forge",
-  // ...
-  demoUrl: "https://demo.aureviagaming.com/neon-forge"
+  id: "neon-rush",
+  title: "Neon Rush",
+  image: {
+    src: "/media/demos/neon-rush.webp",
+    alt: "Neon Rush crash game interface",
+    width: 1200,
+    height: 1200
+  },
+  primaryAction: {
+    label: "Play Demo",
+    href: "https://demo.aureviagaming.com/neon-rush",
+    external: true
+  }
 }
 ```
 
-When `demoUrl` is absent, the card sends the visitor to the quote form. When it is present, the card automatically renders an external live-demo action.
+When `image` is omitted, the card uses its configured `artworkTone` and `symbol` without adding an image request. External action URLs are detected automatically by the shared link component.
 
 ## Contact form delivery
 
