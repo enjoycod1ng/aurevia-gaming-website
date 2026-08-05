@@ -15,10 +15,13 @@ const RATE_LIMIT_MAX_REQUESTS = 5;
 
 interface QuoteRequest {
   name: string;
-  email: string;
+  contact: string;
   company: string;
+  targetMarket: string;
   service: string;
   project: string;
+  budget: string;
+  timeline: string;
   message: string;
 }
 
@@ -58,8 +61,11 @@ function readField(formData: FormData, field: string, maxLength: number): string
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 }
 
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+function isValidContact(value: string): boolean {
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const isTelegramHandle = /^@[A-Za-z0-9_]{5,32}$/.test(value);
+
+  return isEmail || isTelegramHandle;
 }
 
 function redirectToContact(request: Request, status: string) {
@@ -73,10 +79,13 @@ function formatMessage(payload: QuoteRequest): string {
     "New Aurevia Gaming project request",
     "",
     `Name: ${payload.name}`,
-    `Email: ${payload.email}`,
+    `Email or Telegram: ${payload.contact}`,
     `Company: ${payload.company || "Not provided"}`,
+    `Target market: ${payload.targetMarket || "Not provided"}`,
     `Service: ${payload.service}`,
     `Project: ${payload.project || "Not provided"}`,
+    `Budget: ${payload.budget || "Not provided"}`,
+    `Timeline: ${payload.timeline || "Not provided"}`,
     "",
     "Brief:",
     payload.message
@@ -156,18 +165,22 @@ export async function POST(request: Request) {
 
   const payload: QuoteRequest = {
     name: readField(formData, "name", 100),
-    email: readField(formData, "email", 160),
+    contact:
+      readField(formData, "contact", 160) || readField(formData, "email", 160),
     company: readField(formData, "company", 140),
+    targetMarket: readField(formData, "targetMarket", 160),
     service: readField(formData, "service", 120),
     project: readField(formData, "project", 120),
+    budget: readField(formData, "budget", 120),
+    timeline: readField(formData, "timeline", 120),
     message: readField(formData, "message", 4000)
   };
   const consent = readField(formData, "consent", 20);
 
   if (
     payload.name.length < 2 ||
-    !isValidEmail(payload.email) ||
-    payload.service.length < 2 ||
+    !isValidContact(payload.contact) ||
+    !siteContent.contactPage.form.projectTypes.includes(payload.service) ||
     payload.message.length < 20 ||
     consent !== "accepted"
   ) {

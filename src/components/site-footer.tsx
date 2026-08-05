@@ -8,8 +8,12 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="container site-footer__grid">
         <div className="site-footer__brand">
-          <Link className="footer-brand-lockup" href="/" aria-label={`${siteContent.brand.name} home`}>
-            <BrandLogo className="footer-brand-lockup__symbol" aria-hidden="true" />
+          <Link
+            className="footer-brand-lockup"
+            href="/"
+            aria-label={`${siteContent.brand.name} home`}
+          >
+            <BrandLogo className="brand__symbol" aria-hidden="true" />
             <span>{siteContent.brand.name}</span>
           </Link>
           <p>{siteContent.footer.description}</p>
@@ -24,10 +28,17 @@ export function SiteFooter() {
         </nav>
 
         <div className="site-footer__contact">
-          <a href={siteContent.contact.telegramUrl} target="_blank" rel="noreferrer">
-            {siteContent.footer.telegramLabel} {siteContent.contact.telegramHandle}
+          <a
+            href={siteContent.contact.telegramUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {siteContent.footer.telegramLabel}{" "}
+            {siteContent.contact.telegramHandle}
           </a>
-          <p>© {new Date().getFullYear()} {siteContent.brand.name}</p>
+          <p>
+            © {new Date().getFullYear()} {siteContent.brand.name}
+          </p>
         </div>
       </div>
     </footer>

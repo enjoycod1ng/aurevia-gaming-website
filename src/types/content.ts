@@ -124,6 +124,25 @@ export interface ProjectCta {
   phoneLabel?: string;
 }
 
+export interface ContactStatusMessage {
+  tone: "success" | "warning" | "error";
+  message: string;
+}
+
+export interface ContactScopeItem {
+  icon: ServiceIconName;
+  tone: ServiceTone;
+  title: string;
+  description: string;
+  action: ActionLink;
+}
+
+export interface ContactProcessStep {
+  number: string;
+  title: string;
+  description: string;
+}
+
 export type GameCategory =
   | "slots"
   | "crash"
@@ -474,14 +493,49 @@ export interface SiteContent {
   };
   faq: readonly FaqItem[];
   contactPage: {
-    label: string;
-    title: string;
-    description: string;
-    directContactTitle: string;
-    directContactDescription: string;
-    formTitle: string;
-    formDescription: string;
-    serviceOptions: readonly string[];
+    hero: SectionCopy & {
+      telegramDescription: string;
+      phoneDescription: string;
+      deliveryTitle: string;
+      deliveryDescription: string;
+    };
+    form: {
+      title: string;
+      description: string;
+      fields: {
+        name: { label: string; placeholder: string };
+        contact: { label: string; placeholder: string };
+        company: { label: string; placeholder: string };
+        targetMarket: { label: string; placeholder: string };
+        projectTypeLabel: string;
+        budget: { label: string; placeholder: string };
+        timeline: { label: string; placeholder: string };
+        details: { label: string; placeholder: string };
+      };
+      projectTypes: readonly string[];
+      budgetOptions: readonly string[];
+      consentLabel: string;
+      submitLabel: string;
+      statusMessages: Readonly<Record<string, ContactStatusMessage>>;
+    };
+    proofAriaLabel: string;
+    proofPoints: readonly HomeProofPoint[];
+    scopes: {
+      heading: SectionCopy;
+      items: readonly ContactScopeItem[];
+    };
+    process: {
+      heading: SectionCopy;
+      steps: readonly ContactProcessStep[];
+    };
+    brief: {
+      heading: SectionCopy;
+      checklistAriaLabel: string;
+      checklist: readonly string[];
+      questionsTitle: string;
+      questions: readonly FaqItem[];
+    };
+    cta: ProjectCta;
   };
   footer: {
     description: string;

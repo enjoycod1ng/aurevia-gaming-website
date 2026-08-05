@@ -1071,24 +1071,212 @@ export const siteContent = {
     },
   ],
   contactPage: {
-    label: "Start a project",
-    title: "Tell us what you want to launch.",
-    description:
-      "Share the product type, required platforms, integrations and target timeline. We will use those details to shape the first technical conversation.",
-    directContactTitle: "Prefer a direct conversation?",
-    directContactDescription:
-      "Telegram is the fastest contact route. Phone details are also available for scheduled discussions.",
-    formTitle: "Project brief",
-    formDescription:
-      "The form submits server-side with no client JavaScript. Configure Telegram Bot or webhook credentials on the VPS to receive messages.",
-    serviceOptions: [
-      "Slot or betting game",
-      "Web or mobile casino game",
-      "Casino website",
-      "Admin panel / operator platform",
-      "Full product stack",
-      "Other",
+    hero: {
+      label: "Start a project",
+      title: "Let’s build something players want to open.",
+      description:
+        "Tell us what you want to launch — a game, casino website, admin package or complete operator platform. We will respond with a clear scope, timeline and quote path.",
+      telegramDescription: "Fastest way to start",
+      phoneDescription: "Global project inquiries",
+      deliveryTitle: "Global delivery",
+      deliveryDescription:
+        "No business address is required — projects are coordinated remotely across markets and time zones.",
+    },
+    form: {
+      title: "Request a quote",
+      description:
+        "Share the basics. We will follow up to clarify scope, schedule and technical requirements.",
+      fields: {
+        name: { label: "Your name", placeholder: "Full name" },
+        contact: {
+          label: "Email or Telegram",
+          placeholder: "you@company.com or @handle",
+        },
+        company: { label: "Company / brand", placeholder: "Company or product name" },
+        targetMarket: { label: "Target market", placeholder: "Countries or regions" },
+        projectTypeLabel: "Project type",
+        budget: { label: "Budget range", placeholder: "Select approximate budget" },
+        timeline: { label: "Target timeline", placeholder: "When do you want to launch?" },
+        details: {
+          label: "Project details",
+          placeholder:
+            "Tell us about mechanics, features, integrations, platforms or references.",
+        },
+      },
+      projectTypes: [
+        "Slot / betting game",
+        "Web / mobile casino",
+        "Casino website",
+        "Admin panel",
+      ],
+      budgetOptions: [
+        "Under $25,000",
+        "$25,000–$75,000",
+        "$75,000–$150,000",
+        "$150,000+",
+        "Not decided yet",
+      ],
+      consentLabel:
+        "I understand this is a project inquiry and Aurevia may ask follow-up questions before quoting.",
+      submitLabel: "Send project request",
+      statusMessages: {
+        success: {
+          tone: "success",
+          message: "Thank you. Your project request was delivered successfully.",
+        },
+        invalid: {
+          tone: "error",
+          message: "Please check the required fields and submit the form again.",
+        },
+        unavailable: {
+          tone: "warning",
+          message:
+            "Form delivery is not configured on the server yet. Please contact us directly on Telegram.",
+        },
+        error: {
+          tone: "error",
+          message: "The message could not be delivered. Please use Telegram or phone instead.",
+        },
+        "rate-limited": {
+          tone: "warning",
+          message:
+            "Too many form attempts were received. Please wait a few minutes or use Telegram.",
+        },
+      },
+    },
+    proofAriaLabel: "What every Aurevia quote includes",
+    proofPoints: [
+      { number: "01", label: "Clear scoping" },
+      { number: "02", label: "Practical milestones" },
+      { number: "03", label: "Full source-code handover" },
+      { number: "04", label: "Global remote delivery" },
     ],
+    scopes: {
+      heading: {
+        label: "What can we quote?",
+        title: "From one game to a full operator stack.",
+        description:
+          "Use the project request to describe a focused deliverable or a staged roadmap.",
+      },
+      items: [
+        {
+          icon: "spark",
+          tone: "gold",
+          title: "Single game",
+          description:
+            "Original slot, crash, betting or instant-win product with polished web or mobile delivery.",
+          action: {
+            label: "Discuss scope",
+            href: "#quote-form",
+          },
+        },
+        {
+          icon: "devices",
+          tone: "blue",
+          title: "Game catalog",
+          description:
+            "A coordinated portfolio with shared services, wallet hooks, telemetry and content operations.",
+          action: {
+            label: "Discuss scope",
+            href: "#quote-form",
+          },
+        },
+        {
+          icon: "diamond",
+          tone: "violet",
+          title: "Casino website",
+          description:
+            "Player acquisition, lobby, account, wallet, promotions and payment journeys.",
+          action: {
+            label: "Discuss scope",
+            href: "#quote-form",
+          },
+        },
+        {
+          icon: "controls",
+          tone: "green",
+          title: "Platform & admin",
+          description:
+            "Operator services, player controls, RTP profiles, analytics, bonuses and role-based access.",
+          action: {
+            label: "Discuss scope",
+            href: "#quote-form",
+          },
+        },
+      ],
+    },
+    process: {
+      heading: {
+        label: "What happens next",
+        title: "A fast, transparent quote process.",
+        description:
+          "The first conversation is designed to reduce uncertainty — not create a vague sales cycle.",
+      },
+      steps: [
+        {
+          number: "01",
+          title: "Review",
+          description:
+            "We review your scope, market, target devices and required integrations.",
+        },
+        {
+          number: "02",
+          title: "Clarify",
+          description:
+            "We ask focused questions about mechanics, workflows, ownership and launch priorities.",
+        },
+        {
+          number: "03",
+          title: "Plan",
+          description:
+            "You receive a proposed delivery structure with milestones and major assumptions.",
+        },
+        {
+          number: "04",
+          title: "Quote",
+          description:
+            "We provide a commercial estimate and confirm the next practical step.",
+        },
+      ],
+    },
+    brief: {
+      heading: {
+        label: "Before you send",
+        title: "The details that help us quote well.",
+        description: "A concise brief is enough. These details make the first reply more useful.",
+      },
+      checklistAriaLabel: "Helpful project brief details",
+      checklist: [
+        "Game type or platform scope",
+        "Reference products or visual direction",
+        "Target markets and languages",
+        "Wallet, payment or provider integrations",
+        "Expected launch window",
+        "Compliance or certification requirements",
+      ],
+      questionsTitle: "Common questions",
+      questions: [
+        {
+          question: "Do you share source code?",
+          answer: "Yes — full source-code handover is a core differentiator.",
+        },
+        {
+          question: "Can you control RTP?",
+          answer: "RTP profile design and operator controls can be included.",
+        },
+        {
+          question: "Do you work globally?",
+          answer: "Yes. Projects are coordinated remotely without a public office address.",
+        },
+      ],
+    },
+    cta: {
+      title: "Ready to talk about your project?",
+      description:
+        "Send the form, message us on Telegram or call to begin a focused technical conversation.",
+      primaryAction: { label: "Request a quote", href: "#quote-form" },
+      telegramLabel: "Telegram",
+    },
   },
   footer: {
     description: "Casino game development for a global market.",

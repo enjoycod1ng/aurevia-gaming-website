@@ -53,6 +53,7 @@ Edit `src/content/site-content.ts` to change:
 - Services and capability lists
 - Game catalog, filters, artwork themes, optional images and action URLs
 - Casino platform modules, dashboard data, RTP profiles, integrations and security controls
+- Contact-page copy, quote fields, project types, proof points, process steps and common questions
 - Process steps and FAQs
 - Screenshot paths, alt text and intrinsic dimensions
 
@@ -135,6 +136,8 @@ The same `image` field is available on `platformPage.admin.dashboard` and `platf
 ## Contact form delivery
 
 The form POSTs directly to `/api/contact`; it does not require a client component or browser JavaScript. It validates required fields, checks production origins, includes a honeypot, and supports two server-side delivery methods.
+
+Contact-page labels, field placeholders, project types, budget choices, status messages and supporting sections are configured under `siteContent.contactPage`. Keep those options synchronized there; the form and server-side project-type validation both read from the same source.
 
 ### Telegram Bot delivery
 
