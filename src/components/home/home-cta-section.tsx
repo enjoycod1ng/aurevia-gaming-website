@@ -24,14 +24,6 @@ export function HomeCtaSection({
             <ButtonLink href={content.primaryAction.href}>
               {content.primaryAction.label}
             </ButtonLink>
-            <a href={contact.telegramUrl} target="_blank" rel="noreferrer">
-              {content.telegramLabel} {contact.telegramHandle}
-            </a>
-            {content.phoneLabel ? (
-              <a href={contact.phoneHref}>
-                {content.phoneLabel} {contact.phoneDisplay}
-              </a>
-            ) : null}
           </div>
         </div>
       </div>

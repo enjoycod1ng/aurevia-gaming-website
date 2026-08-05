@@ -46,7 +46,7 @@
   --space-20: 80px;
   --space-24: 96px;
   --space-30: 120px;
-  --section-spacing: var(--space-30);
+  --section-spacing: var(--space-16);
   --section-spacing-compact: var(--space-20);
   --card-padding: var(--space-8);
   --card-gap: var(--space-6);
@@ -1059,7 +1059,6 @@ h3 {
 }
 
 .site-header {
-  position: relative;
   min-height: var(--header-height);
   border-color: var(--line);
   background: #07090c;
@@ -1963,7 +1962,7 @@ h3 {
 }
 
 .home-reason-grid article {
-  min-height: 360px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   padding: var(--card-padding);
@@ -1995,7 +1994,7 @@ h3 {
 }
 
 .home-cta-section {
-  padding: 34px 0 24px;
+  padding: 2rem 0;
 }
 
 .home-cta {
@@ -2043,12 +2042,6 @@ h3 {
   color: var(--text);
   font-size: var(--font-size-xs);
   font-weight: 650;
-}
-
-.home-cta__actions > a:last-child {
-  margin-top: -4px;
-  color: var(--muted);
-  font-weight: 500;
 }
 
 .site-footer {
@@ -2405,7 +2398,7 @@ h3 {
   }
 
   .home-reason-grid article {
-    min-height: 320px;
+    min-height: 260px;
   }
 
   .home-cta-section {
