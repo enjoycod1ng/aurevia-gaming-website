@@ -1,8 +1,5 @@
 import { ContactBriefSection } from "@/components/contact/contact-brief-section";
-import {
-  ContactHeroSection,
-  ContactProof,
-} from "@/components/contact/contact-hero-section";
+import { ContactHeroSection } from "@/components/contact/contact-hero-section";
 import styles from "@/components/contact/contact-page.module.css";
 import { ContactProcessSection } from "@/components/contact/contact-process-section";
 import { ContactScopeSection } from "@/components/contact/contact-scope-section";
@@ -40,10 +37,6 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
         content={contactPage}
         requestedProject={requestedProject}
         status={status}
-      />
-      <ContactProof
-        ariaLabel={contactPage.proofAriaLabel}
-        points={contactPage.proofPoints}
       />
       <ContactScopeSection content={contactPage.scopes} />
       <ContactProcessSection content={contactPage.process} />

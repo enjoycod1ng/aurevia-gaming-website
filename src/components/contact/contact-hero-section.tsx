@@ -68,24 +68,3 @@ export function ContactHeroSection({
     </section>
   );
 }
-
-export function ContactProof({
-  ariaLabel,
-  points,
-}: {
-  ariaLabel: string;
-  points: SiteContent["contactPage"]["proofPoints"];
-}) {
-  return (
-    <section className={styles.proof} aria-label={ariaLabel}>
-      <div className={`container ${styles.proofGrid}`}>
-        {points.map((point) => (
-          <div key={point.number}>
-            <span>{point.number}</span>
-            <strong>{point.label}</strong>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}

@@ -14,7 +14,7 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  isProduction ? "upgrade-insecure-requests" : ""
+  isProduction ? "upgrade-insecure-requests" : "",
 ]
   .filter(Boolean)
   .join("; ");
@@ -27,8 +27,8 @@ const securityHeaders = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
-  }
+    value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+  },
 ];
 
 const nextConfig: NextConfig = {
@@ -36,6 +36,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   productionBrowserSourceMaps: false,
   images: {
     formats: ["image/webp"],
@@ -46,18 +47,18 @@ const nextConfig: NextConfig = {
     localPatterns: [
       {
         pathname: "/media/**",
-        search: ""
-      }
-    ]
+        search: "",
+      },
+    ],
   },
   async headers() {
     return [
       {
         source: "/:path*",
-        headers: securityHeaders
-      }
+        headers: securityHeaders,
+      },
     ];
-  }
+  },
 };
 
 export default nextConfig;

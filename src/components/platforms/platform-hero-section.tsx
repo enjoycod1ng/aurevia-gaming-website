@@ -106,24 +106,3 @@ export function PlatformHeroSection({
     </section>
   );
 }
-
-interface PlatformProofProps {
-  ariaLabel: string;
-  points: SiteContent["platformPage"]["proofPoints"];
-}
-
-export function PlatformProof({ ariaLabel, points }: PlatformProofProps) {
-  return (
-    <section className={styles.proof} aria-label={ariaLabel}>
-      <div className={`container ${styles.proofGrid}`}>
-        {points.map((point) => (
-          <article key={point.number}>
-            <span>{point.number}</span>
-            <h2>{point.title}</h2>
-            <p>{point.description}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}

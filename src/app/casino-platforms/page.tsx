@@ -1,9 +1,6 @@
 import { HomeCtaSection } from "@/components/home/home-cta-section";
 import { PlatformAdminSection } from "@/components/platforms/platform-admin-section";
-import {
-  PlatformHeroSection,
-  PlatformProof,
-} from "@/components/platforms/platform-hero-section";
+import { PlatformHeroSection } from "@/components/platforms/platform-hero-section";
 import { PlatformIntegrationsSection } from "@/components/platforms/platform-integrations-section";
 import { PlatformModulesSection } from "@/components/platforms/platform-modules-section";
 import { PlatformRtpSection } from "@/components/platforms/platform-rtp-section";
@@ -19,10 +16,6 @@ export default function CasinoPlatformsPage() {
   return (
     <main id="main-content" className={styles.page}>
       <PlatformHeroSection content={platformPage.hero} />
-      <PlatformProof
-        ariaLabel={platformPage.proofAriaLabel}
-        points={platformPage.proofPoints}
-      />
       <PlatformModulesSection content={platformPage.modules} />
       <PlatformAdminSection content={platformPage.admin} />
       <PlatformRtpSection content={platformPage.rtp} />

@@ -35,17 +35,6 @@ export function ServicesHeroSection({
           />
         </div>
       </section>
-
-      <section className="services-proof" aria-label={content.proofAriaLabel}>
-        <div className="container services-proof__grid">
-          {content.proofPoints.map((point) => (
-            <div key={point.number}>
-              <span>{point.number}</span>
-              <p>{point.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
     </>
   );
 }

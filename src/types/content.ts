@@ -143,11 +143,7 @@ export interface ContactProcessStep {
   description: string;
 }
 
-export type GameCategory =
-  | "slots"
-  | "crash"
-  | "instant-win"
-  | "table-inspired";
+export type GameCategory = "slots" | "crash" | "instant-win" | "table-inspired";
 
 export type GameArtworkTone =
   | "fortune"
@@ -293,8 +289,6 @@ export interface SiteContent {
         }[];
       };
     };
-    proofAriaLabel: string;
-    proofPoints: readonly HomeProofPoint[];
     services: {
       heading: SectionCopy;
       items: readonly HomeService[];
@@ -341,8 +335,6 @@ export interface SiteContent {
       secondaryAction: ActionLink;
       layersAriaLabel: string;
       layers: readonly ServiceLayer[];
-      proofAriaLabel: string;
-      proofPoints: readonly HomeProofPoint[];
     };
     offerings: {
       heading: SectionCopy;
@@ -425,12 +417,6 @@ export interface SiteContent {
         products: readonly DashboardGame[];
       };
     };
-    proofAriaLabel: string;
-    proofPoints: readonly {
-      number: string;
-      title: string;
-      description: string;
-    }[];
     modules: {
       heading: SectionCopy;
       items: readonly PlatformModule[];
@@ -518,8 +504,6 @@ export interface SiteContent {
       submitLabel: string;
       statusMessages: Readonly<Record<string, ContactStatusMessage>>;
     };
-    proofAriaLabel: string;
-    proofPoints: readonly HomeProofPoint[];
     scopes: {
       heading: SectionCopy;
       items: readonly ContactScopeItem[];

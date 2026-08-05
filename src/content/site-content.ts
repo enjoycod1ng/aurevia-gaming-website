@@ -118,9 +118,9 @@ export const siteContent = {
       },
       detailsAriaLabel: "Aurevia delivery highlights",
       details: [
-        { label: "RTP", value: "Configurable control" },
-        { label: "Source", value: "Full code handover" },
-        { label: "Global", value: "Worldwide delivery" },
+        { label: "RTP CONTROL", value: "Configurable RTP" },
+        { label: "FULL OWNERSHIP", value: "Source code included" },
+        { label: "API READY", value: "Casino integration" },
       ],
       mockup: {
         ariaLabel: "Golden Fortune game overview",
@@ -145,13 +145,6 @@ export const siteContent = {
         ],
       },
     },
-    proofAriaLabel: "Aurevia delivery standards",
-    proofPoints: [
-      { number: "01", label: "Quality-first delivery" },
-      { number: "02", label: "Configurable RTP logic" },
-      { number: "03", label: "Full source code shared" },
-      { number: "04", label: "Web + mobile optimized" },
-    ],
     services: {
       heading: {
         label: "What we build",
@@ -386,13 +379,6 @@ export const siteContent = {
           detail: "RTP · Users · Analytics",
           progress: 92,
         },
-      ],
-      proofAriaLabel: "Aurevia service delivery standards",
-      proofPoints: [
-        { number: "01", label: "Original game IP" },
-        { number: "02", label: "Secure integrations" },
-        { number: "03", label: "Responsive delivery" },
-        { number: "04", label: "Operator ownership" },
       ],
     },
     offerings: {
@@ -865,29 +851,6 @@ export const siteContent = {
         ],
       },
     },
-    proofAriaLabel: "Casino platform product layers",
-    proofPoints: [
-      {
-        number: "01",
-        title: "Player experience",
-        description: "Web · Mobile · Lobby",
-      },
-      {
-        number: "02",
-        title: "Platform services",
-        description: "Wallet · Bonus · Accounts",
-      },
-      {
-        number: "03",
-        title: "Game layer",
-        description: "Catalog · Math · RTP",
-      },
-      {
-        number: "04",
-        title: "Operator control",
-        description: "Admin · Analytics · Security",
-      },
-    ],
     modules: {
       heading: {
         label: "Platform modules",
@@ -1288,13 +1251,6 @@ export const siteContent = {
         },
       },
     },
-    proofAriaLabel: "What every Aurevia quote includes",
-    proofPoints: [
-      { number: "01", label: "Clear scoping" },
-      { number: "02", label: "Practical milestones" },
-      { number: "03", label: "Full source-code handover" },
-      { number: "04", label: "Global remote delivery" },
-    ],
     scopes: {
       heading: {
         label: "What can we quote?",
