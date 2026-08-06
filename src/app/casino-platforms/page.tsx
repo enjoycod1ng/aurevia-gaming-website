@@ -11,7 +11,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata = createPageMetadata(siteContent.seo.platforms);
 
 export default function CasinoPlatformsPage() {
-  const { contact, platformPage } = siteContent;
+  const { platformPage } = siteContent;
 
   return (
     <main id="main-content" className={styles.page}>
@@ -23,7 +23,6 @@ export default function CasinoPlatformsPage() {
       <HomeCtaSection
         className={styles.ctaSection}
         content={platformPage.cta}
-        contact={contact}
       />
     </main>
   );

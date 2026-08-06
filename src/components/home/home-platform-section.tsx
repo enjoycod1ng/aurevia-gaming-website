@@ -10,7 +10,7 @@ export function HomePlatformSection({
   content: HomePlatformContent;
 }) {
   return (
-    <section className="home-section home-platform">
+    <section className="home-section home-platform scroll-reveal" data-scroll-reveal>
       <div className="container home-platform__grid">
         <div className="home-platform__content">
           <p className="home-kicker">{content.heading.label}</p>

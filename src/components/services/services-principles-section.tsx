@@ -10,7 +10,10 @@ export function ServicesPrinciplesSection({
   content: ServicesPrinciplesContent;
 }) {
   return (
-    <section className="services-principles section--content-visibility">
+    <section
+      className="services-principles section--content-visibility scroll-reveal"
+      data-scroll-reveal
+    >
       <div className="container">
         <SectionHeading {...content.heading} />
         <div className="services-principles__grid">

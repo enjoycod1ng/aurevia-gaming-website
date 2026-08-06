@@ -12,7 +12,7 @@ export function PlatformModulesSection({
   content: ModulesContent;
 }) {
   return (
-    <section className={styles.modules}>
+    <section className={`${styles.modules} scroll-reveal`} data-scroll-reveal>
       <div className="container">
         <div className={styles.sectionHeading}>
           <SectionHeading {...content.heading} />

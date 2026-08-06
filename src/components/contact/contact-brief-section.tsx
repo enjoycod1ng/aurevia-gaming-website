@@ -11,7 +11,7 @@ export function ContactBriefSection({
   content: ContactBriefContent;
 }) {
   return (
-    <section className={styles.brief}>
+    <section className={`${styles.brief} scroll-reveal`} data-scroll-reveal>
       <div className={`container ${styles.briefGrid}`}>
         <div>
           <SectionHeading {...content.heading} />

@@ -1,19 +1,20 @@
 import { ButtonLink } from "@/components/button-link";
-import type { ProjectCta, SiteContent } from "@/types/content";
+import type { ProjectCta } from "@/types/content";
 
 interface HomeCtaSectionProps {
   content: ProjectCta;
-  contact: SiteContent["contact"];
   className?: string;
 }
 
 export function HomeCtaSection({
   content,
-  contact,
   className = "",
 }: HomeCtaSectionProps) {
   return (
-    <section className={`home-cta-section ${className}`.trim()}>
+    <section
+      className={`home-cta-section ${className} scroll-reveal`.trim()}
+      data-scroll-reveal
+    >
       <div className="container">
         <div className="home-cta">
           <div>

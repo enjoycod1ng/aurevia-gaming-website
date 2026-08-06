@@ -9,7 +9,10 @@ export function ServicesProcessSection({
   content: ServicesProcessContent;
 }) {
   return (
-    <section className="services-process section--content-visibility">
+    <section
+      className="services-process section--content-visibility scroll-reveal"
+      data-scroll-reveal
+    >
       <div className="container">
         <SectionHeading {...content.heading} />
         <ol className="services-process__steps">

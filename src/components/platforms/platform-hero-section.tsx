@@ -73,7 +73,7 @@ export function PlatformHeroSection({
   content: PlatformHeroContent;
 }) {
   return (
-    <section className={styles.hero}>
+    <section className={`${styles.hero} scroll-reveal`} data-scroll-reveal>
       <div className={`container ${styles.heroGrid}`}>
         <div className={styles.heroContent}>
           <p className={styles.kicker}>{content.label}</p>

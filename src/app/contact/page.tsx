@@ -44,7 +44,6 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
       <HomeCtaSection
         className={styles.ctaSection}
         content={contactPage.cta}
-        contact={contact}
       />
     </main>
   );

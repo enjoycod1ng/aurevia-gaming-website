@@ -10,7 +10,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata = createPageMetadata(siteContent.seo.services);
 
 export default function ServicesPage() {
-  const { contact, servicesPage } = siteContent;
+  const { servicesPage } = siteContent;
 
   return (
     <main id="main-content" className="services-page">
@@ -32,7 +32,6 @@ export default function ServicesPage() {
       <HomeCtaSection
         className="services-page__cta"
         content={servicesPage.cta}
-        contact={contact}
       />
     </main>
   );

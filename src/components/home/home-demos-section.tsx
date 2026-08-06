@@ -5,7 +5,7 @@ type HomeDemosContent = SiteContent["home"]["demos"];
 
 export function HomeDemosSection({ content }: { content: HomeDemosContent }) {
   return (
-    <section className="home-section home-demos">
+    <section className="home-section home-demos scroll-reveal" data-scroll-reveal>
       <div className="container">
         <div className="home-section-heading">
           <p className="home-kicker">{content.heading.label}</p>
@@ -14,7 +14,11 @@ export function HomeDemosSection({ content }: { content: HomeDemosContent }) {
         </div>
         <div className="home-demo-grid">
           {content.items.map((demo) => (
-            <article className="home-demo-card" key={demo.title}>
+            <article
+              className="home-demo-card scroll-reveal"
+              data-scroll-reveal
+              key={demo.title}
+            >
               <div
                 className={`home-demo-card__visual home-demo-card__visual--${demo.theme}`}
               >

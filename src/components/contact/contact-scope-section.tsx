@@ -8,12 +8,16 @@ type ContactScopesContent = SiteContent["contactPage"]["scopes"];
 
 export function ContactScopeSection({ content }: { content: ContactScopesContent }) {
   return (
-    <section className={styles.scopes}>
+    <section className={`${styles.scopes} scroll-reveal`} data-scroll-reveal>
       <div className="container">
         <SectionHeading {...content.heading} />
         <div className={styles.scopeGrid}>
           {content.items.map((item) => (
-            <article className={styles[`tone--${item.tone}`]} key={item.title}>
+            <article
+              className={`${styles[`tone--${item.tone}`]} scroll-reveal`}
+              data-scroll-reveal
+              key={item.title}
+            >
               <span className={styles.scopeIcon}>
                 <ServiceIcon name={item.icon} />
               </span>

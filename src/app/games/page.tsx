@@ -9,7 +9,7 @@ import { HomeCtaSection } from "@/components/home/home-cta-section";
 export const metadata = createPageMetadata(siteContent.seo.games);
 
 export default function GamesPage() {
-  const { contact, gamesPage } = siteContent;
+  const { gamesPage } = siteContent;
 
   return (
     <main id="main-content" className={styles.page}>
@@ -18,7 +18,6 @@ export default function GamesPage() {
       <HomeCtaSection
         className="games-page__cta"
         content={gamesPage.cta}
-        contact={contact}
       />
     </main>
   );

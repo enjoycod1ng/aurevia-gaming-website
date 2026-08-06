@@ -11,7 +11,7 @@ export function PlatformIntegrationsSection({
   content: IntegrationsContent;
 }) {
   return (
-    <section className={styles.integrations}>
+    <section className={`${styles.integrations} scroll-reveal`} data-scroll-reveal>
       <div className={`container ${styles.integrationsGrid}`}>
         <div>
           <div className={styles.sectionHeading}>
