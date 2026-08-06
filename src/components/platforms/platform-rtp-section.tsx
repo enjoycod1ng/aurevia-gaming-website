@@ -91,7 +91,7 @@ function RtpPanel({ content }: { content: RtpPanelContent }) {
 
 export function PlatformRtpSection({ content }: { content: RtpContent }) {
   return (
-    <section className={styles.rtp}>
+    <section className={`${styles.rtp} scroll-reveal`} data-scroll-reveal>
       <div className="container">
         <div className={styles.sectionHeading}>
           <SectionHeading {...content.heading} />

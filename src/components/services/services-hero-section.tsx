@@ -11,7 +11,7 @@ export function ServicesHeroSection({
 }) {
   return (
     <>
-      <section className="services-hero">
+      <section className="services-hero scroll-reveal" data-scroll-reveal>
         <div className="container services-hero__grid">
           <div className="services-hero__content">
             <p className="home-kicker">{content.label}</p>

@@ -129,7 +129,7 @@ function AdminDashboard({ content }: { content: AdminDashboardContent }) {
 
 export function PlatformAdminSection({ content }: { content: AdminContent }) {
   return (
-    <section className={styles.admin} id="admin-features">
+    <section className={`${styles.admin} scroll-reveal`} data-scroll-reveal id="admin-features">
       <div className="container">
         <div className={styles.sectionHeading}>
           <SectionHeading {...content.heading} />

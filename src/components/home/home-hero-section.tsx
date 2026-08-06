@@ -6,7 +6,7 @@ type HomeHeroContent = SiteContent["home"]["hero"];
 
 export function HomeHeroSection({ content }: { content: HomeHeroContent }) {
   return (
-    <section className="home-hero">
+    <section className="home-hero scroll-reveal" data-scroll-reveal>
       <div className="container home-hero__grid">
         <div className="home-hero__content">
           <p className="home-kicker">{content.label}</p>

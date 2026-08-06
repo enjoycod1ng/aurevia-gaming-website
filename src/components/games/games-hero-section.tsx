@@ -58,7 +58,7 @@ function FeaturedGame({ content }: { content: GamesHeroContent["featured"] }) {
 
 export function GamesHeroSection({ content }: { content: GamesHeroContent }) {
   return (
-    <section className={styles.hero}>
+    <section className={`${styles.hero} scroll-reveal`} data-scroll-reveal>
       <div className={`container ${styles.heroGrid}`}>
         <div className={styles.heroContent}>
           <p className={styles.kicker}>{content.label}</p>

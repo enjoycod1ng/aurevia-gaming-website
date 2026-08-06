@@ -11,7 +11,7 @@ export function HomeServicesSection({
   content: HomeServicesContent;
 }) {
   return (
-    <section className="home-section home-services">
+    <section className="home-section home-services scroll-reveal" data-scroll-reveal>
       <div className="container">
         <div className="home-section-heading">
           <p className="home-kicker">{content.heading.label}</p>
@@ -23,9 +23,10 @@ export function HomeServicesSection({
             <article
               className={
                 index === 0
-                  ? "home-service-card is-featured"
-                  : "home-service-card"
+                  ? "home-service-card is-featured scroll-reveal"
+                  : "home-service-card scroll-reveal"
               }
+              data-scroll-reveal
               key={service.number}
             >
               <span className="home-service-card__number">

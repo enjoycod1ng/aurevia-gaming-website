@@ -10,7 +10,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata = createPageMetadata(siteContent.seo.home);
 
 export default function HomePage() {
-  const { contact, home } = siteContent;
+  const { home } = siteContent;
 
   return (
     <main id="main-content" className="home-page">
@@ -19,7 +19,7 @@ export default function HomePage() {
       <HomeDemosSection content={home.demos} />
       <HomePlatformSection content={home.platform} />
       <HomeReasonsSection content={home.reasons} />
-      <HomeCtaSection content={home.cta} contact={contact} />
+      <HomeCtaSection content={home.cta} />
     </main>
   );
 }

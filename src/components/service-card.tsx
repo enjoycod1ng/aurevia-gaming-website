@@ -8,7 +8,8 @@ interface ServiceCardProps {
 export function ServiceCard({ service }: ServiceCardProps) {
   return (
     <article
-      className={`services-card services-card--${service.tone}`}
+      className={`services-card services-card--${service.tone} scroll-reveal`}
+      data-scroll-reveal
       id={service.id}
     >
       <span className="services-card__number">{service.number}</span>

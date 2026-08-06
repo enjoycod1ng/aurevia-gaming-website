@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
 
 import { JsonLd } from "@/components/json-ld";
+import { ScrollRevealInit } from "@/components/scroll-reveal-init";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { siteContent } from "@/content/site-content";
@@ -84,6 +85,7 @@ export default function RootLayout({
         </a>
         <JsonLd data={organizationJsonLd} />
         <SiteHeader />
+        <ScrollRevealInit />
         {children}
         <SiteFooter />
       </body>

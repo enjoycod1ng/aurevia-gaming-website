@@ -36,7 +36,7 @@ function GameArtwork({ game }: { game: GameCatalogItem }) {
 
 function GameCard({ game }: { game: GameCatalogItem }) {
   return (
-    <article className={styles.gameCard} id={game.id}>
+    <article className={`${styles.gameCard} scroll-reveal`} data-scroll-reveal id={game.id}>
       <GameArtwork game={game} />
       <p
         className={`${styles.gameCategory} ${styles[`gameCategory--${game.artworkTone}`]}`}
@@ -77,7 +77,7 @@ export function GameCatalogSection({ content }: { content: CatalogContent }) {
       : content.games.filter((game) => game.category === activeFilter);
 
   return (
-    <section className={styles.catalog} id="game-library">
+    <section className={`${styles.catalog} scroll-reveal`} data-scroll-reveal id="game-library">
       <div className="container">
         <div
           className={styles.filterBar}

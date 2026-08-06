@@ -8,7 +8,7 @@ export function HomeReasonsSection({
   content: HomeReasonsContent;
 }) {
   return (
-    <section className="home-section home-reasons">
+    <section className="home-section home-reasons scroll-reveal" data-scroll-reveal>
       <div className="container">
         <div className="home-section-heading">
           <p className="home-kicker">{content.heading.label}</p>
@@ -17,7 +17,7 @@ export function HomeReasonsSection({
         </div>
         <div className="home-reason-grid">
           {content.items.map((reason) => (
-            <article key={reason.number}>
+            <article className="scroll-reveal" data-scroll-reveal key={reason.number}>
               <span>{reason.number}</span>
               <h3>{reason.title}</h3>
               <p>{reason.description}</p>
