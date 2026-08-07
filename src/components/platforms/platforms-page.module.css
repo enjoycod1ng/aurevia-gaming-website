@@ -608,6 +608,10 @@
   margin-top: 18px;
 }
 
+.lineChartPanel svg circle {
+  fill: var(--accent-bright);
+}
+
 .lineChartPanel,
 .trafficPanel {
   min-height: 270px;
