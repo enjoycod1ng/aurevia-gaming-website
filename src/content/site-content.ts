@@ -14,10 +14,10 @@ export const siteContent = {
       "A casino game development agency building web and mobile games, casino platforms and operator admin systems.",
   },
   contact: {
-    phoneDisplay: "716-217-0171",
-    phoneHref: "tel:+17162170171",
-    telegramHandle: "@withtechs",
-    telegramUrl: "https://t.me/withtechs",
+    phoneDisplay: "737-304-3074",
+    whatsappHref: "https://wa.me/17373043074",
+    telegramHandle: "@bettingssupporter",
+    telegramUrl: "https://t.me/bettingssupporter",
   },
   navigation: [
     { label: "Home", href: "/" },
@@ -32,13 +32,13 @@ export const siteContent = {
   },
   secondaryCta: {
     label: "Message on Telegram",
-    href: "https://t.me/withtechs",
+    href: "https://t.me/bettingssupporter",
     external: true,
     ariaLabel: "Message Aurevia Gaming on Telegram",
   },
   seo: {
     home: {
-      title: "Home",
+      title: "Aurevia Gaming | Casino Game Development Agency",
       description:
         "Aurevia Gaming develops slot and betting games, casino websites, mobile experiences and operator admin platforms with source-code ownership and configurable RTP controls.",
       path: "/",
@@ -514,7 +514,7 @@ export const siteContent = {
       },
       items: [
         {
-          icon: "spark",
+          icon: "performance",
           tone: "gold",
           title: "Performance",
           description:
@@ -860,7 +860,7 @@ export const siteContent = {
       },
       items: [
         {
-          icon: "devices",
+          icon: "spark",
           tone: "gold",
           title: "Player app & lobby",
           description:
@@ -876,7 +876,7 @@ export const siteContent = {
           footer: "Included capabilities",
         },
         {
-          icon: "spark",
+          icon: "wallet",
           tone: "violet",
           title: "Bonus & loyalty",
           description:
@@ -900,7 +900,7 @@ export const siteContent = {
           footer: "Included capabilities",
         },
         {
-          icon: "check",
+          icon: "shield",
           tone: "red",
           title: "Security & access",
           description:
@@ -1123,7 +1123,7 @@ export const siteContent = {
         {
           tone: "violet",
           title: "Protected changes",
-          description: "Approvals for financial and RTP updates.",
+          description: "Approvals for financial updates.",
         },
         {
           tone: "green",
@@ -1169,10 +1169,7 @@ export const siteContent = {
       description:
         "Tell us what you want to launch — a game, casino website, admin package or complete operator platform. We will respond with a clear scope, timeline and quote path.",
       telegramDescription: "Fastest way to start",
-      phoneDescription: "Global project inquiries",
-      deliveryTitle: "Global delivery",
-      deliveryDescription:
-        "No business address is required — projects are coordinated remotely across markets and time zones.",
+      whatsappDescription: "Global project inquiries",
     },
     form: {
       title: "Request a quote",

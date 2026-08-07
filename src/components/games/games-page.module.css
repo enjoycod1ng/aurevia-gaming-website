@@ -1,6 +1,6 @@
 .page {
   --games-accent: var(--accent);
-  --games-accent-soft: var(--accent-soft);
+  --games-accent-soft: var(--accent-bright);
   --games-green: #45d594;
   overflow: hidden;
   background: #07090c;
@@ -8,7 +8,7 @@
 
 .kicker {
   width: fit-content;
-  min-height: 31px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

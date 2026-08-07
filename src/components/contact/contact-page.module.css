@@ -104,27 +104,11 @@
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  color: #071019;
-  border-radius: 50%;
 }
 
 .methodIcon svg,
 .deliveryIcon svg {
-  width: 21px;
-  height: 21px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
-}
-
-.methodTelegram {
-  background: #35b9f3;
-}
-
-.methodPhone {
-  background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+  width: 100%;
 }
 
 .deliveryNote {
@@ -473,19 +457,14 @@
   height: var(--card-icon-size);
   display: grid;
   place-items: center;
-  color: #071019;
+  color: white;
   border-radius: 50%;
   background: var(--card-tone);
 }
 
 .scopeIcon svg {
-  width: 21px;
-  height: 21px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
+  width: 24px;
+  height: 24px;
 }
 
 .scopeGrid h3 {
