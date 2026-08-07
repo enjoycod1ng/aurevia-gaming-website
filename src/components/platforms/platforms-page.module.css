@@ -9,13 +9,13 @@
 
 .kicker {
   width: fit-content;
-  min-height: 34px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0 20px;
   margin-bottom: 36px;
-  color: var(--accent-soft);
+  color: var(--accent-bright);
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: var(--surface);
@@ -425,7 +425,7 @@
 
 .sectionHeading :global(.eyebrow) {
   width: fit-content;
-  min-height: 34px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   padding: 0 20px;

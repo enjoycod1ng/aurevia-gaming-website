@@ -414,7 +414,7 @@ img {
 
 .eyebrow {
   margin-bottom: 19px;
-  color: var(--accent-soft);
+  color: var(--accent-bright);
   font-size: var(--font-size-xs);
   font-weight: 780;
   letter-spacing: 0.17em;
@@ -1233,7 +1233,7 @@ h3 {
 .home-kicker {
   width: fit-content;
   min-width: 190px;
-  min-height: 39px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
