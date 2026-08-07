@@ -38,7 +38,7 @@ export const siteContent = {
   },
   seo: {
     home: {
-      title: "Home",
+      title: "Aurevia Gaming | Casino Game Development Agency",
       description:
         "Aurevia Gaming develops slot and betting games, casino websites, mobile experiences and operator admin platforms with source-code ownership and configurable RTP controls.",
       path: "/",
@@ -514,7 +514,7 @@ export const siteContent = {
       },
       items: [
         {
-          icon: "spark",
+          icon: "performance",
           tone: "gold",
           title: "Performance",
           description:
@@ -860,7 +860,7 @@ export const siteContent = {
       },
       items: [
         {
-          icon: "devices",
+          icon: "spark",
           tone: "gold",
           title: "Player app & lobby",
           description:
@@ -876,7 +876,7 @@ export const siteContent = {
           footer: "Included capabilities",
         },
         {
-          icon: "spark",
+          icon: "wallet",
           tone: "violet",
           title: "Bonus & loyalty",
           description:
@@ -900,7 +900,7 @@ export const siteContent = {
           footer: "Included capabilities",
         },
         {
-          icon: "check",
+          icon: "shield",
           tone: "red",
           title: "Security & access",
           description:
@@ -1123,7 +1123,7 @@ export const siteContent = {
         {
           tone: "violet",
           title: "Protected changes",
-          description: "Approvals for financial and RTP updates.",
+          description: "Approvals for financial updates.",
         },
         {
           tone: "green",

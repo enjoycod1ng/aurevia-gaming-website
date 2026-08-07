@@ -576,7 +576,9 @@ img {
 .scroll-reveal {
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity 780ms cubic-bezier(0.22, 1, 0.36, 1), transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity 780ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 
@@ -1554,11 +1556,6 @@ h3 {
 .home-service-card__icon svg {
   width: 24px;
   height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .home-service-card h3 {
@@ -2032,7 +2029,7 @@ h3 {
 }
 
 .home-cta-section {
-  padding: 2rem 0;
+  padding-bottom: var(--section-spacing);
 }
 
 .home-cta {
@@ -2573,13 +2570,8 @@ h3 {
 
 .services-layer__icon svg,
 .services-principle__icon svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  width: 24px;
+  height: 24px;
 }
 
 .services-layer h3 {
@@ -2896,8 +2888,8 @@ h3 {
 }
 
 .services-principle__icon {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
 }
 
 .services-principle h3 {

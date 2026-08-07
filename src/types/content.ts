@@ -50,7 +50,9 @@ export type ServiceIconName =
   | "controls"
   | "shield"
   | "target"
-  | "check";
+  | "check"
+  | "performance"
+  | "wallet";
 
 export type ServiceTone = "gold" | "blue" | "violet" | "green";
 

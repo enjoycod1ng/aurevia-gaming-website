@@ -479,13 +479,8 @@
 }
 
 .scopeIcon svg {
-  width: 21px;
-  height: 21px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
+  width: 24px;
+  height: 24px;
 }
 
 .scopeGrid h3 {
