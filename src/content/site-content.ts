@@ -14,10 +14,10 @@ export const siteContent = {
       "A casino game development agency building web and mobile games, casino platforms and operator admin systems.",
   },
   contact: {
-    phoneDisplay: "716-217-0171",
-    phoneHref: "tel:+17162170171",
-    telegramHandle: "@withtechs",
-    telegramUrl: "https://t.me/withtechs",
+    phoneDisplay: "737-304-3074",
+    whatsappHref: "https://wa.me/17373043074",
+    telegramHandle: "@bettingssupporter",
+    telegramUrl: "https://t.me/bettingssupporter",
   },
   navigation: [
     { label: "Home", href: "/" },
@@ -32,7 +32,7 @@ export const siteContent = {
   },
   secondaryCta: {
     label: "Message on Telegram",
-    href: "https://t.me/withtechs",
+    href: "https://t.me/bettingssupporter",
     external: true,
     ariaLabel: "Message Aurevia Gaming on Telegram",
   },
@@ -1169,10 +1169,7 @@ export const siteContent = {
       description:
         "Tell us what you want to launch — a game, casino website, admin package or complete operator platform. We will respond with a clear scope, timeline and quote path.",
       telegramDescription: "Fastest way to start",
-      phoneDescription: "Global project inquiries",
-      deliveryTitle: "Global delivery",
-      deliveryDescription:
-        "No business address is required — projects are coordinated remotely across markets and time zones.",
+      whatsappDescription: "Global project inquiries",
     },
     form: {
       title: "Request a quote",

@@ -36,26 +36,16 @@ export function ContactHeroSection({
                 <em>{content.hero.telegramDescription}</em>
               </span>
             </a>
-            <a href={contact.phoneHref}>
+            <a href={contact.whatsappHref}>
               <span className={`${styles.methodIcon} ${styles.methodPhone}`}>
-                <ContactMethodIcon name="phone" />
+                <ContactMethodIcon name="whatsapp" />
               </span>
               <span>
-                <small>Phone</small>
+                <small>WhatsApp</small>
                 <strong>{contact.phoneDisplay}</strong>
-                <em>{content.hero.phoneDescription}</em>
+                <em>{content.hero.whatsappDescription}</em>
               </span>
             </a>
-          </div>
-
-          <div className={styles.deliveryNote}>
-            <span className={styles.deliveryIcon}>
-              <ContactMethodIcon name="delivery" />
-            </span>
-            <div>
-              <strong>{content.hero.deliveryTitle}</strong>
-              <p>{content.hero.deliveryDescription}</p>
-            </div>
           </div>
         </div>
 

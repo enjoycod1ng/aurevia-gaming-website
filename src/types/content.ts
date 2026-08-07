@@ -246,7 +246,7 @@ export interface SiteContent {
   };
   contact: {
     phoneDisplay: string;
-    phoneHref: string;
+    whatsappHref: string;
     telegramHandle: string;
     telegramUrl: string;
   };
@@ -483,9 +483,7 @@ export interface SiteContent {
   contactPage: {
     hero: SectionCopy & {
       telegramDescription: string;
-      phoneDescription: string;
-      deliveryTitle: string;
-      deliveryDescription: string;
+      whatsappDescription: string;
     };
     form: {
       title: string;
