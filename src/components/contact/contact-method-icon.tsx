@@ -1,4 +1,4 @@
-type ContactMethodIconName = "telegram" | "phone" | "delivery";
+type ContactMethodIconName = "telegram" | "phone" | "delivery" | "whatsapp";
 
 export function ContactMethodIcon({ name }: { name: ContactMethodIconName }) {
   if (name === "phone") {
@@ -18,9 +18,68 @@ export function ContactMethodIcon({ name }: { name: ContactMethodIconName }) {
     );
   }
 
+  if (name === "whatsapp") {
+    return (
+      <svg aria-hidden="true" fill="#fff" viewBox="0 0 512 512">
+        <rect width="512" height="512" fill="#45d354" rx="15%" />
+        <path d="M308 273c-3-2-6-3-9 1l-12 16c-3 2-5 3-9 1-15-8-36-17-54-47-1-4 1-6 3-8l9-14c2-2 1-4 0-6l-12-29c-3-8-6-7-9-7h-8c-2 0-6 1-10 5-22 22-13 53 3 73 3 4 23 40 66 59 32 14 39 12 48 10 11-1 22-10 27-19 1-3 6-16 2-18m-79 94c-41 0-72-22-72-22l-49 13 12-48s-20-31-20-70c0-72 59-132 132-132 68 0 126 53 126 127 0 72-58 131-129 132m-159 29l83-23a158 158 0 0 0 230-140c0-86-68-155-154-155a158 158 0 0 0-137 236" />
+      </svg>
+    );
+  }
+
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="m4 11.4 15.6-6.1-3.1 13.5-4.8-4-2.8 2.7.4-4.2 7.7-5.2-9.4 4.2L4 11.4Z" />
+    <svg aria-hidden="true" viewBox="0 0 64 64">
+      <defs>
+        <clipPath id="A">
+          <path d="M15.903 131.998c0-65.17 52.83-118 118-118s118 52.83 118 118-52.83 118-118 118-118-52.83-118-118" />
+        </clipPath>
+        <linearGradient
+          x1="133.903"
+          y1="13.999"
+          x2="133.903"
+          y2="249.999"
+          gradientUnits="userSpaceOnUse"
+          spreadMethod="pad"
+          id="B"
+        >
+          <stop offset="0" stopColor="#1d93d2" />
+          <stop offset="1" stopColor="#38b0e3" />
+        </linearGradient>
+        <clipPath id="C">
+          <path d="M0 265.9h266.987V0H0z" />
+        </clipPath>
+        <clipPath id="D">
+          <path d="M0 265.9h266.987V0H0z" />
+        </clipPath>
+        <clipPath id="E">
+          <path d="M0 265.9h266.987V0H0z" />
+        </clipPath>
+      </defs>
+      <g transform="matrix(.271187 0 0 -.271187 -4.312678 67.796339)">
+        <path
+          d="M15.903 131.998c0-65.17 52.83-118 118-118s118 52.83 118 118-52.83 118-118 118-118-52.83-118-118"
+          fill="url(#B)"
+          clipPath="url(#A)"
+        />
+        <g clipPath="url(#C)">
+          <path
+            d="M95.778 123.374l14-38.75S111.528 81 113.403 81s29.75 29 29.75 29l31 59.875-77.875-36.5z"
+            fill="#c8daea"
+          />
+        </g>
+        <g clipPath="url(#D)">
+          <path
+            d="M114.34 113.436l-2.688-28.562s-1.125-8.75 7.625 0 17.125 15.5 17.125 15.5"
+            fill="#a9c6d8"
+          />
+        </g>
+        <g clipPath="url(#E)">
+          <path
+            d="M96.03 121.99l-28.795 9.383s-3.437 1.395-2.333 4.562c.228.653.687 1.208 2.062 2.167 6.382 4.447 118.104 44.604 118.104 44.604s3.155 1.062 5.02.356c.852-.323 1.396-.688 1.854-2.02.167-.485.263-1.516.25-2.542-.01-.74-.1-1.425-.166-2.5-.68-10.98-21.04-92.918-21.04-92.918s-1.218-4.795-5.583-4.958c-1.592-.06-3.524.263-5.834 2.25-8.565 7.368-38.172 27.265-44.713 31.64-.37.246-.474.567-.537.88-.092.46.4 1.034.4 1.034s51.552 45.825 52.924 50.633c.106.373-.293.557-.834.396-3.424-1.26-62.78-38.74-69.33-42.88-.383-.242-1.457-.086-1.457-.086"
+            fill="#fff"
+          />
+        </g>
+      </g>
     </svg>
   );
 }

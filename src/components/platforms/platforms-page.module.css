@@ -9,13 +9,13 @@
 
 .kicker {
   width: fit-content;
-  min-height: 34px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0 20px;
   margin-bottom: 36px;
-  color: var(--accent-soft);
+  color: var(--accent-bright);
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: var(--surface);
@@ -425,7 +425,7 @@
 
 .sectionHeading :global(.eyebrow) {
   width: fit-content;
-  min-height: 34px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   padding: 0 20px;
@@ -493,13 +493,8 @@
 }
 
 .moduleIcon svg {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  width: 24px;
+  height: 24px;
 }
 
 .moduleCard h3 {
@@ -611,6 +606,10 @@
   grid-template-columns: minmax(0, 1.85fr) minmax(240px, 1fr);
   gap: 18px;
   margin-top: 18px;
+}
+
+.lineChartPanel svg circle {
+  fill: var(--accent-bright);
 }
 
 .lineChartPanel,
