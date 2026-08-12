@@ -13,7 +13,7 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <div className={`section-heading section-heading--${align}`}>
-      <p className="eyebrow">{label}</p>
+      <p className="home-kicker">{label}</p>
       <h2>{title}</h2>
       {description ? (
         <p className="section-heading__description">{description}</p>

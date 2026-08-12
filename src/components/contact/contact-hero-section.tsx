@@ -21,7 +21,7 @@ export function ContactHeroSection({
     <section className={`${styles.hero} scroll-reveal`} data-scroll-reveal>
       <div className={`container ${styles.heroGrid}`}>
         <div className={styles.heroContent}>
-          <p className="eyebrow">{content.hero.label}</p>
+          <p className="home-kicker">{content.hero.label}</p>
           <h1>{content.hero.title}</h1>
           <p className={styles.heroDescription}>{content.hero.description}</p>
 
