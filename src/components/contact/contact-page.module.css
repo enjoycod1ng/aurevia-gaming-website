@@ -316,7 +316,7 @@
 }
 
 .projectTypeGrid input:checked + span {
-  color: var(--accent-soft);
+  color: var(--accent-bright);
   border-color: var(--accent);
   background: rgba(212, 175, 55, 0.09);
 }

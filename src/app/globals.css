@@ -362,7 +362,7 @@ img {
 .button--text {
   min-height: auto;
   padding: 8px 0;
-  color: var(--accent-soft);
+  color: var(--accent-bright);
   border-radius: 0;
   background: transparent;
   box-shadow: none;

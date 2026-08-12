@@ -883,7 +883,7 @@
 }
 
 .profileStatus--test {
-  color: var(--accent-soft);
+  color: var(--accent-bright);
   background: #34280c;
 }
 
@@ -984,7 +984,7 @@
 }
 
 .capabilities li:first-child {
-  color: var(--accent-soft);
+  color: var(--accent-bright);
 }
 
 .securityPanel {
