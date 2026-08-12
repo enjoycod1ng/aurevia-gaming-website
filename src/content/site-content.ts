@@ -1231,6 +1231,11 @@ export const siteContent = {
           message:
             "Please check the required fields and submit the form again.",
         },
+        verification: {
+          tone: "error",
+          message:
+            "Please complete the human verification and submit the form again.",
+        },
         unavailable: {
           tone: "warning",
           message:

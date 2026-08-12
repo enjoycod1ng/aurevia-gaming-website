@@ -53,6 +53,8 @@ function GameCard({ game }: { game: GameCatalogItem }) {
           href={game.primaryAction.href}
           external={game.primaryAction.external}
           ariaLabel={game.primaryAction.ariaLabel}
+          analyticsEvent="demo_request_click"
+          analyticsLabel={game.id}
         >
           {game.primaryAction.label}
         </ButtonLink>

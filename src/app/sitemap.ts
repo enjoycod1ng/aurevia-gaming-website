@@ -3,7 +3,10 @@ import type { MetadataRoute } from "next";
 import { siteContent } from "@/content/site-content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = siteContent.navigation.map((item) => item.href);
+  const routes = [
+    ...siteContent.navigation.map((item) => item.href),
+    "/privacy",
+  ];
 
   return routes.map((path, index) => ({
     url: new URL(path, siteContent.brand.url).toString(),

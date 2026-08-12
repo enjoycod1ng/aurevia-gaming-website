@@ -5,7 +5,10 @@ type HomeDemosContent = SiteContent["home"]["demos"];
 
 export function HomeDemosSection({ content }: { content: HomeDemosContent }) {
   return (
-    <section className="home-section home-demos scroll-reveal" data-scroll-reveal>
+    <section
+      className="home-section home-demos scroll-reveal"
+      data-scroll-reveal
+    >
       <div className="container">
         <div className="home-section-heading">
           <p className="home-kicker">{content.heading.label}</p>
@@ -28,7 +31,11 @@ export function HomeDemosSection({ content }: { content: HomeDemosContent }) {
               <h3>{demo.title}</h3>
               <p>{demo.description}</p>
               <div className="button-row">
-                <ButtonLink href={demo.primaryAction.href}>
+                <ButtonLink
+                  href={demo.primaryAction.href}
+                  analyticsEvent="demo_request_click"
+                  analyticsLabel={demo.title}
+                >
                   {demo.primaryAction.label}
                 </ButtonLink>
                 <ButtonLink

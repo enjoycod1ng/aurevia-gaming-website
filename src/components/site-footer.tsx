@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CookiePreferencesButton } from "@/components/analytics/cookie-preferences-button";
 import { BrandLogo } from "@/components/brand-logo";
 import { siteContent } from "@/content/site-content";
 
@@ -32,6 +33,7 @@ export function SiteFooter() {
             href={siteContent.contact.telegramUrl}
             target="_blank"
             rel="noreferrer"
+            data-analytics-event="telegram_click"
           >
             {siteContent.footer.telegramLabel}{" "}
             {siteContent.contact.telegramHandle}
@@ -39,6 +41,10 @@ export function SiteFooter() {
           <p>
             © {new Date().getFullYear()} {siteContent.brand.name}
           </p>
+          <div className="site-footer__legal-links">
+            <Link href="/privacy">Privacy</Link>
+            <CookiePreferencesButton />
+          </div>
         </div>
       </div>
     </footer>

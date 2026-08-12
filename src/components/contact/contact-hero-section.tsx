@@ -26,7 +26,12 @@ export function ContactHeroSection({
           <p className={styles.heroDescription}>{content.hero.description}</p>
 
           <div className={styles.contactMethods}>
-            <a href={contact.telegramUrl} target="_blank" rel="noreferrer">
+            <a
+              href={contact.telegramUrl}
+              target="_blank"
+              rel="noreferrer"
+              data-analytics-event="telegram_click"
+            >
               <span className={`${styles.methodIcon} ${styles.methodTelegram}`}>
                 <ContactMethodIcon name="telegram" />
               </span>
@@ -36,7 +41,10 @@ export function ContactHeroSection({
                 <em>{content.hero.telegramDescription}</em>
               </span>
             </a>
-            <a href={contact.whatsappHref}>
+            <a
+              href={contact.whatsappHref}
+              data-analytics-event="whatsapp_click"
+            >
               <span className={`${styles.methodIcon} ${styles.methodPhone}`}>
                 <ContactMethodIcon name="whatsapp" />
               </span>

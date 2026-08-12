@@ -1,0 +1,163 @@
+.notice,
+.preferences {
+  position: fixed;
+  z-index: 1000;
+  right: 24px;
+  bottom: 24px;
+  left: 24px;
+  width: min(760px, calc(100% - 48px));
+  padding: 24px;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: rgba(12, 13, 16, 0.98);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+.notice {
+  margin-inline: auto;
+}
+
+.notice h2,
+.preferences h2 {
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+}
+
+.notice p,
+.preferences p,
+.preferenceRow small {
+  color: var(--muted);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+}
+
+.notice p {
+  margin-top: 10px;
+}
+
+.notice a,
+.preferences a {
+  color: var(--accent-bright);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.actions,
+.preferencesFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.actions button,
+.preferencesFooter button {
+  min-height: 42px;
+  padding: 0 16px;
+  cursor: pointer;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+}
+
+.actions .primaryAction,
+.preferencesFooter .primaryAction {
+  color: #160d05;
+  border-color: var(--accent);
+  background: var(--accent-bright);
+}
+
+.preferences {
+  left: 50%;
+  width: min(580px, calc(100% - 48px));
+  transform: translateX(-50%);
+}
+
+.preferencesHeader,
+.preferenceRow,
+.preferencesFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.preferencesHeader p {
+  margin-top: 8px;
+}
+
+.closeButton {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  font-size: 24px;
+}
+
+.preferenceRow {
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+
+.preferencesHeader + .preferenceRow {
+  margin-top: 20px;
+}
+
+.preferenceRow > span:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.preferenceRow input {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+.alwaysOn {
+  color: var(--success);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.preferencesFooter {
+  padding-top: 18px;
+  margin-top: 0;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 620px) {
+  .notice,
+  .preferences {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: calc(100% - 24px);
+    padding: 20px;
+    transform: none;
+  }
+
+  .actions,
+  .preferencesFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions button,
+  .preferencesFooter button,
+  .preferencesFooter a {
+    width: 100%;
+    text-align: center;
+  }
+}

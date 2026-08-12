@@ -355,6 +355,23 @@
   margin-top: 1px;
 }
 
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.turnstileField {
+  display: grid;
+  gap: 9px;
+}
+
+.turnstileField small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
 .honeypot {
   position: absolute;
   left: -10000px;

@@ -2,17 +2,19 @@
 
 A production-oriented, configuration-driven marketing website for `aureviagaming.com`.
 
-The project uses the Next.js App Router, React Server Components, TypeScript, local WebP media, responsive image optimization, server-rendered metadata, a no-client-JavaScript contact form, and standalone VPS deployment behind Caddy.
+The project uses the Next.js App Router, React Server Components, TypeScript, local WebP media, responsive image optimization, server-rendered metadata, a Turnstile-protected contact form, consent-gated GA4, and standalone VPS deployment behind Cloudflare. Production currently uses Nginx and PM2; the Caddy and systemd files under `ops/` document the planned standalone migration.
 
 ## Stack
 
-- Next.js 16.2.11
+- Next.js 16.3.0
 - React 19.2.8
 - TypeScript
 - Global company design tokens plus scoped CSS Modules; no runtime CSS library
 - Sharp for self-hosted image optimization and the included WebP conversion script
 - Node.js 24 LTS on the VPS
-- Caddy for HTTPS, HTTP/2/HTTP/3, reverse proxying and compression
+- Nginx and PM2 on the live VPS; Caddy and a standalone systemd unit are available for a future migration
+- Cloudflare Free for DNS, CDN, WAF, DDoS protection, rate limiting and Turnstile
+- Google Analytics 4 behind an explicit analytics-consent control
 - systemd for process supervision
 
 ## Project structure
@@ -135,7 +137,11 @@ The same `image` field is available on `platformPage.admin.dashboard` and `platf
 
 ## Contact form delivery
 
-The form POSTs directly to `/api/contact`; it does not require a client component or browser JavaScript. It validates required fields, checks production origins, includes a honeypot, and supports two server-side delivery methods.
+The form submits to `/api/contact` with an accessible client-side status flow. It requires Cloudflare Turnstile, validates the token again on the server, checks the expected hostname and action, validates required fields, checks production origins, includes a honeypot, and supports two server-side delivery methods.
+
+Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and
+`TURNSTILE_ALLOWED_HOSTNAMES` as shown in `.env.example`. The public site key is
+embedded at build time; the secret remains server-only.
 
 Contact-page labels, field placeholders, project types, budget choices, status messages and supporting sections are configured under `siteContent.contactPage`. Keep those options synchronized there; the form and server-side project-type validation both read from the same source.
 
@@ -198,7 +204,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable aurevia-gaming
 ```
 
-Edit `/etc/aurevia-gaming.env` and add production contact delivery credentials. Keep this file owned by root and mode `0600`.
+For the live Nginx/PM2 deployment, edit `/etc/aurevia-gaming/production.env` and add the production Turnstile, GA4, and contact delivery values. Keep this file owned by `deploy` and mode `0600`. The standalone systemd example below instead uses `/etc/aurevia-gaming.env`. Follow [`ops/CLOUDFLARE-PRODUCTION.md`](ops/CLOUDFLARE-PRODUCTION.md) for the current Cloudflare Free and GA4 account settings.
 
 Add the contents of `ops/Caddyfile` to the active Caddy configuration. Do not overwrite other site blocks already on the server.
 
@@ -207,7 +213,7 @@ sudo caddy validate --config /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 ```
 
-The public firewall should expose only SSH, HTTP and HTTPS. Port `3000` is bound to `127.0.0.1` and must not be publicly opened.
+Port `3000` is bound to `127.0.0.1` and must not be publicly opened. After validating SSH access, restrict public HTTP and HTTPS at the VPS firewall to Cloudflare's published proxy ranges so traffic cannot bypass the WAF.
 
 ## Deploy a release
 
@@ -248,13 +254,13 @@ sudo systemctl restart aurevia-gaming
 
 ## Performance decisions
 
-- Marketing pages use Server Components with no custom client components or hydration state.
+- Marketing content remains server-rendered; client JavaScript is limited to existing interactions, Turnstile, and the analytics-consent control.
 - Content is local and build-time renderable; there are no data-fetch waterfalls.
 - The only dynamic routes are the contact endpoint and health endpoint.
 - Hero imagery is preloaded; below-the-fold images remain lazy by default.
 - Every responsive image has an explicit `sizes` rule and intrinsic dimensions.
 - WebP quality values are allowlisted in `next.config.ts`.
-- The app uses system fonts, avoiding a render-blocking remote font request.
+- `next/font` self-hosts the selected fonts, avoiding a render-blocking remote font request.
 - `output: "standalone"` produces a minimal production server.
 - Caddy applies Zstandard/Gzip compression and immutable caching to hashed Next.js assets.
 - Security headers, origin checks and a non-public application port are included by default.

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
 
+import { AnalyticsConsent } from "@/components/analytics/analytics-consent";
 import { JsonLd } from "@/components/json-ld";
 import { ScrollRevealInit } from "@/components/scroll-reveal-init";
 import { SiteFooter } from "@/components/site-footer";
@@ -88,6 +89,7 @@ export default function RootLayout({
         <ScrollRevealInit />
         {children}
         <SiteFooter />
+        <AnalyticsConsent />
       </body>
     </html>
   );

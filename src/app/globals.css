@@ -2137,6 +2137,29 @@ h3 {
   font-weight: 680;
 }
 
+.site-footer__legal-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.site-footer__legal-links a,
+.site-footer__preferences {
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  border: 0;
+  background: transparent;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.site-footer__legal-links a:hover,
+.site-footer__preferences:hover {
+  color: var(--text);
+}
+
 @media (max-width: 1180px) {
   .site-header__inner {
     grid-template-columns: 220px 1fr auto;
