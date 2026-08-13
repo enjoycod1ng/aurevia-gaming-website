@@ -4,8 +4,6 @@ import { GoogleAnalytics, sendGAEvent } from "@next/third-parties/google";
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
-import styles from "./analytics-consent.module.css";
-
 const consentStorageKey = "aurevia.analytics-consent.v1";
 const preferencesEventName = "aurevia:open-cookie-preferences";
 const consentChangedEventName = "aurevia:analytics-consent-changed";
@@ -206,21 +204,21 @@ export function AnalyticsConsent() {
 
       {hydrated && !consent && !preferencesOpen ? (
         <section
-          className={styles.notice}
+          className="fixed right-6 bottom-6 left-6 z-1000 mx-auto w-[min(760px,calc(100%-48px))] rounded-[18px] border border-line-strong bg-[#0c0d10]/98 p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:p-5"
           role="dialog"
           aria-labelledby="cookie-notice-title"
           aria-describedby="cookie-notice-description"
         >
           <div>
-            <h2 id="cookie-notice-title">Your privacy choices</h2>
-            <p id="cookie-notice-description">
+            <h2 className="text-base uppercase" id="cookie-notice-title">Your privacy choices</h2>
+            <p className="mt-2.5 text-xs leading-5 text-muted" id="cookie-notice-description">
               We use optional Google Analytics cookies to understand site
               usage. Turnstile security and essential site functions do not
               depend on analytics consent. Read our{" "}
-              <Link href="/privacy">privacy policy</Link>.
+              <Link className="text-gold-bright underline underline-offset-3" href="/privacy">privacy policy</Link>.
             </p>
           </div>
-          <div className={styles.actions}>
+          <div className="mt-5 flex flex-wrap items-center gap-2.5 max-sm:flex-col max-sm:items-stretch [&_button]:min-h-10.5 [&_button]:cursor-pointer [&_button]:rounded-[10px] [&_button]:border [&_button]:border-line-strong [&_button]:bg-surface [&_button]:px-4 [&_button]:text-xs [&_button]:font-bold [&_button]:text-ink">
             <button type="button" onClick={() => persistConsent("denied")}>
               Reject analytics
             </button>
@@ -234,7 +232,7 @@ export function AnalyticsConsent() {
               Manage preferences
             </button>
             <button
-              className={styles.primaryAction}
+              className="!border-gold !bg-gold-bright !text-[#160d05]"
               type="button"
               onClick={() => persistConsent("granted")}
             >
@@ -246,18 +244,18 @@ export function AnalyticsConsent() {
 
       {preferencesOpen ? (
         <section
-          className={styles.preferences}
+          className="fixed bottom-6 left-1/2 z-1000 w-[min(580px,calc(100%-48px))] -translate-x-1/2 rounded-[18px] border border-line-strong bg-[#0c0d10]/98 p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:translate-x-0 max-sm:p-5"
           role="dialog"
           aria-labelledby="cookie-preferences-title"
         >
-          <div className={styles.preferencesHeader}>
+          <div className="flex items-center justify-between gap-6">
             <div>
-              <h2 id="cookie-preferences-title">Cookie preferences</h2>
-              <p>Choose whether optional analytics may run on this device.</p>
+              <h2 className="text-base uppercase" id="cookie-preferences-title">Cookie preferences</h2>
+              <p className="mt-2 text-xs leading-5 text-muted">Choose whether optional analytics may run on this device.</p>
             </div>
             {consent ? (
               <button
-                className={styles.closeButton}
+                className="size-9.5 shrink-0 cursor-pointer rounded-full border border-line bg-transparent text-2xl text-muted"
                 type="button"
                 onClick={() => setPreferencesOpen(false)}
                 aria-label="Close cookie preferences"
@@ -267,30 +265,31 @@ export function AnalyticsConsent() {
             ) : null}
           </div>
 
-          <div className={styles.preferenceRow}>
-            <span>
+          <div className="mt-5 flex items-center justify-between gap-6 border-t border-line py-4.5">
+            <span className="grid gap-1">
               <strong>Necessary</strong>
-              <small>Security, form delivery, and saved privacy choice.</small>
+              <small className="text-xs leading-5 text-muted">Security, form delivery, and saved privacy choice.</small>
             </span>
-            <span className={styles.alwaysOn}>Always on</span>
+            <span className="whitespace-nowrap text-xs font-bold text-success">Always on</span>
           </div>
 
-          <label className={styles.preferenceRow}>
-            <span>
+          <label className="flex items-center justify-between gap-6 border-t border-line py-4.5">
+            <span className="grid gap-1">
               <strong>Google Analytics</strong>
-              <small>Site usage and conversion measurement.</small>
+              <small className="text-xs leading-5 text-muted">Site usage and conversion measurement.</small>
             </span>
             <input
+              className="size-5.5 shrink-0 accent-gold"
               type="checkbox"
               checked={analyticsEnabled}
               onChange={(event) => setAnalyticsEnabled(event.target.checked)}
             />
           </label>
 
-          <div className={styles.preferencesFooter}>
-            <Link href="/privacy">Privacy policy</Link>
+          <div className="flex items-center justify-between gap-6 border-t border-line pt-4.5 max-sm:flex-col max-sm:items-stretch">
+            <Link className="text-gold-bright underline underline-offset-3 max-sm:text-center" href="/privacy">Privacy policy</Link>
             <button
-              className={styles.primaryAction}
+              className="min-h-10.5 cursor-pointer rounded-[10px] border border-gold bg-gold-bright px-4 text-xs font-bold text-[#160d05]"
               type="button"
               onClick={() =>
                 persistConsent(analyticsEnabled ? "granted" : "denied")

@@ -22,8 +22,9 @@ export function PlatformVisual({
   }
 
   return (
-    <figure className={className}>
+    <figure className={`m-0 overflow-hidden rounded-3xl border border-line-strong bg-surface ${className}`}>
       <Image
+        className="block h-auto w-full"
         src={image.src}
         alt={image.alt}
         width={image.width}
@@ -31,7 +32,7 @@ export function PlatformVisual({
         sizes={sizes}
         priority={priority}
       />
-      {image.caption ? <figcaption>{image.caption}</figcaption> : null}
+      {image.caption ? <figcaption className="px-4.5 py-3 text-xs text-muted">{image.caption}</figcaption> : null}
     </figure>
   );
 }
