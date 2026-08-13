@@ -55,7 +55,7 @@ jobs:
           npm run release:package -- "$archive"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy to staging VPS
+      - name: Deploy and verify on staging VPS
         shell: bash
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
@@ -64,24 +64,6 @@ jobs:
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
         run: bash scripts/deploy-vps.sh staging "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
-
-      - name: Verify staging through Cloudflare Access
-        shell: bash
-        env:
-          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
-          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
-        run: |
-          response="$(curl --fail --silent --show-error \
-            --retry 5 --retry-all-errors --retry-delay 2 \
-            -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
-            -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
-            https://staging.aureviagaming.com/api/health)"
-          node -e '
-            const health = JSON.parse(process.argv[1]);
-            if (health.status !== "ok" || health.environment !== "staging" || health.revision !== process.env.GITHUB_SHA) {
-              throw new Error(`Unexpected staging health response: ${JSON.stringify(health)}`);
-            }
-          ' "$response"
 
   promote:
     name: Prepare production promotion

@@ -88,9 +88,6 @@ Configure the public build variables:
 | production | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Production Turnstile site key |
 | production | `NEXT_PUBLIC_GA_ID` | Production GA4 measurement ID |
 
-Staging also requires `CF_ACCESS_CLIENT_ID` and `CF_ACCESS_CLIENT_SECRET` as
-environment secrets so its deployment can perform an end-to-end health check.
-
 Runtime-only Turnstile, webhook, Telegram and bearer secrets remain in the VPS
 environment files and are never stored in the repository.
 
@@ -98,20 +95,20 @@ environment files and are never stored in the repository.
 
 1. Create a managed Turnstile widget restricted to
    `staging.aureviagaming.com`.
-2. Create a self-hosted Access application for the exact staging hostname.
-3. Add an email one-time-PIN allow policy for the administrator and a service
-   token policy for GitHub Actions.
-4. Validate the origin before DNS is published:
+2. Validate the origin before DNS is published:
 
    ```bash
    curl --resolve staging.aureviagaming.com:443:ORIGIN_IP \
      https://staging.aureviagaming.com/api/health
    ```
 
-5. Add a proxied `A` record named `staging` pointing to the existing origin.
+3. Add a proxied `A` record named `staging` pointing to the existing origin.
 
-The staging build sets `APP_ENV=staging`, emits a disallowing `robots.txt`, and
-sends `X-Robots-Tag: noindex, nofollow, noarchive` on every response.
+The staging site is public. The staging build sets `APP_ENV=staging`, emits a
+disallowing `robots.txt`, and sends
+`X-Robots-Tag: noindex, nofollow, noarchive` on every response. These directives
+discourage indexing but are not access controls; do not place confidential data
+on staging.
 
 ## Deployment and rollback
 
@@ -125,7 +122,9 @@ sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/ARCHIV
 The helper validates all inputs, serializes deployments with `flock`, switches
 the `current` symlink atomically, verifies the environment and exact revision
 through `/api/health`, retains five releases, and automatically restores the
-previous symlink if startup or health validation fails.
+previous symlink if startup or health validation fails. The staging workflow
+uses this check as its deployment health gate; it does not require Cloudflare
+Access credentials.
 
 For manual recovery, inspect the current and retained releases before changing
 anything:
