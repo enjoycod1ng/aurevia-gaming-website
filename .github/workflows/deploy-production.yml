@@ -56,7 +56,7 @@ jobs:
           npm run release:package -- "$archive"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy to production VPS
+      - name: Deploy and verify on production VPS
         shell: bash
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
@@ -66,15 +66,3 @@ jobs:
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
         run: bash scripts/deploy-vps.sh production "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
 
-      - name: Verify production through Cloudflare
-        shell: bash
-        run: |
-          response="$(curl --fail --silent --show-error \
-            --retry 5 --retry-all-errors --retry-delay 2 \
-            https://aureviagaming.com/api/health)"
-          node -e '
-            const health = JSON.parse(process.argv[1]);
-            if (health.status !== "ok" || health.environment !== "production" || health.revision !== process.env.GITHUB_SHA) {
-              throw new Error(`Unexpected production health response: ${JSON.stringify(health)}`);
-            }
-          ' "$response"
