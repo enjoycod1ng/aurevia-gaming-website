@@ -3,7 +3,6 @@ set -Eeuo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RELEASE_ROOT="$PROJECT_ROOT/release"
-STAGE_DIR="$RELEASE_ROOT/stage"
 ARCHIVE="$RELEASE_ROOT/aurevia-gaming-$(date -u +%Y%m%d-%H%M%S).tar.gz"
 
 cd "$PROJECT_ROOT"
@@ -20,17 +19,4 @@ npm run typecheck
 npm run lint
 npm run build
 
-rm -rf "$STAGE_DIR"
-mkdir -p "$STAGE_DIR/.next"
-
-cp -a .next/standalone/. "$STAGE_DIR/"
-cp -a .next/static "$STAGE_DIR/.next/static"
-cp -a public "$STAGE_DIR/public"
-
-# The image optimizer writes cache files here at runtime.
-mkdir -p "$STAGE_DIR/.next/cache/images"
-
-tar -C "$STAGE_DIR" -czf "$ARCHIVE" .
-rm -rf "$STAGE_DIR"
-
-echo "Release created: $ARCHIVE"
+bash "$PROJECT_ROOT/scripts/package-release.sh" "$ARCHIVE"

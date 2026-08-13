@@ -1,0 +1,130 @@
+name: Deploy staging
+
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: staging
+      url: https://staging.aureviagaming.com
+    env:
+      APP_ENV: staging
+      SITE_URL: ${{ vars.SITE_URL }}
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+      NEXT_PUBLIC_GA_ID: ""
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build staging release
+        run: npm run build
+
+      - name: Package standalone release
+        id: package
+        shell: bash
+        run: |
+          archive="$RUNNER_TEMP/aurevia-gaming-$GITHUB_SHA.tar.gz"
+          npm run release:package -- "$archive"
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy and verify on staging VPS
+        shell: bash
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: bash scripts/deploy-vps.sh staging "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
+
+  promote:
+    name: Prepare production promotion
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: write
+
+    steps:
+      - name: Create or update dev to master pull request
+        id: promotion
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          repository="$GITHUB_REPOSITORY"
+          pull_number="$(gh pr list \
+            --repo "$repository" \
+            --base master \
+            --head dev \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')"
+
+          if [[ -z "$pull_number" ]]; then
+            pull_url="$(gh pr create \
+              --repo "$repository" \
+              --base master \
+              --head dev \
+              --title "chore: promote dev to production" \
+              --body "Automated production promotion after the staging deployment for \`$GITHUB_SHA\` passed.")"
+            pull_number="${pull_url##*/}"
+          fi
+
+          details="$(gh pr view "$pull_number" \
+            --repo "$repository" \
+            --json baseRefName,headRefName,isCrossRepository \
+            --jq '[.baseRefName, .headRefName, .isCrossRepository] | @tsv')"
+          IFS=$'\t' read -r base_ref head_ref cross_repository <<< "$details"
+
+          if [[ "$base_ref" != "master" || "$head_ref" != "dev" || "$cross_repository" != "false" ]]; then
+            echo "Promotion PR must be same-repository dev -> master." >&2
+            exit 1
+          fi
+
+          gh api \
+            --method POST \
+            "repos/$repository/statuses/$GITHUB_SHA" \
+            -f state=success \
+            -f context='policy/dev-to-master' \
+            -f description='Commit deployed successfully from dev to staging' \
+            -f target_url="$GITHUB_SERVER_URL/$repository/actions/runs/$GITHUB_RUN_ID" \
+            >/dev/null
+
+          gh pr merge "$pull_number" --repo "$repository" --auto --merge
+          echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
+
+      - name: Write promotion summary
+        run: |
+          echo "Production promotion PR: #${{ steps.promotion.outputs.pull_number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Auto-merge is waiting for the required owner approval." >> "$GITHUB_STEP_SUMMARY"
