@@ -121,10 +121,9 @@ jobs:
             -f target_url="$GITHUB_SERVER_URL/$repository/actions/runs/$GITHUB_RUN_ID" \
             >/dev/null
 
-          gh pr merge "$pull_number" --repo "$repository" --auto --merge
-          echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
+            echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
 
       - name: Write promotion summary
         run: |
           echo "Production promotion PR: #${{ steps.promotion.outputs.pull_number }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Auto-merge is waiting for the required owner approval." >> "$GITHUB_STEP_SUMMARY"
+          echo "Approve and merge the promotion PR manually to trigger production deployment." >> "$GITHUB_STEP_SUMMARY"
