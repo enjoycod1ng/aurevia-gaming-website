@@ -159,7 +159,10 @@ export const siteContent = {
           title: "Slot & Betting Games",
           description:
             "Original game mechanics, math models, bonus rounds, responsive interfaces and secure backend integration.",
-          action: { label: "Learn more", href: "/services#slot-betting-games" },
+          action: {
+            label: "Explore Slot & Betting Games",
+            href: "/services#slot-betting-games",
+          },
         },
         {
           number: "02",
@@ -167,7 +170,10 @@ export const siteContent = {
           title: "Web & Mobile Casino",
           description:
             "Fast, device-optimized casino experiences built for browser, Android and iOS delivery.",
-          action: { label: "Learn more", href: "/services#web-mobile" },
+          action: {
+            label: "Explore Web & Mobile Casino",
+            href: "/services#web-mobile",
+          },
         },
         {
           number: "03",
@@ -175,7 +181,10 @@ export const siteContent = {
           title: "Casino Websites",
           description:
             "Conversion-focused operator websites with wallets, payments, promotions and player journeys.",
-          action: { label: "Learn more", href: "/services#casino-websites" },
+          action: {
+            label: "Explore Casino Websites",
+            href: "/services#casino-websites",
+          },
         },
         {
           number: "04",
@@ -183,7 +192,10 @@ export const siteContent = {
           title: "Admin & RTP Control",
           description:
             "Powerful management panels for games, users, transactions, bonuses, analytics and RTP profiles.",
-          action: { label: "Learn more", href: "/services#admin-platforms" },
+          action: {
+            label: "Explore Admin & RTP Control",
+            href: "/services#admin-platforms",
+          },
         },
       ],
     },

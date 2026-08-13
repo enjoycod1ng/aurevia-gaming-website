@@ -298,6 +298,10 @@ img {
   box-shadow: var(--shadow);
 }
 
+.mobile-nav:not([open]) .mobile-nav__panel {
+  display: none;
+}
+
 .mobile-nav__panel > a:not(.button) {
   padding: 12px 6px;
   color: var(--text-soft);
@@ -362,7 +366,7 @@ img {
 .button--text {
   min-height: auto;
   padding: 8px 0;
-  color: var(--accent-soft);
+  color: var(--accent-bright);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
