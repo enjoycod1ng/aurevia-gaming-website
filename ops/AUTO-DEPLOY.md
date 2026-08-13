@@ -68,7 +68,9 @@ Configure the public build variables:
 
 | Environment | Variable | Value |
 | --- | --- | --- |
+| staging | `SITE_URL` | `https://staging.aureviagaming.com` |
 | staging | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Staging Turnstile site key |
+| production | `SITE_URL` | `https://aureviagaming.com` |
 | production | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Production Turnstile site key |
 | production | `NEXT_PUBLIC_GA_ID` | Production GA4 measurement ID |
 

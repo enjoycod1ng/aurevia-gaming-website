@@ -21,7 +21,7 @@ jobs:
       url: https://staging.aureviagaming.com
     env:
       APP_ENV: staging
-      SITE_URL: https://staging.aureviagaming.com
+      SITE_URL: ${{ vars.SITE_URL }}
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
       NEXT_PUBLIC_GA_ID: ""
 
