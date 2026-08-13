@@ -177,6 +177,15 @@ The **Cloudflare managed ruleset** is always active on this Free zone. Keep
 **Browser Integrity Check** and **Bot Fight Mode** enabled, and monitor Security
 Events because Free Bot Fight Mode cannot be bypassed for individual paths.
 
+The application sends `Cache-Control: no-transform` on HTML document responses.
+Cloudflare documents that this prevents JavaScript Detections from injecting
+`/cdn-cgi/challenge-platform/` scripts into those responses. This avoids
+deprecated browser API warnings from Cloudflare's injected script in Lighthouse,
+but `cf.bot_management.js_detection.passed` will be missing for those page loads.
+Bot Fight Mode and the managed ruleset remain enabled; remove `no-transform` if
+the JavaScript-detection signal becomes more important than a perfect Lighthouse
+Best Practices score.
+
 The Free plan currently includes one rate-limiting rule. Use it for the contact
 endpoint:
 

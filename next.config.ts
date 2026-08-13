@@ -33,6 +33,24 @@ const securityHeaders = [
   },
 ];
 
+const staticDocumentPaths = [
+  "/",
+  "/services",
+  "/games",
+  "/casino-platforms",
+  "/privacy",
+];
+
+const staticDocumentHeaders = staticDocumentPaths.map((source) => ({
+  source,
+  headers: [
+    {
+      key: "Cache-Control",
+      value: "s-maxage=31536000, no-transform",
+    },
+  ],
+}));
+
 const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
@@ -58,6 +76,17 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      ...staticDocumentHeaders,
+      {
+        source: "/contact",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "private, no-cache, no-store, max-age=0, must-revalidate, no-transform",
+          },
+        ],
       },
       {
         source: "/media/:path*",
