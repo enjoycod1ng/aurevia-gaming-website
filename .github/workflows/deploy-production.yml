@@ -21,7 +21,7 @@ jobs:
       url: https://aureviagaming.com
     env:
       APP_ENV: production
-      SITE_URL: https://aureviagaming.com
+      SITE_URL: ${{ vars.SITE_URL }}
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
       NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
 
