@@ -54,6 +54,20 @@ SSH_OPTIONS=(
   -o ConnectTimeout=15
 )
 
+retry_connection() {
+  local attempt=1
+
+  until "$@"; do
+    if (( attempt >= 5 )); then
+      return 1
+    fi
+
+    echo "SSH connection attempt $attempt failed; retrying in 5 seconds..." >&2
+    sleep 5
+    ((attempt += 1))
+  done
+}
+
 REMOTE_NAME="${DEPLOY_ENVIRONMENT}-${GITHUB_RUN_ID:-manual}-${GITHUB_RUN_ATTEMPT:-1}-${REVISION}.tar.gz"
 REMOTE_ARCHIVE="$VPS_INBOX/$REMOTE_NAME"
 REMOTE_CHECKSUM="$REMOTE_ARCHIVE.sha256"
@@ -67,9 +81,9 @@ fi
 
 printf '%s  %s\n' "$ARCHIVE_HASH" "$REMOTE_NAME" > "$SSH_DIR/release.sha256"
 
-ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" "install -d -m 0700 '$VPS_INBOX'"
-scp "${SSH_OPTIONS[@]}" -P "$VPS_PORT" "$ARCHIVE" "$REMOTE_TARGET:$REMOTE_ARCHIVE"
-scp "${SSH_OPTIONS[@]}" -P "$VPS_PORT" "$SSH_DIR/release.sha256" "$REMOTE_TARGET:$REMOTE_CHECKSUM"
+retry_connection ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" "install -d -m 0700 '$VPS_INBOX'"
+retry_connection scp "${SSH_OPTIONS[@]}" -P "$VPS_PORT" "$ARCHIVE" "$REMOTE_TARGET:$REMOTE_ARCHIVE"
+retry_connection scp "${SSH_OPTIONS[@]}" -P "$VPS_PORT" "$SSH_DIR/release.sha256" "$REMOTE_TARGET:$REMOTE_CHECKSUM"
 
-ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" \
+retry_connection ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" \
   "sudo -n /usr/local/sbin/aurevia-deploy '$DEPLOY_ENVIRONMENT' '$REMOTE_ARCHIVE' '$REVISION'"

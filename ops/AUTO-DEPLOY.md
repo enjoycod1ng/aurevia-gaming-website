@@ -35,16 +35,30 @@ sudo install -o deploy -g deploy -m 0600 ops/staging.env.example /etc/aurevia-ga
 sudoedit /etc/aurevia-gaming/staging.env
 ```
 
-Install the staging Cloudflare Origin CA certificate and private key with the
-exact paths expected by `ops/nginx-staging.conf`, then install and validate the
-Nginx site:
+Create a temporary HTTP site and issue a Let's Encrypt certificate for the
+staging hostname, then install the final Nginx site. The DNS record must already
+resolve to this server so Certbot can complete its HTTP challenge:
 
 ```bash
-sudo install -d -o root -g root -m 0700 /etc/ssl/cloudflare
-sudo install -o root -g root -m 0644 /path/to/aurevia-staging.pem /etc/ssl/cloudflare/aurevia-staging.pem
-sudo install -o root -g root -m 0600 /path/to/aurevia-staging.key /etc/ssl/cloudflare/aurevia-staging.key
+sudo tee /etc/nginx/sites-available/aurevia-gaming-staging >/dev/null <<'NGINX'
+server {
+    listen 80;
+    listen [::]:80;
+    server_name staging.aureviagaming.com;
+    return 404;
+}
+NGINX
+sudo ln -sfn /etc/nginx/sites-available/aurevia-gaming-staging /etc/nginx/sites-enabled/aurevia-gaming-staging
+sudo nginx -t
+sudo systemctl reload nginx
+
+sudo certbot --nginx \
+  -d staging.aureviagaming.com \
+  --non-interactive \
+  --redirect \
+  --cert-name staging.aureviagaming.com
 sudo install -o root -g root -m 0644 ops/nginx-staging.conf /etc/nginx/sites-available/aurevia-gaming-staging
-sudo ln -s /etc/nginx/sites-available/aurevia-gaming-staging /etc/nginx/sites-enabled/aurevia-gaming-staging
+sudo ln -sfn /etc/nginx/sites-available/aurevia-gaming-staging /etc/nginx/sites-enabled/aurevia-gaming-staging
 sudo nginx -t
 sudo systemctl reload nginx
 ```
