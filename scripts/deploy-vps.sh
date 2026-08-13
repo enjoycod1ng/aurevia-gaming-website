@@ -85,5 +85,5 @@ retry_connection ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" "instal
 retry_connection scp "${SSH_OPTIONS[@]}" -P "$VPS_PORT" "$ARCHIVE" "$REMOTE_TARGET:$REMOTE_ARCHIVE"
 retry_connection scp "${SSH_OPTIONS[@]}" -P "$VPS_PORT" "$SSH_DIR/release.sha256" "$REMOTE_TARGET:$REMOTE_CHECKSUM"
 
-retry_connection ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" \
+ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" \
   "sudo -n /usr/local/sbin/aurevia-deploy '$DEPLOY_ENVIRONMENT' '$REMOTE_ARCHIVE' '$REVISION'"
