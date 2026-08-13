@@ -9,7 +9,7 @@ The project uses the Next.js App Router, React Server Components, TypeScript, lo
 - Next.js 16.3.0
 - React 19.2.8
 - TypeScript
-- Global company design tokens plus scoped CSS Modules; no runtime CSS library
+- Tailwind CSS 4 with CSS-first theme tokens and a minimal global base layer
 - Sharp for self-hosted image optimization and the included WebP conversion script
 - Node.js 24 LTS on the VPS
 - Nginx and PM2 on the live VPS; Caddy and a standalone systemd unit are available for a future migration
@@ -30,6 +30,11 @@ public/media/              WebP game and admin screenshots
 scripts/                   Image optimization and release packaging
 ops/                       Caddy, systemd and VPS deployment files
 ```
+
+Component styling uses colocated Tailwind utilities. `src/app/globals.css`
+contains only the Tailwind import, shared design tokens, base element defaults,
+and the global scroll-reveal behavior. Tailwind 4 discovers source classes
+automatically, so the project does not require a `tailwind.config.js` file.
 
 ## Local development
 

@@ -4,7 +4,6 @@ import { PlatformHeroSection } from "@/components/platforms/platform-hero-sectio
 import { PlatformIntegrationsSection } from "@/components/platforms/platform-integrations-section";
 import { PlatformModulesSection } from "@/components/platforms/platform-modules-section";
 import { PlatformRtpSection } from "@/components/platforms/platform-rtp-section";
-import styles from "@/components/platforms/platforms-page.module.css";
 import { siteContent } from "@/content/site-content";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -14,14 +13,14 @@ export default function CasinoPlatformsPage() {
   const { platformPage } = siteContent;
 
   return (
-    <main id="main-content" className={styles.page}>
+    <main id="main-content" className="overflow-hidden bg-canvas">
       <PlatformHeroSection content={platformPage.hero} />
       <PlatformModulesSection content={platformPage.modules} />
       <PlatformAdminSection content={platformPage.admin} />
       <PlatformRtpSection content={platformPage.rtp} />
       <PlatformIntegrationsSection content={platformPage.integrations} />
       <HomeCtaSection
-        className={styles.ctaSection}
+        className="bg-[#0d1117]"
         content={platformPage.cta}
       />
     </main>

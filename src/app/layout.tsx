@@ -81,7 +81,10 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className={`${manrope.variable} ${sora.variable}`}>
-        <a className="skip-link" href="#main-content">
+        <a
+          className="fixed top-3 left-3 z-1000 -translate-y-[160%] rounded-lg bg-gold-soft px-3.5 py-2.5 text-[#100a06] focus:translate-y-0"
+          href="#main-content"
+        >
           Skip to content
         </a>
         <JsonLd data={organizationJsonLd} />

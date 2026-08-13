@@ -13,13 +13,13 @@ export default function ServicesPage() {
   const { servicesPage } = siteContent;
 
   return (
-    <main id="main-content" className="services-page">
+    <main id="main-content" className="overflow-hidden bg-canvas">
       <ServicesHeroSection content={servicesPage.hero} />
 
-      <section className="services-offerings section--content-visibility">
+      <section className="section-space">
         <div className="container">
           <SectionHeading {...servicesPage.offerings.heading} />
-          <div className="services-offerings__grid">
+          <div className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-2">
             {servicesPage.offerings.items.map((service) => (
               <ServiceCard service={service} key={service.id} />
             ))}
@@ -30,7 +30,6 @@ export default function ServicesPage() {
       <ServicesProcessSection content={servicesPage.process} />
       <ServicesPrinciplesSection content={servicesPage.principles} />
       <HomeCtaSection
-        className="services-page__cta"
         content={servicesPage.cta}
       />
     </main>

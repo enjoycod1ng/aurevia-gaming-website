@@ -6,8 +6,6 @@ import { trackAnalyticsEvent } from "@/components/analytics/analytics-consent";
 import { TurnstileWidget } from "@/components/security/turnstile-widget";
 import type { ContactStatusMessage, SiteContent } from "@/types/content";
 
-import styles from "./contact-page.module.css";
-
 type ContactFormContent = SiteContent["contactPage"]["form"];
 
 interface ContactFormProps {
@@ -18,14 +16,14 @@ interface ContactFormProps {
 
 function getStatusToneClass(tone: ContactStatusMessage["tone"]) {
   if (tone === "success") {
-    return styles.statusSuccess;
+    return "border-success/35 bg-success/7 text-success";
   }
 
   if (tone === "warning") {
-    return styles.statusWarning;
+    return "border-warning/35 bg-warning/7 text-warning";
   }
 
-  return styles.statusError;
+  return "border-error/35 bg-error/7 text-error";
 }
 
 export function ContactForm({
@@ -107,13 +105,13 @@ export function ContactForm({
   };
 
   return (
-    <div className={styles.formPanel} id="quote-form">
-      <h2>{content.title}</h2>
-      <p className={styles.formDescription}>{content.description}</p>
+    <div className="scroll-mt-28 rounded-[26px] border border-line bg-[radial-gradient(circle_at_100%_100%,rgb(212_175_55/0.09),transparent_18rem),var(--color-surface)] p-5.5 shadow-panel sm:p-8.5" id="quote-form">
+      <h2 className="text-4xl uppercase">{content.title}</h2>
+      <p className="mt-3.5 max-w-130 text-sm leading-6 text-muted">{content.description}</p>
 
       {currentStatus ? (
         <div
-          className={`${styles.formStatus} ${getStatusToneClass(currentStatus.tone)}`}
+          className={`mt-5 rounded-[10px] border px-3.5 py-3 text-xs ${getStatusToneClass(currentStatus.tone)}`}
           role="status"
           aria-live="polite"
         >
@@ -123,12 +121,12 @@ export function ContactForm({
 
       <form
         ref={formRef}
-        className={styles.form}
+        className="mt-7 grid gap-5 [&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-line [&_input]:bg-canvas-soft [&_input]:text-ink [&_input]:transition [&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-line [&_select]:bg-canvas-soft [&_select]:text-ink [&_textarea]:w-full [&_textarea]:rounded-xl [&_textarea]:border [&_textarea]:border-line [&_textarea]:bg-canvas-soft [&_textarea]:text-ink"
         action="/api/contact"
         method="post"
         onSubmit={handleSubmit}
       >
-        <div className={styles.honeypot} aria-hidden="true">
+        <div className="absolute left-[-10000px] size-px overflow-hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
           <input
             id="website"
@@ -143,10 +141,11 @@ export function ContactForm({
           <input name="project" type="hidden" value={requestedProject} />
         ) : null}
 
-        <div className={styles.formRow}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 [&_label]:grid [&_label]:gap-2 [&_label>span]:text-xs [&_label>span]:font-bold [&_label>span]:tracking-[0.04em] [&_label>span]:text-ink-soft [&_label>span]:uppercase">
           <label>
             <span>{content.fields.name.label} *</span>
             <input
+              className="min-h-12.5 px-3.5 focus:border-gold-bright focus:outline-none focus:ring-3 focus:ring-gold-bright/13"
               name="name"
               type="text"
               autoComplete="name"
@@ -159,6 +158,7 @@ export function ContactForm({
           <label>
             <span>{content.fields.contact.label} *</span>
             <input
+              className="min-h-12.5 px-3.5 focus:border-gold-bright focus:outline-none focus:ring-3 focus:ring-gold-bright/13"
               name="contact"
               type="text"
               autoComplete="email"
@@ -170,10 +170,11 @@ export function ContactForm({
           </label>
         </div>
 
-        <div className={styles.formRow}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 [&_label]:grid [&_label]:gap-2 [&_label>span]:text-xs [&_label>span]:font-bold [&_label>span]:tracking-[0.04em] [&_label>span]:text-ink-soft [&_label>span]:uppercase">
           <label>
             <span>{content.fields.company.label}</span>
             <input
+              className="min-h-12.5 px-3.5 focus:border-gold-bright focus:outline-none focus:ring-3 focus:ring-gold-bright/13"
               name="company"
               type="text"
               autoComplete="organization"
@@ -184,6 +185,7 @@ export function ContactForm({
           <label>
             <span>{content.fields.targetMarket.label}</span>
             <input
+              className="min-h-12.5 px-3.5 focus:border-gold-bright focus:outline-none focus:ring-3 focus:ring-gold-bright/13"
               name="targetMarket"
               type="text"
               maxLength={160}
@@ -192,28 +194,29 @@ export function ContactForm({
           </label>
         </div>
 
-        <fieldset className={styles.projectTypes}>
-          <legend>{content.fields.projectTypeLabel} *</legend>
-          <div className={styles.projectTypeGrid}>
+        <fieldset className="min-w-0 border-0 p-0">
+          <legend className="mb-2 text-xs font-bold tracking-[0.04em] text-ink-soft uppercase">{content.fields.projectTypeLabel} *</legend>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
             {content.projectTypes.map((projectType) => (
-              <label key={projectType}>
+              <label className="relative cursor-pointer" key={projectType}>
                 <input
+                  className="peer absolute size-px opacity-0"
                   name="service"
                   type="radio"
                   value={projectType}
                   defaultChecked={projectType === selectedProject}
                   required
                 />
-                <span>{projectType}</span>
+                <span className="flex min-h-11 items-center justify-center rounded-[10px] border border-line bg-canvas-soft px-3 py-2 text-center text-xs font-semibold leading-4 text-muted peer-checked:border-gold peer-checked:bg-gold-bright/9 peer-checked:text-gold-bright peer-focus-visible:outline-3 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-gold-bright">{projectType}</span>
               </label>
             ))}
           </div>
         </fieldset>
 
-        <div className={styles.formRow}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 [&_label]:grid [&_label]:gap-2 [&_label>span]:text-xs [&_label>span]:font-bold [&_label>span]:tracking-[0.04em] [&_label>span]:text-ink-soft [&_label>span]:uppercase">
           <label>
             <span>{content.fields.budget.label}</span>
-            <select name="budget" defaultValue="">
+            <select className="min-h-12.5 px-3.5 focus:border-gold-bright focus:outline-none focus:ring-3 focus:ring-gold-bright/13" name="budget" defaultValue="">
               <option value="" disabled>
                 {content.fields.budget.placeholder}
               </option>
@@ -227,6 +230,7 @@ export function ContactForm({
           <label>
             <span>{content.fields.timeline.label}</span>
             <input
+              className="min-h-12.5 px-3.5 focus:border-gold-bright focus:outline-none focus:ring-3 focus:ring-gold-bright/13"
               name="timeline"
               type="text"
               maxLength={120}
@@ -235,9 +239,10 @@ export function ContactForm({
           </label>
         </div>
 
-        <label>
+        <label className="grid gap-2 [&>span]:text-xs [&>span]:font-bold [&>span]:tracking-[0.04em] [&>span]:text-ink-soft [&>span]:uppercase">
           <span>{content.fields.details.label} *</span>
           <textarea
+            className="min-h-28 resize-y px-3.5 py-3 focus:border-gold-bright focus:outline-none focus:ring-3 focus:ring-gold-bright/13"
             name="message"
             rows={5}
             minLength={20}
@@ -247,12 +252,12 @@ export function ContactForm({
           />
         </label>
 
-        <label className={styles.consent}>
-          <input name="consent" type="checkbox" value="accepted" required />
-          <span>{content.consentLabel}</span>
+        <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-2.5">
+          <input className="mt-px! size-4.5! min-h-0! accent-gold" name="consent" type="checkbox" value="accepted" required />
+          <span className="text-xs font-medium leading-5 text-muted">{content.consentLabel}</span>
         </label>
 
-        <div className={styles.turnstileField}>
+        <div className="grid gap-2">
           <TurnstileWidget
             onTokenChange={setTurnstileToken}
             resetSignal={resetSignal}
@@ -262,14 +267,14 @@ export function ContactForm({
             name="cf-turnstile-response"
             value={turnstileToken ?? ""}
           />
-          <small>
+          <small className="text-[0.72rem] leading-5 text-muted">
             Protected by Cloudflare Turnstile. Verification tokens are checked
             by our server and cannot be reused.
           </small>
         </div>
 
         <button
-          className={`button button--primary ${styles.submitButton}`}
+          className="mt-px inline-flex min-h-13 w-full cursor-pointer items-center justify-center rounded-xl border border-transparent bg-linear-to-br from-gold-bright to-gold px-6 font-bold text-[#1b0c03] disabled:cursor-not-allowed disabled:opacity-55"
           type="submit"
           disabled={!turnstileToken || isSubmitting}
         >

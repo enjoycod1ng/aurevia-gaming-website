@@ -13,7 +13,7 @@ export default function HomePage() {
   const { home } = siteContent;
 
   return (
-    <main id="main-content" className="home-page">
+    <main id="main-content" className="overflow-hidden">
       <HomeHeroSection content={home.hero} />
       <HomeServicesSection content={home.services} />
       <HomeDemosSection content={home.demos} />

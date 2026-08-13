@@ -18,10 +18,10 @@ export function MediaFrame({
   className = "",
 }: MediaFrameProps) {
   return (
-    <figure className={`media-frame ${className}`.trim()}>
-      <div className="media-frame__inner">
+    <figure className={`relative mb-0 ${className}`.trim()}>
+      <div className="relative overflow-hidden rounded-panel border border-gold-bright/25 bg-canvas-soft leading-none shadow-panel">
         <Image
-          className="media-frame__image"
+          className="block h-auto w-full"
           src={image.src}
           alt={image.alt}
           width={image.width}
@@ -32,7 +32,7 @@ export function MediaFrame({
         />
       </div>
       {showCaption && image.caption ? (
-        <figcaption className="media-frame__caption">
+        <figcaption className="mt-2.5 text-xs text-muted">
           {image.caption}
         </figcaption>
       ) : null}

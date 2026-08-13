@@ -11,7 +11,6 @@ export function CookiePreferencesButton() {
 
   return (
     <button
-      className="site-footer__preferences"
       type="button"
       onClick={openCookiePreferences}
     >

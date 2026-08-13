@@ -1,6 +1,5 @@
 import { ContactBriefSection } from "@/components/contact/contact-brief-section";
 import { ContactHeroSection } from "@/components/contact/contact-hero-section";
-import styles from "@/components/contact/contact-page.module.css";
 import { ContactProcessSection } from "@/components/contact/contact-process-section";
 import { ContactScopeSection } from "@/components/contact/contact-scope-section";
 import { HomeCtaSection } from "@/components/home/home-cta-section";
@@ -31,7 +30,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
   const requestedProject = params.project?.slice(0, 120) ?? "";
 
   return (
-    <main id="main-content" className={styles.page}>
+    <main id="main-content" className="bg-canvas">
       <ContactHeroSection
         contact={contact}
         content={contactPage}
@@ -42,7 +41,6 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
       <ContactProcessSection content={contactPage.process} />
       <ContactBriefSection content={contactPage.brief} />
       <HomeCtaSection
-        className={styles.ctaSection}
         content={contactPage.cta}
       />
     </main>
