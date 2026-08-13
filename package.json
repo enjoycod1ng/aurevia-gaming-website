@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run lint && npm run build",
     "images:optimize": "node scripts/optimize-images.mjs",
+    "release:package": "bash scripts/package-release.sh",
     "release": "bash scripts/build-release.sh"
   },
   "dependencies": {

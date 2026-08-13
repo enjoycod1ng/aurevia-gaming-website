@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const isProduction = process.env.NODE_ENV === "production";
+const isStaging = process.env.APP_ENV === "staging";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -32,6 +33,15 @@ const securityHeaders = [
     value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
   },
 ];
+
+const stagingHeaders = isStaging
+  ? [
+      {
+        key: "X-Robots-Tag",
+        value: "noindex, nofollow, noarchive",
+      },
+    ]
+  : [];
 
 const staticDocumentPaths = [
   "/",
@@ -75,7 +85,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        headers: securityHeaders,
+        headers: [...securityHeaders, ...stagingHeaders],
       },
       ...staticDocumentHeaders,
       {

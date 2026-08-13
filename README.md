@@ -182,6 +182,14 @@ Or run all three:
 npm run check
 ```
 
+## Automated deployments
+
+Pull requests merge into `dev`, which deploys to the Access-protected staging
+site. A successful staging deployment creates or updates the `dev` to `master`
+promotion pull request and enables auto-merge; production deploys only after
+the required owner approval. See [`ops/AUTO-DEPLOY.md`](ops/AUTO-DEPLOY.md) for
+the complete GitHub, VPS, Nginx and Cloudflare setup.
+
 ## Create a VPS release
 
 ```bash
