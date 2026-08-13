@@ -91,37 +91,37 @@ jobs:
             --json number \
             --jq '.[0].number // empty')"
 
-          if [[ -z "$pul_number" ]]; then
+          if [[ -z "$pull_number" ]]; then
             pull_url="$(gh pr create \
               --repo "$repository" \
               --base master \
               --head dev \
               --title "chore: promote dev to production" \
-              --body "Automated production promotion after the staging deployment for \`'$GITHUB_SHA\`' passed.")"
+              --body "Automated production promotion after the staging deployment for \`$GITHUB_SHA\` passed.")"
             pull_number="${pull_url##*/}"
-        fi
+          fi
 
-        details="$(gh pr view "$pull_number" \
+          details="$(gh pr view "$pull_number" \
             --repo "$repository" \
             --json baseRefName,headRefName,isCrossRepository \
             --jq '[.baseRefName, .headRefName, .isCrossRepository] | @tsv')"
-        IFS=$'\t' read -r base_ref head_ref cross_repository <<< "$details"
+          IFS=$'\t' read -r base_ref head_ref cross_repository <<< "$details"
 
-        if [[ "$base_ref" != "master" || "$head_ref" != "dev" || "$cross_repository" != "false" ]]; then
-          echo "Promotion PR must be same-repository dev -> master." >&2
-          exit 1
-        fi
+          if [[ "$base_ref" != "master" || "$head_ref" != "dev" || "$cross_repository" != "false" ]]; then
+            echo "Promotion PR must be same-repository dev -> master." >&2
+            exit 1
+          fi
 
-        gh api \
-          --method POST \
-          "repos/$repository/statuses/$GITHUB_SHA" \
-          -f state=success \
-          -f context='policy/dev-to-master' \
-          -f description='Commit deployed successfully from dev to staging' \
-          -f target_url="$GITHUB_SERVER_URL/$repository/actions/runs/$GITHUB_RUN_ID" \
-          >/dev/null
+          gh api \
+            --method POST \
+            "repos/$repository/statuses/$GITHUB_SHA" \
+            -f state=success \
+            -f context='policy/dev-to-master' \
+            -f description='Commit deployed successfully from dev to staging' \
+            -f target_url="$GITHUB_SERVER_URL/$repository/actions/runs/$GITHUB_RUN_ID" \
+            >/dev/null
 
-        echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
+            echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
 
       - name: Write promotion summary
         run: |
