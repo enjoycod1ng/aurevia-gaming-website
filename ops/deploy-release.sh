@@ -57,6 +57,8 @@ fi
 
 WORK_DIR="$(mktemp -d /var/tmp/aurevia-deploy.XXXXXX)"
 ARCHIVE="$WORK_DIR/release.tar.gz"
+chown root:deploy "$WORK_DIR"
+chmod 0750 "$WORK_DIR"
 
 cleanup() {
   rm -f -- "$ARCHIVE_SOURCE" "$CHECKSUM_SOURCE"
@@ -102,7 +104,6 @@ esac
 APP_USER="deploy"
 APP_GROUP="deploy"
 APP_HOME="$(getent passwd "$APP_USER" | cut -d: -f6)"
-PM2_BIN="$(command -v pm2 || true)"
 RELEASES_ROOT="$APP_ROOT/releases"
 CURRENT_LINK="$APP_ROOT/current"
 LOCK_FILE="/run/lock/aurevia-${DEPLOY_ENVIRONMENT}.lock"
@@ -115,10 +116,25 @@ if [[ -z "$APP_HOME" || ! -d "$APP_HOME" ]]; then
   exit 1
 fi
 
+PM2_BIN="$(runuser -u "$APP_USER" -- env HOME="$APP_HOME" bash -lc '
+  if command -v pm2 >/dev/null 2>&1; then
+    command -v pm2
+    exit 0
+  fi
+
+  if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
+    source "$HOME/.nvm/nvm.sh"
+    nvm use --silent default >/dev/null 2>&1 || true
+    command -v pm2
+  fi
+' || true)"
+
 if [[ -z "$PM2_BIN" ]]; then
-  echo "pm2 is not installed or not available in root's PATH." >&2
+  echo "pm2 is not installed or not available in $APP_USER's login PATH." >&2
   exit 1
 fi
+
+PM2_BIN_DIR="$(dirname "$PM2_BIN")"
 
 if [[ ! -f "$ENV_FILE" ]]; then
   echo "Missing runtime environment file: $ENV_FILE" >&2
@@ -152,6 +168,7 @@ chown -R "$APP_USER:$APP_GROUP" "$RELEASE_DIR"
 run_pm2() {
   runuser -u "$APP_USER" -- env \
     HOME="$APP_HOME" \
+    PATH="$PM2_BIN_DIR:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
     NODE_ENV=production \
     HOSTNAME=127.0.0.1 \
     PORT="$PORT" \
