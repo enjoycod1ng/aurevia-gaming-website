@@ -181,14 +181,14 @@ restart_release() {
   local revision="$1"
 
   if run_pm2 "$revision" describe "$PROCESS_NAME" >/dev/null 2>&1; then
-    run_pm2 "$revision" restart "$PROCESS_NAME" --update-env || return 1
-  else
-    run_pm2 "$revision" start "$CURRENT_LINK/server.js" \
-      --name "$PROCESS_NAME" \
-      --cwd "$CURRENT_LINK" \
-      --node-args="--env-file=$ENV_FILE" \
-      --time || return 1
+    run_pm2 "$revision" delete "$PROCESS_NAME" || return 1
   fi
+
+  run_pm2 "$revision" start "$CURRENT_LINK/server.js" \
+    --name "$PROCESS_NAME" \
+    --cwd "$CURRENT_LINK" \
+    --node-args="--env-file=$ENV_FILE" \
+    --time || return 1
 
   run_pm2 "$revision" save || return 1
 }
