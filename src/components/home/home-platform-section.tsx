@@ -1,5 +1,5 @@
 import { ButtonLink } from "@/components/button-link";
-import { OperatorDashboard } from "@/components/home/operator-dashboard";
+import { AnalyticsPreview } from "@/components/platforms/analytics-preview";
 import type { SiteContent } from "@/types/content";
 
 type HomePlatformContent = SiteContent["home"]["platform"];
@@ -43,7 +43,7 @@ export function HomePlatformSection({
             ))}
           </ul>
         </div>
-        <OperatorDashboard content={content.dashboard} />
+        <AnalyticsPreview image={content.dashboard} compact />
       </div>
     </section>
   );

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aurevia Admin Analytics — Sample Data</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; width: 1440px; height: 1120px; background: #0d1118; color: #edf0f5; font: 14px Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    .app { display: grid; grid-template-columns: 208px 1fr; height: 100%; }
+    aside { padding: 30px 18px; background: #090d13; border-right: 1px solid #242c38; display: flex; flex-direction: column; }
+    .brand { display: flex; gap: 12px; align-items: center; margin: 0 10px 42px; }
+    .monogram { background: #d9b94e; color: #17130b; border-radius: 11px; height: 38px; width: 38px; display: grid; place-items: center; font-size: 24px; font-weight: 800; }
+    .brand b { letter-spacing: 2px; font-size: 15px; }
+    .brand small { display: block; margin-top: 6px; color: #8f9bad; font-size: 10px; letter-spacing: 1.8px; }
+    .nav-label { margin: 0 14px 14px; color: #637186; font-size: 10px; letter-spacing: 1.8px; font-weight: 700; }
+    nav { display: grid; gap: 7px; }
+    .nav-item { display: flex; align-items: center; gap: 13px; padding: 14px; color: #a0adbd; border-radius: 8px; font-size: 12px; }
+    .nav-item svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    .nav-item.selected { color: #e4c764; background: #282315; border: 1px solid #4f4120; }
+    .nav-item .count { margin-left: auto; background: #222c39; color: #bac5d3; border-radius: 4px; padding: 2px 5px; font-size: 10px; }
+    .side-bottom { margin-top: auto; padding: 18px 12px 0; border-top: 1px solid #242c38; }
+    .side-bottom p { margin: 0 0 7px; font-size: 12px; }
+    .side-bottom small { color: #8f9bad; font-size: 11px; line-height: 1.7; }
+    .dot { width: 6px; height: 6px; background: #57c99c; border-radius: 50%; display: inline-block; margin-right: 7px; }
+    main { min-width: 0; }
+    .topbar { height: 69px; border-bottom: 1px solid #242c38; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; }
+    .crumb { color: #8f9bad; font-size: 12px; }
+    .crumb strong { color: #d8dfe8; font-weight: 400; }
+    .pill { border: 1px solid #524521; background: #282315; color: #e4c764; border-radius: 5px; font-size: 10px; letter-spacing: 1px; padding: 7px 10px; font-weight: 700; }
+    .identity { display: flex; gap: 18px; align-items: center; color: #a0adbd; font-size: 12px; }
+    .avatar { border-radius: 50%; background: #243041; width: 29px; height: 29px; display: grid; place-items: center; font-size: 10px; color: #ccd8e7; }
+    .content { padding: 27px 30px 20px; }
+    .heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    h1 { font-size: 28px; letter-spacing: -.6px; margin: 0 0 9px; font-weight: 600; }
+    .muted { color: #8f9bad; }
+    .heading p { margin: 0; font-size: 12px; color: #8f9bad; }
+    .filters { display: flex; gap: 9px; align-items: center; }
+    .filter { border: 1px solid #303b4b; border-radius: 6px; background: #151c26; padding: 10px 12px; color: #b7c2d0; font-size: 11px; }
+    .filter b { color: #e4c764; font-weight: 400; margin-left: 12px; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .kpi { background: #151c26; border: 1px solid #293443; border-radius: 10px; padding: 20px; height: 128px; }
+    .kpi.accent { background: linear-gradient(115deg, #242318, #181d23); border-color: #665426; }
+    .kpi label { color: #a8b4c4; font-size: 11px; display: block; }
+    .kpi strong { font-size: 29px; letter-spacing: -.8px; display: block; margin: 12px 0 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .kpi.accent strong { color: #e4c764; }
+    .kpi small { font-size: 10px; color: #8292a7; }
+    .kpi .positive { color: #69d4aa; }
+    .middle { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .panel { border: 1px solid #293443; background: #111822; border-radius: 10px; overflow: hidden; }
+    .panel-heading { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 0; }
+    h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -.1px; }
+    .panel-heading small { color: #8797ac; font-size: 10px; }
+    .chart { height: 213px; padding: 22px 22px 14px; }
+    .chart svg { width: 100%; height: 100%; overflow: visible; }
+    .chart text { font: 10px Arial, sans-serif; fill: #8596ad; }
+    .bridge { padding: 18px 20px; }
+    .bridge-row { display: flex; justify-content: space-between; margin-bottom: 9px; font-size: 12px; color: #a8b4c4; }
+    .bridge-row strong { color: #e5ebf3; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .track { height: 5px; background: #263240; border-radius: 3px; overflow: hidden; margin-bottom: 17px; }
+    .track i { display: block; height: 100%; border-radius: 3px; }
+    .bridge-note { border-top: 1px solid #263240; padding-top: 12px; font-size: 10px; color: #8292a7; }
+    .table-panel { margin-bottom: 20px; }
+    .table-panel .panel-heading { padding-bottom: 17px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+    th { text-align: right; background: #171f2b; color: #91a1b7; padding: 12px 16px; font-size: 10px; font-weight: 500; border-top: 1px solid #293443; border-bottom: 1px solid #293443; }
+    th:first-child, td:first-child { text-align: left; padding-left: 20px; }
+    td { padding: 16px; text-align: right; border-bottom: 1px solid #222d3b; color: #cdd7e5; }
+    tr:last-child td { border-bottom: 0; }
+    .client { display: flex; align-items: center; gap: 11px; }
+    .client-icon { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; color: #e4c764; background: #30291a; font-size: 11px; }
+    .client small { display: block; margin-top: 4px; color: #7f91a8; font-size: 10px; }
+    .share { color: #e4c764; }
+    .net { color: #6bd2ab; }
+    .table-foot { padding: 12px 20px; border-top: 1px solid #293443; display: flex; justify-content: space-between; color: #8c9cb0; font-size: 10px; }
+    .bottom { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; }
+    .games { display: flex; gap: 14px; padding: 18px 20px; }
+    .game { display: flex; align-items: center; gap: 11px; flex: 1; }
+    .game img { width: 58px; height: 42px; object-fit: cover; border-radius: 5px; }
+    .game strong { display: block; font-size: 11px; font-weight: 500; margin-bottom: 5px; }
+    .game small { font-size: 10px; color: #8a9ab0; }
+    .settlement { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 18px 20px; }
+    .settlement strong { display: block; color: #6bd2ab; font-size: 22px; font-weight: 500; margin-bottom: 7px; }
+    .settlement small { color: #8a9ab0; font-size: 10px; }
+    footer { margin-top: 19px; color: #78899e; font-size: 10px; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand"><span class="monogram">A</span><div><b>AUREVIA</b><small>ADMIN ANALYTICS</small></div></div>
+      <p class="nav-label">WORKSPACE</p>
+      <nav aria-label="Preview navigation">
+        <span class="nav-item selected"><svg viewBox="0 0 20 20"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="12" y="2" width="6" height="6" rx="1"/><rect x="2" y="12" width="6" height="6" rx="1"/><rect x="12" y="12" width="6" height="6" rx="1"/></svg>Overview</span>
+        <span class="nav-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="6" r="3"/><path d="M3 18v-2a7 7 0 0 1 14 0v2"/></svg>API clients <span class="count">3</span></span>
+        <span class="nav-item"><svg viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="13" rx="2"/><path d="M12 9h6v4h-6zM4 4V2h11"/></svg>Wallet balances</span>
+        <span class="nav-item"><svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="3"/><path d="M7 7h.01M13 7h.01M10 10h.01M7 13h.01M13 13h.01" stroke-linecap="round" stroke-width="2.5"/></svg>Game catalog <span class="count">9</span></span>
+        <span class="nav-item"><svg viewBox="0 0 20 20"><path d="M2 6h15l-4-4M18 14H3l4 4"/></svg>Transactions</span>
+        <span class="nav-item"><svg viewBox="0 0 20 20"><path d="M3 17V9M9 17V3M15 17V6" stroke-width="3"/></svg>Client results</span>
+        <span class="nav-item"><svg viewBox="0 0 20 20"><path d="M3 15l5-5 3 3 6-8M12 5h5v5"/></svg>Revenue share</span>
+        <span class="nav-item"><svg viewBox="0 0 20 20"><path d="M10 2l7 3v5c0 4-7 8-7 8S3 14 3 10V5zM7 9l2 2 4-4"/></svg>Settlement</span>
+      </nav>
+      <div class="side-bottom"><p><span class="dot"></span>Preview workspace</p><small>Illustrative clients &amp; figures<br>EUR reporting currency</small></div>
+    </aside>
+    <main>
+      <div class="topbar"><span class="crumb">Workspace &nbsp; / &nbsp; <strong>Overview</strong></span><div class="identity"><span class="pill">DESIGN PREVIEW · SAMPLE DATA</span><span>Administrator</span><span class="avatar">AG</span></div></div>
+      <div class="content">
+        <header class="heading"><div><h1>Business overview</h1><p>Client performance and your revenue, in one place.</p></div><div class="filters"><span class="filter">All clients <b>⌄</b></span><span class="filter">07–13 Sep 2026 <b>⌄</b></span><span class="filter">EUR <b>⌄</b></span></div></header>
+        <div class="kpis">
+          <div class="kpi"><label>Client wallet balances</label><strong id="wallet-total"></strong><small>Combined snapshot · 3 sample clients</small></div>
+          <div class="kpi"><label>Settled bets</label><strong id="bets-total"></strong><small>Selected reporting period</small></div>
+          <div class="kpi"><label>Client gross gaming revenue</label><strong id="ggr-total"></strong><small>Bets minus payouts</small></div>
+          <div class="kpi accent"><label>Aurevia revenue share</label><strong id="share-total"></strong><small class="positive">Before operating costs &amp; taxes</small></div>
+        </div>
+        <div class="middle">
+          <section class="panel"><div class="panel-heading"><h2>Aurevia revenue trend</h2><small>Daily revenue share · EUR</small></div><div class="chart"><svg viewBox="0 0 640 170" role="img" aria-label="Sample daily revenue share increasing from 870 to 1,748 euros"><defs><linearGradient id="bar" x2="0" y2="1"><stop stop-color="#e1c366"/><stop offset="1" stop-color="#997930"/></linearGradient></defs><g stroke="#26313f" stroke-dasharray="3 5"><path d="M42 12H633M42 61H633M42 110H633M42 140H633"/></g><text x="0" y="16">2,000</text><text x="0" y="65">1,250</text><text x="6" y="114">500</text><g id="revenue-bars"></g></svg></div></section>
+          <section class="panel"><div class="panel-heading"><h2>Result breakdown</h2><small>Selected period</small></div><div class="bridge"><div class="bridge-row"><span>Client GGR</span><strong id="bridge-ggr"></strong></div><div class="track"><i style="width:100%;background:#6f91ba"></i></div><div class="bridge-row"><span>Aurevia revenue share</span><strong id="bridge-share"></strong></div><div class="track"><i id="share-bar" style="background:#d9b94e"></i></div><div class="bridge-row"><span>Client result after share</span><strong id="bridge-net"></strong></div><div class="track"><i id="net-bar" style="background:#59bd98"></i></div><div class="bridge-note">Client GGR = Aurevia share + client result after share</div></div></section>
+        </div>
+        <section class="panel table-panel"><div class="panel-heading"><h2>Client balance &amp; performance</h2><small>3 sample clients · All amounts in EUR</small></div><table><thead><tr><th>Client</th><th>Wallet balance</th><th>Settled bets</th><th>Payouts</th><th>Client GGR</th><th>Aurevia share</th><th>Client result</th></tr></thead><tbody id="clients"></tbody></table><div class="table-foot"><span>Wallet balances are a snapshot. Financial results cover the selected period.</span><span>Client result = GGR − revenue share</span></div></section>
+        <div class="bottom">
+          <section class="panel"><div class="panel-heading"><h2>Connected game catalog</h2><small>Play’n GO · 9 prepared games</small></div><div class="games"><div class="game"><img src="../../public/media/games/wildframes.webp" alt="Wild Frames"><div><strong>Wild Frames</strong><small>Grid slot</small></div></div><div class="game"><img src="../../public/media/games/honeyrush.webp" alt="Honey Rush"><div><strong>Honey Rush</strong><small>Grid slot</small></div></div><div class="game"><img src="../../public/media/games/moonprincess.webp" alt="Moon Princess"><div><strong>Moon Princess</strong><small>Grid slot</small></div></div></div></section>
+          <section class="panel"><div class="panel-heading"><h2>Settlement snapshot</h2><small>Sample state</small></div><div class="settlement"><div><strong>0</strong><small>Pending callbacks</small></div><div><strong>0</strong><small>Unresolved rounds</small></div></div></section>
+        </div>
+        <footer><span>AUREVIA GAMING / ADMIN ANALYTICS</span><span>Design preview · Illustrative data, not live client accounts or financial results</span></footer>
+      </div>
+    </main>
+  </div>
+  <script>
+    // Integer cents keep the sample ledger internally consistent. These are fictional clients.
+    const clients = [
+      { name: 'Client A', wallet: 12845000, bets: 51840000, payouts: 49248000, sharePercent: 20 },
+      { name: 'Client B', wallet: 9620000, bets: 34760000, payouts: 33369600, sharePercent: 15 },
+      { name: 'Client C', wallet: 6490000, bets: 19800000, payouts: 18909000, sharePercent: 18 },
+    ].map(c => ({ ...c, ggr: c.bets - c.payouts, share: Math.round((c.bets - c.payouts) * c.sharePercent / 100) }));
+    const money = cents => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format(cents / 100);
+    const number = cents => new Intl.NumberFormat('en-IE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(cents / 100);
+    const sum = key => clients.reduce((total, c) => total + c[key], 0);
+    for (const [id, amount] of Object.entries({ 'wallet-total':sum('wallet'), 'bets-total':sum('bets'), 'ggr-total':sum('ggr'), 'share-total':sum('share'), 'bridge-ggr':sum('ggr'), 'bridge-share':sum('share'), 'bridge-net':sum('ggr')-sum('share') })) document.getElementById(id).textContent = money(amount);
+    document.getElementById('share-bar').style.width = `${sum('share')/sum('ggr')*100}%`;
+    document.getElementById('net-bar').style.width = `${(sum('ggr')-sum('share'))/sum('ggr')*100}%`;
+    document.getElementById('clients').innerHTML = clients.map((c,i) => `<tr><td><div class="client"><span class="client-icon">0${i+1}</span><div>${c.name}<small>Sample · ${c.sharePercent}% revenue share</small></div></div></td><td>${number(c.wallet)}</td><td>${number(c.bets)}</td><td>${number(c.payouts)}</td><td>${number(c.ggr)}</td><td class="share">${number(c.share)}</td><td class="net">${number(c.ggr-c.share)}</td></tr>`).join('');
+    const dailyShare = [87000,112000,104000,128000,132500,149000,174840];
+    if (dailyShare.reduce((a,b)=>a+b,0) !== sum('share')) throw new Error('Sample chart must reconcile with the client table.');
+    document.getElementById('revenue-bars').innerHTML = dailyShare.map((c,i) => `<rect x="${63+i*82}" y="${140-c/200000*128}" width="38" height="${c/200000*128}" rx="4" fill="url(#bar)"/><text x="${82+i*82}" y="162" text-anchor="middle">${7+i} Sep</text>`).join('');
+  </script>
+</body>
+</html>

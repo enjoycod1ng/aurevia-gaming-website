@@ -90,7 +90,7 @@ try {
     assert.equal(response.status, 200, `Missing release asset: ${asset}`);
     await response.arrayBuffer();
   }
-  const image = await get("/_next/image?url=%2Fmedia%2Fservices%2Fslot-development.webp&w=384&q=80", {
+  const image = await get("/_next/image?url=%2Fmedia%2Fgames%2Fwildframes.webp&w=384&q=80", {
     headers: { Accept: "image/webp" },
   });
   assert.equal(image.status, 200, "Native Sharp image optimization");

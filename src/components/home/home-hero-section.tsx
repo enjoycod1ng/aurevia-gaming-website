@@ -1,5 +1,5 @@
 import { ButtonLink } from "@/components/button-link";
-import { HeroProductMockup } from "@/components/home/hero-product-mockup";
+import { GamePreview } from "@/components/games/game-preview";
 import type { SiteContent } from "@/types/content";
 
 type HomeHeroContent = SiteContent["home"]["hero"];
@@ -39,7 +39,7 @@ export function HomeHeroSection({ content }: { content: HomeHeroContent }) {
             ))}
           </div>
         </div>
-        <HeroProductMockup content={content.mockup} />
+        <GamePreview content={content.showcase} />
       </div>
     </section>
   );

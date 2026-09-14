@@ -1,3 +1,5 @@
+import { gameShowcase, preparedGames } from "@/content/prepared-games";
+import { analyticsPreviewImage } from "@/content/platform-preview";
 import type { SiteContent } from "@/types/content";
 
 const siteUrl = (process.env.SITE_URL ?? "https://aureviagaming.com").replace(
@@ -34,7 +36,7 @@ export const siteContent = {
     home: {
       title: "Casino Game Development Agency",
       description:
-        "Aurevia Gaming develops slot and betting games, casino websites, mobile experiences and operator admin platforms with source-code ownership and configurable RTP controls.",
+        "Aurevia Gaming builds casino websites, game API integrations and admin analytics platforms. Explore nine prepared Play’n GO titles in our integration sandbox.",
       path: "/",
       keywords: [
         "casino game development",
@@ -60,20 +62,19 @@ export const siteContent = {
     games: {
       title: "Games",
       description:
-        "Explore Aurevia Gaming concepts for premium slots, crash games, instant-win formats and table-inspired casino experiences.",
+        "Explore nine prepared Play’n GO games in Aurevia’s API integration sandbox, with real game artwork and simulated client wallets.",
       path: "/games",
       keywords: [
-        "casino game development",
-        "slot game portfolio",
-        "casino game portfolio",
-        "crash game development",
-        "custom casino games",
+        "Play’n GO API integration",
+        "casino game integration",
+        "game integration sandbox",
+        "casino game catalog"
       ],
     },
     platforms: {
       title: "Casino Platforms",
       description:
-        "Build a tailored casino platform with player management, games, reporting, payments, promotions, RTP controls and operational dashboards.",
+        "Plan a multi-client game API analytics platform with wallet balances, bets, payouts, client results and Aurevia revenue reporting.",
       path: "/casino-platforms",
       keywords: [
         "casino platform development",
@@ -99,9 +100,9 @@ export const siteContent = {
     hero: {
       label: "Casino-tech studio",
       title: "Casino games",
-      highlightedTitle: "built to win",
+      highlightedTitle: "connected.",
       description:
-        "Aurevia Gaming designs and develops high-performance slot, betting and casino products for web and mobile — with precise RTP control and complete source-code ownership.",
+        "Game integrations, casino websites and admin analytics — built around your clients, their wallets and your business. Explore our prepared Play’n GO game catalog.",
       primaryAction: {
         label: "Request a Quote",
         href: "/contact",
@@ -112,32 +113,20 @@ export const siteContent = {
       },
       detailsAriaLabel: "Aurevia delivery highlights",
       details: [
-        { label: "RTP CONTROL", value: "Configurable RTP" },
-        { label: "FULL OWNERSHIP", value: "Source code included" },
-        { label: "API READY", value: "Casino integration" },
+        {
+          "label": "9 PREPARED GAMES",
+          "value": "Play’n GO catalog"
+        },
+        {
+          "label": "WALLET API",
+          "value": "Client-owned balances"
+        },
+        {
+          "label": "ADMIN ANALYTICS",
+          "value": "Clear business results"
+        }
       ],
-      mockup: {
-        ariaLabel: "Golden Fortune game overview",
-        title: "Golden Fortune",
-        subtitle: "Mega win",
-        reels: [
-          { symbol: "7" },
-          { symbol: "\u2605" },
-          { symbol: "\u25A0" },
-          { symbol: "\u265B" },
-          { symbol: "BAR", active: true },
-          { symbol: "7" },
-          { symbol: "\u25A0" },
-          { symbol: "\u2605" },
-          { symbol: "\u265B" },
-        ],
-        jackpotLabel: "Jackpot",
-        jackpotValue: "$128,450.00",
-        metrics: [
-          { label: "RTP profile", value: "96.20%", progress: 80 },
-          { label: "Live players", value: "18,426", change: "+12.8%" },
-        ],
-      },
+      showcase: gameShowcase,
     },
     services: {
       heading: {
@@ -183,11 +172,11 @@ export const siteContent = {
         {
           number: "04",
           icon: "controls",
-          title: "Admin & RTP Control",
+          title: "Admin & API Analytics",
           description:
-            "Powerful management panels for games, users, transactions, bonuses, analytics and RTP profiles.",
+            "Clear reporting for API clients, wallet balances, game results, transactions and revenue share.",
           action: {
-            label: "Explore Admin & RTP Control",
+            label: "Explore Admin & API Analytics",
             href: "/services#admin-platforms",
           },
         },
@@ -195,117 +184,27 @@ export const siteContent = {
     },
     demos: {
       heading: {
-        label: "Demo-ready games",
-        title: "Showcase the experience",
-        description:
-          "Present playable concepts with polished visuals, responsive controls and operator-ready integration points.",
+        label: "Prepared game catalog",
+        title: "Real games. Connected through our API.",
+        description: "Explore Play’n GO titles from our integration sandbox. Open the lobby, select a game and try it with a simulated wallet. Aurevia provides the integration layer; game titles and artwork belong to their respective owners.",
       },
-      items: [
-        {
-          title: "Fortune Vault",
-          description: "Classic slots \u00B7 96.2% RTP",
-          symbol: "7",
-          theme: "fortune",
-          primaryAction: { label: "Play Demo", href: "/games#fortune-vault" },
-          secondaryAction: {
-            label: "View Details",
-            href: "/games#fortune-vault",
-          },
-        },
-        {
-          title: "Neon Rush",
-          description: "Crash game \u00B7 Real-time",
-          symbol: "\u00D7",
-          theme: "neon",
-          primaryAction: { label: "Play Demo", href: "/games#neon-rush" },
-          secondaryAction: { label: "View Details", href: "/games#neon-rush" },
-        },
-        {
-          title: "Royal Reels",
-          description: "Premium slots \u00B7 Bonus rounds",
-          symbol: "\u265B",
-          theme: "royal",
-          primaryAction: { label: "Play Demo", href: "/games#royal-reels" },
-          secondaryAction: {
-            label: "View Details",
-            href: "/games#royal-reels",
-          },
-        },
-      ],
+      items: preparedGames.slice(0, 3),
     },
     platform: {
       heading: {
-        label: "Operator control",
-        title: "One platform.",
-        description:
-          "Manage games, players, RTP profiles, payments, bonuses and performance analytics from one secure administrative workspace.",
+        "label": "Admin analytics",
+        "title": "Every client.",
+        "description": "A clear view of client wallet balances, betting results and your revenue share across API-integrated games. Explore our analytics platform design."
       },
-      highlightedTitle: "Total visibility.",
+      highlightedTitle: "One clear picture.",
       action: { label: "Explore Casino Platforms", href: "/casino-platforms" },
       features: [
-        "Real-time dashboards",
-        "RTP profile management",
-        "Player & wallet controls",
-        "Campaign and bonus tools",
+        "Balances by client and currency",
+        "Bets, payouts and gaming results",
+        "Aurevia revenue share by client",
+        "Settlement and callback visibility"
       ],
-      dashboard: {
-        ariaLabel: "Aurevia operator dashboard preview",
-        navigationAriaLabel: "Dashboard preview navigation",
-        brandMark: "A",
-        brandName: "Aurevia",
-        navigation: [
-          "Overview",
-          "Games",
-          "Players",
-          "RTP Profiles",
-          "Transactions",
-          "Bonuses",
-          "Analytics",
-          "Settings",
-        ],
-        title: "Operator Overview",
-        description: "Live data across all connected products",
-        stats: [
-          {
-            label: "GGR today",
-            value: "$284,720",
-            change: "+18.4%",
-            tone: "positive",
-          },
-          {
-            label: "Active players",
-            value: "18,426",
-            change: "+12.8%",
-            tone: "positive",
-          },
-          {
-            label: "Avg. RTP",
-            value: "96.17%",
-            change: "Stable",
-            tone: "neutral",
-          },
-        ],
-        chart: {
-          title: "Gross gaming revenue",
-          period: "Last 8 days",
-          points: [
-            [12, 132],
-            [80, 166],
-            [130, 94],
-            [202, 153],
-            [272, 75],
-            [340, 49],
-            [408, 92],
-            [490, 22],
-          ],
-        },
-        gamesTitle: "Top games",
-        games: [
-          { name: "Fortune Vault", players: "4,820", revenue: "$78.2k" },
-          { name: "Neon Rush", players: "3,176", revenue: "$62.8k" },
-          { name: "Royal Reels", players: "2,980", revenue: "$46.1k" },
-        ],
-      },
+      dashboard: analyticsPreviewImage,
     },
     reasons: {
       heading: {
@@ -380,7 +279,7 @@ export const siteContent = {
           icon: "controls",
           tone: "green",
           title: "Admin control",
-          detail: "RTP · Users · Analytics",
+          detail: "Clients · Balances · Results",
           progress: 92,
         },
       ],
@@ -399,19 +298,14 @@ export const siteContent = {
           tone: "gold",
           title: "Betting & slot game development",
           description:
-            "Original mechanics, math models and memorable player experiences built for production environments.",
+            "Custom game development and provider API integration, illustrated with a real capture from our prepared Play’n GO sandbox.",
           capabilities: [
             "RNG and probability logic",
             "Bonus rounds and free spins",
             "Jackpot and tournament systems",
             "WebGL / HTML5 responsive UI",
           ],
-          image: {
-            src: "/media/services/slot-development.webp",
-            alt: "Slot game development interface with reels and game controls",
-            width: 1200,
-            height: 800,
-          },
+          image: gameShowcase.image,
         },
         {
           id: "web-mobile",
@@ -426,12 +320,7 @@ export const siteContent = {
             "Low-bandwidth optimization",
             "Wallet and account integration",
           ],
-          image: {
-            src: "/media/services/web-mobile-casino.webp",
-            alt: "Responsive casino product shown on mobile and desktop screens",
-            width: 1200,
-            height: 800,
-          },
+          image: { src: "/media/games/moonprincess-gameplay.webp", alt: "Moon Princess gameplay capture from the prepared integration", width: 1366, height: 768 },
         },
         {
           id: "casino-websites",
@@ -446,12 +335,7 @@ export const siteContent = {
             "Promotions and loyalty tools",
             "Game lobby and search",
           ],
-          image: {
-            src: "/media/services/casino-website.webp",
-            alt: "Premium dark casino website interface with featured games",
-            width: 1200,
-            height: 800,
-          },
+          image: { src: "/media/games/catalog-preview.webp", alt: "Aurevia game catalog with real Play’n GO game artwork", width: 1429, height: 1111 },
         },
         {
           id: "admin-platforms",
@@ -459,19 +343,14 @@ export const siteContent = {
           tone: "green",
           title: "Admin panel development",
           description:
-            "A secure control layer for managing games, players, transactions, reporting and configurable RTP profiles.",
+            "A reporting workspace for API-integrated games, multiple clients, balances, gaming results and company revenue.",
           capabilities: [
-            "RTP profile management",
-            "Player and wallet controls",
-            "Campaign and bonus tools",
-            "Real-time performance analytics",
+            "Client balance reporting",
+            "Bets, payouts and gaming results",
+            "Revenue share by client",
+            "Transaction and settlement visibility"
           ],
-          image: {
-            src: "/media/services/admin-platform.webp",
-            alt: "Casino operator admin panel with analytics and management tables",
-            width: 1200,
-            height: 800,
-          },
+          image: analyticsPreviewImage,
         },
       ],
     },
@@ -556,184 +435,38 @@ export const siteContent = {
   },
   gamesPage: {
     hero: {
-      label: "Playable concepts",
-      titleLines: ["Games that look great,", "feel fast, and play fair"],
-      description:
-        "Original formats. Every title can be adapted to your brand, market and operator stack.",
+      label: "Play’n GO integration",
+      titleLines: ["Real games.", "Ready to explore."],
+      description: "Nine prepared titles, one integration sandbox. Explore the game catalog and discuss how to connect your own client wallet and website.",
       primaryAction: { label: "Browse All Games", href: "#game-library" },
-      secondaryAction: {
-        label: "Discuss a Custom Game",
-        href: "/contact?project=Custom%20casino%20game",
-      },
-      featured: {
-        label: "Featured demo",
-        title: "Fortune Vault",
-        description:
-          "A premium five-reel slot concept with expanding symbols, free spins and configurable jackpot mechanics.",
-        reels: [
-          { symbol: "7" },
-          { symbol: "★" },
-          { symbol: "■" },
-          { symbol: "♛" },
-          { symbol: "BAR" },
-          { symbol: "7", active: true },
-          { symbol: "■" },
-          { symbol: "★" },
-          { symbol: "♛" },
-          { symbol: "7" },
-          { symbol: "★" },
-          { symbol: "BAR" },
-        ],
-        primaryAction: {
-          label: "Play Demo",
-          href: "/contact?project=Fortune%20Vault%20demo",
-        },
-        secondaryAction: {
-          label: "Game Details",
-          href: "#fortune-vault",
-        },
-        metric: "RTP 96.20%",
-        volatility: "High volatility",
-      },
+      secondaryAction: { label: "Discuss Integration", href: "/contact?project=Game%20API%20integration" },
+      featured: gameShowcase,
     },
     catalog: {
-      ariaLabel: "Filter the Aurevia game library",
-      filterLabel: "Game library",
-      label: "Demo showcase",
-      title: "A flexible game portfolio.",
-      description:
-        "Use these titles as a starting point or commission a completely original concept.",
-      filters: [
-        { label: "All Games", value: "all" },
-        { label: "Slots", value: "slots" },
-        { label: "Crash", value: "crash" },
-        { label: "Instant Win", value: "instant-win" },
-        { label: "Table Inspired", value: "table-inspired" },
-      ],
-      games: [
-        {
-          id: "fortune-vault",
-          title: "Fortune Vault",
-          category: "slots",
-          categoryLabel: "Premium slots",
-          description: "5 reels · Free spins",
-          metric: "96.20%",
-          symbol: "7",
-          artworkTone: "fortune",
-          primaryAction: {
-            label: "Play Demo",
-            href: "/contact?project=Fortune%20Vault%20demo",
-          },
-          secondaryAction: {
-            label: "Details",
-            href: "/contact?project=Fortune%20Vault",
-          },
-        },
-        {
-          id: "neon-rush",
-          title: "Neon Rush",
-          category: "crash",
-          categoryLabel: "Crash game",
-          description: "Real-time multiplier",
-          metric: "Configurable",
-          symbol: "×",
-          artworkTone: "neon",
-          primaryAction: {
-            label: "Play Demo",
-            href: "/contact?project=Neon%20Rush%20demo",
-          },
-          secondaryAction: {
-            label: "Details",
-            href: "/contact?project=Neon%20Rush",
-          },
-        },
-        {
-          id: "royal-reels",
-          title: "Royal Reels",
-          category: "slots",
-          categoryLabel: "Premium slots",
-          description: "Bonus wheel · Wilds",
-          metric: "95.80%",
-          symbol: "♛",
-          artworkTone: "royal",
-          primaryAction: {
-            label: "Play Demo",
-            href: "/contact?project=Royal%20Reels%20demo",
-          },
-          secondaryAction: {
-            label: "Details",
-            href: "/contact?project=Royal%20Reels",
-          },
-        },
-        {
-          id: "dragon-treasure",
-          title: "Dragon Treasure",
-          category: "slots",
-          categoryLabel: "Adventure slots",
-          description: "Cascades · Multipliers",
-          metric: "96.00%",
-          symbol: "◆",
-          artworkTone: "treasure",
-          primaryAction: {
-            label: "Play Demo",
-            href: "/contact?project=Dragon%20Treasure%20demo",
-          },
-          secondaryAction: {
-            label: "Details",
-            href: "/contact?project=Dragon%20Treasure",
-          },
-        },
-        {
-          id: "cosmic-drop",
-          title: "Cosmic Drop",
-          category: "instant-win",
-          categoryLabel: "Instant win",
-          description: "Risk ladder · Quick play",
-          metric: "96.10%",
-          symbol: "✦",
-          artworkTone: "cosmic",
-          primaryAction: {
-            label: "Play Demo",
-            href: "/contact?project=Cosmic%20Drop%20demo",
-          },
-          secondaryAction: {
-            label: "Details",
-            href: "/contact?project=Cosmic%20Drop",
-          },
-        },
-        {
-          id: "black-table",
-          title: "Black Table",
-          category: "table-inspired",
-          categoryLabel: "Table inspired",
-          description: "Classic cards · Live feel",
-          metric: "99.00%",
-          symbol: "A",
-          artworkTone: "table",
-          primaryAction: {
-            label: "Play Demo",
-            href: "/contact?project=Black%20Table%20demo",
-          },
-          secondaryAction: {
-            label: "Details",
-            href: "/contact?project=Black%20Table",
-          },
-        },
-      ],
+      ariaLabel: "Filter the prepared Play’n GO catalog",
+      filterLabel: "Game format",
+      label: "Prepared catalog",
+      title: "Nine titles. Real game artwork.",
+      description: "These Play’n GO titles are available in Aurevia’s integration sandbox. Open the lobby and choose a title to explore it with a simulated wallet. Game titles and artwork belong to their respective owners; Aurevia provides the integration layer.",
+      filters: [ { label: "All Games", value: "all" }, { label: "Grid Slots", value: "grid-slots" }, { label: "Video Slots", value: "video-slots" } ],
+      games: preparedGames,
     },
     cta: {
-      title: "Have a game idea? Let's make it playable.",
-      description:
-        "Share your theme, mechanics or market goals and receive a development plan.",
-      primaryAction: { label: "Request a Quote", href: "/contact" },
+      title: "Connect the games to your platform.",
+      description: "Talk through your game catalog, wallet callbacks, client requirements and reporting needs.",
+      primaryAction: { label: "Discuss Integration", href: "/contact?project=Game%20API%20integration" },
     },
   },
   platformPage: {
     hero: {
-      label: "Operator infrastructure",
-      titleLines: ["Casino platforms", "built for", "control"],
+      label: "Game API & admin analytics",
+      titleLines: [
+        "Your clients.",
+        "Your games.",
+        "Your results."
+      ],
       description:
-        "Launch and operate a modern casino ecosystem with a responsive player experience, secure management tools, configurable RTP profiles and real-time business visibility.",
+        "An analytics platform designed for game API businesses: understand each client’s balances, betting performance and contribution to your revenue. Preview the reporting experience below.",
       primaryAction: {
         label: "Request a Platform Quote",
         href: "/contact?project=Admin%20panel%20%2F%20operator%20platform",
@@ -742,292 +475,79 @@ export const siteContent = {
         label: "Explore Admin Features",
         href: "#admin-features",
       },
-      overview: {
-        ariaLabel: "Operator overview dashboard preview",
-        brandMark: "A",
-        brandName: "Control",
-        navigationAriaLabel: "Operator overview navigation",
-        navigation: [
-          "Overview",
-          "Games",
-          "Players",
-          "Wallets",
-          "RTP",
-          "Bonuses",
-          "Reports",
-        ],
-        title: "Operator Overview",
-        description: "Live performance across connected products",
-        metrics: [
-          {
-            label: "GGR today",
-            value: "$284.7k",
-            change: "+18.4%",
-            changeTone: "positive",
-          },
-          {
-            label: "Players",
-            value: "18,426",
-            change: "+12.8%",
-            changeTone: "positive",
-          },
-          {
-            label: "Avg RTP",
-            value: "96.17%",
-            change: "Stable",
-            changeTone: "neutral",
-          },
-        ],
-        chartTitle: "Revenue trend",
-        chartBars: [36, 54, 43, 68, 58, 86, 72, 104, 94, 121, 106, 132],
-        productsTitle: "Top products",
-        products: [
-          { name: "Fortune Vault", players: "4,820", revenue: "$74.2k" },
-          { name: "Neon Rush", players: "3,714", revenue: "$58.9k" },
-          { name: "Royal Reels", players: "2,980", revenue: "$46.1k" },
-        ],
-      },
+      overview: analyticsPreviewImage,
     },
     modules: {
       heading: {
         label: "Platform modules",
         title: "Every core workflow, connected.",
         description:
-          "Choose the modules you need today and expand the ecosystem as your operation grows.",
+          "Plan the modules around your game integration, client operations and reporting needs.",
       },
       items: [
         {
-          icon: "spark",
-          tone: "gold",
-          title: "Player app & lobby",
-          description:
-            "Responsive game discovery, search, categories, favorites and personalized promotions.",
-          footer: "Included capabilities",
+          "icon": "spark",
+          "tone": "gold",
+          "title": "Game catalog",
+          "description": "Browse assigned games, provider artwork and launch availability.",
+          "footer": "Platform scope"
         },
         {
-          icon: "diamond",
-          tone: "blue",
-          title: "Account & wallet",
-          description:
-            "Registration, KYC touchpoints, balances, deposits, withdrawals and transaction history.",
-          footer: "Included capabilities",
+          "icon": "diamond",
+          "tone": "blue",
+          "title": "Client wallets",
+          "description": "Inspect client balances and signed debit, credit and rollback callbacks.",
+          "footer": "Platform scope"
         },
         {
-          icon: "wallet",
-          tone: "violet",
-          title: "Bonus & loyalty",
-          description:
-            "Campaign rules, free spins, cashback, missions, tiers and segmented rewards.",
-          footer: "Included capabilities",
+          "icon": "wallet",
+          "tone": "violet",
+          "title": "Client results",
+          "description": "Compare settled bets, payouts and gaming results by reporting period.",
+          "footer": "Platform scope"
         },
         {
-          icon: "controls",
-          tone: "green",
-          title: "Game management",
-          description:
-            "Catalog control, providers, availability, market visibility and launch configuration.",
-          footer: "Included capabilities",
+          "icon": "controls",
+          "tone": "green",
+          "title": "Game performance",
+          "description": "Break down game activity by client, title and currency.",
+          "footer": "Platform scope"
         },
         {
-          icon: "target",
-          tone: "gold",
-          title: "Payments & reporting",
-          description:
-            "Provider integrations, reconciliation, exports and financial monitoring.",
-          footer: "Included capabilities",
+          "icon": "target",
+          "tone": "gold",
+          "title": "Revenue reporting",
+          "description": "Separate your revenue share from the client’s remaining gaming result.",
+          "footer": "Platform scope"
         },
         {
-          icon: "shield",
-          tone: "red",
-          title: "Security & access",
-          description:
-            "Role-based permissions, audit trails, alerts and protected operator workflows.",
-          footer: "Included capabilities",
-        },
+          "icon": "shield",
+          "tone": "red",
+          "title": "Access & settlement",
+          "description": "Plan operator access, audit history and pending settlement workflows.",
+          "footer": "Platform scope"
+        }
       ],
     },
     admin: {
       heading: {
-        label: "Admin panel",
-        title: "A control room for the entire operation.",
-        description:
-          "Designed around fast decisions, clear accountability and operational safety.",
+        label: "Admin dashboard design",
+        title: "From client balances to company revenue.",
+        description: "A sample reporting workspace for multiple API clients, with bets, payouts, client gaming results and Aurevia’s revenue share shown separately. The preview uses illustrative data.",
       },
-      tabsAriaLabel: "Admin panel capabilities",
-      tabs: [
-        "Overview",
-        "Players",
-        "RTP Profiles",
-        "Transactions",
-        "Promotions",
-      ],
-      dashboard: {
-        ariaLabel: "Casino operator live dashboard preview",
-        brandName: "Aurevia",
-        brandLabel: "Operator suite",
-        navigationAriaLabel: "Operator dashboard navigation",
-        navigation: [
-          "Dashboard",
-          "Players",
-          "Games",
-          "RTP Profiles",
-          "Wallets",
-          "Transactions",
-          "Bonuses",
-          "Analytics",
-          "User Roles",
-          "Settings",
-        ],
-        title: "Live Dashboard",
-        description: "Updated moments ago",
-        actionLabel: "Export Report",
-        metrics: [
-          {
-            label: "Net revenue",
-            value: "$1.84M",
-            change: "+16.2%",
-            changeTone: "positive",
-          },
-          {
-            label: "Active users",
-            value: "52,190",
-            change: "+9.6%",
-            changeTone: "positive",
-          },
-          {
-            label: "Deposits",
-            value: "$624k",
-            change: "+12.1%",
-            changeTone: "positive",
-          },
-          {
-            label: "Withdrawals",
-            value: "$318k",
-            change: "-2.4%",
-            changeTone: "negative",
-          },
-        ],
-        chart: {
-          title: "Revenue and player activity",
-          period: "30 days",
-          points: [
-            [1, 74],
-            [10, 84],
-            [19, 66],
-            [28, 70],
-            [38, 50],
-            [48, 62],
-            [57, 42],
-            [67, 55],
-            [76, 31],
-            [85, 39],
-            [94, 20],
-          ],
-        },
-        traffic: [
-          { label: "Organic", value: 62, tone: "gold" },
-          { label: "Campaigns", value: 24, tone: "blue" },
-          { label: "Affiliates", value: 14, tone: "violet" },
-        ],
-        activityTitle: "Recent activity",
-        activity: [
-          {
-            tone: "gold",
-            label: "RTP profile updated",
-            detail: "Fortune Vault · Profile EU-02",
-            time: "2 min ago",
-          },
-          {
-            tone: "green",
-            label: "Large withdrawal reviewed",
-            detail: "Player #A98241 · $4,800",
-            time: "8 min ago",
-          },
-          {
-            tone: "violet",
-            label: "Bonus campaign launched",
-            detail: "Weekend Cashback · Segment VIP",
-            time: "16 min ago",
-          },
-        ],
-      },
+      dashboard: analyticsPreviewImage,
     },
-    rtp: {
+    reporting: {
       heading: {
-        label: "RTP control",
-        title: "Configure, test and govern game profiles.",
-        description:
-          "A controlled workflow for managing payout profiles, simulations and approvals without exposing unsafe system-level access.",
+        label: "Financial visibility",
+        title: "Know what every number means.",
+        description: "Separate player wallet balances, client gaming results and your own revenue so each report answers a clear business question.",
       },
-      panel: {
-        ariaLabel: "RTP profile management preview",
-        profilesTitle: "RTP Profiles",
-        newProfileLabel: "+ New Profile",
-        profiles: [
-          {
-            name: "EU Standard",
-            value: "96.20%",
-            status: "Active",
-            statusTone: "active",
-            selected: true,
-          },
-          {
-            name: "LATAM Growth",
-            value: "95.60%",
-            status: "Active",
-            statusTone: "active",
-          },
-          {
-            name: "High Value VIP",
-            value: "97.10%",
-            status: "Draft",
-            statusTone: "draft",
-          },
-          {
-            name: "Test Environment",
-            value: "94.00%",
-            status: "Test",
-            statusTone: "test",
-          },
-        ],
-        title: "EU Standard",
-        description: "Profile ID RTP-EU-02 · Last approved Jul 30",
-        actionLabel: "Save Changes",
-        metrics: [
-          { label: "Target RTP", value: "96.20%" },
-          { label: "Volatility", value: "High" },
-          { label: "Max win", value: "10,000×" },
-          { label: "Bonus frequency", value: "1 in 120" },
-        ],
-        payoutTitle: "Payout distribution",
-        payouts: [
-          { label: "Base game", value: 58, tone: "gold" },
-          { label: "Free spins", value: 24, tone: "blue" },
-          { label: "Jackpot", value: 10, tone: "violet" },
-          { label: "Bonus feature", value: 8, tone: "green" },
-        ],
-        auditTitle: "Governance & audit trail",
-        audit: [
-          {
-            tone: "gold",
-            label: "Draft created",
-            detail: "James O.",
-            time: "Jul 28 · 10:24",
-          },
-          {
-            tone: "green",
-            label: "Simulation passed",
-            detail: "System",
-            time: "Jul 29 · 13:16",
-          },
-          {
-            tone: "green",
-            label: "Profile approved",
-            detail: "Maria K.",
-            time: "Jul 30 · 09:42",
-          },
-        ],
-      },
+      items: [
+        { title: "Client wallet balances", description: "View balances by client and currency. The client wallet remains authoritative; a displayed balance is not revenue." },
+        { title: "Client gaming results", description: "Compare settled bets and payouts for the same reporting period. Gross gaming revenue is bets minus payouts, with refunds and pending settlement tracked separately." },
+        { title: "Aurevia revenue share", description: "Apply each client’s agreed share to the eligible result. Report Aurevia’s revenue separately from the client’s remaining result and from profit after operating costs." },
+      ],
     },
     integrations: {
       heading: {

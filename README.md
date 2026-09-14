@@ -57,8 +57,8 @@ Edit `src/content/site-content.ts` to change:
 - Header and footer navigation
 - Page titles, descriptions, CTAs and SEO keywords
 - Services and capability lists
-- Game catalog, filters, artwork themes, optional images and action URLs
-- Casino platform modules, dashboard data, RTP profiles, integrations and security controls
+- Prepared game catalog, format filters, real artwork and sandbox links in `src/content/prepared-games.ts`
+- Casino platform modules, reporting copy and the sample-data analytics preview
 - Contact-page copy, quote fields, project types, proof points, process steps and common questions
 - Screenshot paths, alt text and intrinsic dimensions
 
@@ -94,49 +94,15 @@ Always use the real exported pixel width and height. Next.js uses them to reserv
 
 Keep true UI icons as small vector/CSS assets when appropriate. Use WebP for screenshot-like material—game scenes, admin panels, product interfaces and large decorative raster artwork—not for tiny icons that need infinite scaling.
 
-## Configuring game artwork and demo links
+## Game catalog and analytics preview
 
-Each item under `siteContent.gamesPage.catalog.games` stores its actions and can optionally replace the lightweight themed artwork with an optimized image:
+The home showcase and Games page share the nine titles in `src/content/prepared-games.ts`. Each game requires real artwork with intrinsic dimensions. Formats are Grid Slots and Video Slots. The sandbox button opens the existing Aurevia integration lobby, where visitors select a title and use a simulated wallet; it does not launch a session automatically.
 
-```ts
-{
-  id: "neon-rush",
-  title: "Neon Rush",
-  image: {
-    src: "/media/demos/neon-rush.webp",
-    alt: "Neon Rush crash game interface",
-    width: 1200,
-    height: 1200
-  },
-  primaryAction: {
-    label: "Play Demo",
-    href: "https://demo.aureviagaming.com/neon-rush",
-    external: true
-  }
-}
-```
+The catalog is limited to the nine games selected by the integration release manifest. In particular, original Honey Rush (game 375) must not be replaced with Black and Yellow artwork. Aurevia is identified as the integration provider, and Play’n GO as the game provider.
 
-When `image` is omitted, the card uses its configured `artworkTone` and `symbol` without adding an image request. External action URLs are detected automatically by the shared link component.
+`src/content/platform-preview.ts` defines the shared admin analytics screenshot. It is a **design preview with sample data**, not a live financial dashboard. It separates client wallet snapshots, period bets/payouts, client GGR, Aurevia revenue share and client results after share. Every placement carries a sample-data caption; the home and platform previews open the full-size image in a new tab.
 
-## Configuring casino platform previews
-
-The Casino Platforms page renders its operator overview, admin dashboard and RTP panel as lightweight code-native previews by default. Their labels, metrics, charts, profiles and activity rows are stored under `siteContent.platformPage`.
-
-Each preview also accepts an optional optimized image override in `site-content.ts`:
-
-```ts
-overview: {
-  image: {
-    src: "/media/platforms/operator-overview-v2.webp",
-    alt: "Operator overview showing revenue, players and RTP",
-    width: 1600,
-    height: 1200
-  },
-  // Remaining preview content...
-}
-```
-
-The same `image` field is available on `platformPage.admin.dashboard` and `platformPage.rtp.panel`. When present, the shared platform visual component renders it with `next/image`, responsive `sizes` and intrinsic dimensions. When omitted, no image request is added.
+The editable HTML source, asset origins and screenshot reproduction instructions are documented in [assets/README.md](assets/README.md). The old generated game symbols, invented game titles, code-only dashboard fixtures and four service mockup images have been removed.
 
 ## Contact form delivery
 
@@ -237,7 +203,7 @@ not the active deployment procedure.
 - Marketing content remains server-rendered; client JavaScript is limited to existing interactions, Turnstile, and the analytics-consent control.
 - Content is local and build-time renderable; there are no data-fetch waterfalls.
 - The contact page and API endpoints are dynamic; the other marketing pages are prerendered.
-- Current hero previews use HTML/SVG; service images remain lazy by default. Optional platform hero images are preloaded.
+- Game and platform hero images are preloaded. Catalog and service images use responsive sizes and lazy loading. Artwork is served locally as optimized WebP.
 - Every responsive image has an explicit `sizes` rule and intrinsic dimensions.
 - WebP quality values are allowlisted in `next.config.ts`.
 - `next/font` self-hosts the selected fonts, avoiding a render-blocking remote font request.

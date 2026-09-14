@@ -37,7 +37,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
       <MediaFrame
         image={service.image}
         sizes="(max-width: 660px) 100vw, (max-width: 900px) 34vw, 190px"
-        className="h-full min-w-0 [&>div]:flex [&>div]:h-full [&>div]:min-h-65 [&>div]:items-center [&>div]:rounded-2xl [&>div]:bg-[#090d13] [&>div]:p-3.5 [&_img]:max-h-full [&_img]:object-contain"
+        className="min-w-0 self-start [&>div]:flex [&>div]:min-h-65 [&>div]:items-center [&>div]:rounded-2xl [&>div]:bg-[#090d13] [&>div]:p-3.5 [&_img]:object-contain"
       />
     </article>
   );

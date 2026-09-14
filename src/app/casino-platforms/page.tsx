@@ -3,7 +3,7 @@ import { PlatformAdminSection } from "@/components/platforms/platform-admin-sect
 import { PlatformHeroSection } from "@/components/platforms/platform-hero-section";
 import { PlatformIntegrationsSection } from "@/components/platforms/platform-integrations-section";
 import { PlatformModulesSection } from "@/components/platforms/platform-modules-section";
-import { PlatformRtpSection } from "@/components/platforms/platform-rtp-section";
+import { PlatformReportingSection } from "@/components/platforms/platform-reporting-section";
 import { siteContent } from "@/content/site-content";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -17,7 +17,7 @@ export default function CasinoPlatformsPage() {
       <PlatformHeroSection content={platformPage.hero} />
       <PlatformModulesSection content={platformPage.modules} />
       <PlatformAdminSection content={platformPage.admin} />
-      <PlatformRtpSection content={platformPage.rtp} />
+      <PlatformReportingSection content={platformPage.reporting} />
       <PlatformIntegrationsSection content={platformPage.integrations} />
       <HomeCtaSection
         className="bg-[#0d1117]"

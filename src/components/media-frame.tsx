@@ -26,6 +26,7 @@ export function MediaFrame({
           quality={80}
         />
       </div>
+      {image.caption ? <figcaption className="mt-4 text-xs leading-5 text-muted">{image.caption}</figcaption> : null}
     </figure>
   );
 }

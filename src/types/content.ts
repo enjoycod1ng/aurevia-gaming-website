@@ -59,33 +59,11 @@ export interface HomeService {
   action: ActionLink;
 }
 
-export interface HomeDemo {
-  title: string;
-  description: string;
-  symbol: string;
-  theme: "fortune" | "neon" | "royal";
-  primaryAction: ActionLink;
-  secondaryAction: ActionLink;
-}
-
 export interface HomeReason {
   number: string;
   title: string;
   description: string;
   result: string;
-}
-
-export interface DashboardStat {
-  label: string;
-  value: string;
-  change: string;
-  tone?: "positive" | "neutral";
-}
-
-export interface DashboardGame {
-  name: string;
-  players: string;
-  revenue: string;
 }
 
 export interface ServiceItem {
@@ -132,15 +110,7 @@ export interface ContactScopeItem {
   action: ActionLink;
 }
 
-export type GameCategory = "slots" | "crash" | "instant-win" | "table-inspired";
-
-export type GameArtworkTone =
-  | "fortune"
-  | "neon"
-  | "royal"
-  | "treasure"
-  | "cosmic"
-  | "table";
+export type GameCategory = "grid-slots" | "video-slots";
 
 export interface GameCatalogItem {
   id: string;
@@ -148,10 +118,7 @@ export interface GameCatalogItem {
   category: GameCategory;
   categoryLabel: string;
   description: string;
-  metric: string;
-  symbol: string;
-  artworkTone: GameArtworkTone;
-  image?: MediaAsset;
+  image: MediaAsset;
   primaryAction: ActionLink;
   secondaryAction: ActionLink;
 }
@@ -169,34 +136,6 @@ export interface PlatformModule {
   title: string;
   description: string;
   footer: string;
-}
-
-export interface PlatformMetric {
-  label: string;
-  value: string;
-  change?: string;
-  changeTone?: "positive" | "negative" | "neutral";
-}
-
-export interface PlatformActivity {
-  tone: PlatformTone;
-  label: string;
-  detail: string;
-  time: string;
-}
-
-export interface PlatformRtpProfile {
-  name: string;
-  value: string;
-  status: string;
-  statusTone: "active" | "draft" | "test";
-  selected?: boolean;
-}
-
-export interface PlatformDistribution {
-  label: string;
-  value: number;
-  tone: PlatformTone;
 }
 
 export interface PlatformSecurityItem {
@@ -251,23 +190,7 @@ export interface SiteContent {
         label: string;
         value: string;
       }[];
-      mockup: {
-        ariaLabel: string;
-        title: string;
-        subtitle: string;
-        reels: readonly {
-          symbol: string;
-          active?: boolean;
-        }[];
-        jackpotLabel: string;
-        jackpotValue: string;
-        metrics: readonly {
-          label: string;
-          value: string;
-          change?: string;
-          progress?: number;
-        }[];
-      };
+      showcase: GamePreview;
     };
     services: {
       heading: SectionCopy;
@@ -275,30 +198,14 @@ export interface SiteContent {
     };
     demos: {
       heading: SectionCopy;
-      items: readonly HomeDemo[];
+      items: readonly GameCatalogItem[];
     };
     platform: {
       heading: SectionCopy;
       highlightedTitle: string;
       action: ActionLink;
       features: readonly string[];
-      dashboard: {
-        ariaLabel: string;
-        navigationAriaLabel: string;
-        brandMark: string;
-        brandName: string;
-        navigation: readonly string[];
-        title: string;
-        description: string;
-        stats: readonly DashboardStat[];
-        chart: {
-          title: string;
-          period: string;
-          points: readonly (readonly [number, number])[];
-        };
-        gamesTitle: string;
-        games: readonly DashboardGame[];
-      };
+      dashboard: MediaAsset;
     };
     reasons: {
       heading: SectionCopy;
@@ -337,16 +244,7 @@ export interface SiteContent {
       description: string;
       primaryAction: ActionLink;
       secondaryAction: ActionLink;
-      featured: {
-        label: string;
-        title: string;
-        description: string;
-        reels: readonly { symbol: string; active?: boolean }[];
-        primaryAction: ActionLink;
-        secondaryAction: ActionLink;
-        metric: string;
-        volatility: string;
-      };
+      featured: GamePreview;
     };
     catalog: {
       ariaLabel: string;
@@ -366,21 +264,7 @@ export interface SiteContent {
       description: string;
       primaryAction: ActionLink;
       secondaryAction: ActionLink;
-      overview: {
-        ariaLabel: string;
-        image?: MediaAsset;
-        brandMark: string;
-        brandName: string;
-        navigationAriaLabel: string;
-        navigation: readonly string[];
-        title: string;
-        description: string;
-        metrics: readonly PlatformMetric[];
-        chartTitle: string;
-        chartBars: readonly number[];
-        productsTitle: string;
-        products: readonly DashboardGame[];
-      };
+      overview: MediaAsset;
     };
     modules: {
       heading: SectionCopy;
@@ -388,50 +272,11 @@ export interface SiteContent {
     };
     admin: {
       heading: SectionCopy;
-      tabsAriaLabel: string;
-      tabs: readonly string[];
-      dashboard: {
-        ariaLabel: string;
-        image?: MediaAsset;
-        brandName: string;
-        brandLabel: string;
-        navigationAriaLabel: string;
-        navigation: readonly string[];
-        title: string;
-        description: string;
-        actionLabel: string;
-        metrics: readonly PlatformMetric[];
-        chart: {
-          title: string;
-          period: string;
-          points: readonly (readonly [number, number])[];
-        };
-        traffic: readonly {
-          label: string;
-          value: number;
-          tone: PlatformTone;
-        }[];
-        activityTitle: string;
-        activity: readonly PlatformActivity[];
-      };
+      dashboard: MediaAsset;
     };
-    rtp: {
+    reporting: {
       heading: SectionCopy;
-      panel: {
-        ariaLabel: string;
-        image?: MediaAsset;
-        profilesTitle: string;
-        newProfileLabel: string;
-        profiles: readonly PlatformRtpProfile[];
-        title: string;
-        description: string;
-        actionLabel: string;
-        metrics: readonly PlatformMetric[];
-        payoutTitle: string;
-        payouts: readonly PlatformDistribution[];
-        auditTitle: string;
-        audit: readonly PlatformActivity[];
-      };
+      items: readonly { title: string; description: string }[];
     };
     integrations: {
       heading: SectionCopy;
@@ -487,4 +332,13 @@ export interface SiteContent {
     description: string;
     telegramLabel: string;
   };
+}
+
+export interface GamePreview {
+  label: string;
+  title: string;
+  description: string;
+  image: MediaAsset;
+  primaryAction: ActionLink;
+  secondaryAction: ActionLink;
 }

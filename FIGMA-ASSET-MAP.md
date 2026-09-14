@@ -1,17 +1,18 @@
 # Website visual assets
 
-The current home hero, demo cards and platform dashboards are rendered with HTML, CSS and SVG. They do not use screenshot files.
+Game previews use real Play’n GO artwork and gameplay captures from the prepared integration. The admin analytics screenshot is a branded design preview with explicitly labeled sample data.
 
 | Placement | Active asset |
 | --- | --- |
 | Header and footer monogram | `src/components/brand-logo.tsx` |
 | Favicon and manifest icon | `public/logo.svg` |
 | Social sharing preview | `public/opengraph-image.png` |
-| Slot development service | `public/media/services/slot-development.webp` |
-| Web/mobile service | `public/media/services/web-mobile-casino.webp` |
-| Casino website service | `public/media/services/casino-website.webp` |
-| Admin platform service | `public/media/services/admin-platform.webp` |
+| Home and games hero; slot service | `public/media/games/wildframes-gameplay.webp` |
+| Home and games catalog cards | `public/media/games/{game-id}.webp` |
+| Web/mobile service | `public/media/games/moonprincess-gameplay.webp` |
+| Casino website service | `public/media/games/catalog-preview.webp` |
+| Home, platform and admin service previews | `public/media/platforms/admin-analytics-preview.webp` |
 
-The service screenshots remain sample artwork. Replace them with approved exports and update their dimensions and descriptions in `src/content/site-content.ts`.
+`src/content/prepared-games.ts` is the shared nine-game catalog. It matches the current selected integration manifest, including original Honey Rush (`honeyrush`, game 375), not Honey Rush Black and Yellow.
 
-Game catalog cards and platform previews retain documented optional image overrides. Add versioned optimized assets when enabling those overrides; see the README. Removed screenshots from earlier layouts are available in Git history.
+Artwork provenance and screenshot reproduction notes are in `assets/README.md`. No fictional game fallback remains. Keep image dimensions and descriptive alt text in sync when replacing an asset.
