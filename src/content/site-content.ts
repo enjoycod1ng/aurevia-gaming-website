@@ -536,7 +536,7 @@ export const siteContent = {
       heading: {
         label: "Admin dashboard design",
         title: "From client balances to company revenue.",
-        description: "A sample reporting workspace for multiple API clients, with bets, payouts, client gaming results and Aurevia’s revenue share shown separately. The preview uses illustrative data.",
+        description: "Preview client access, game activity and service health in both themes. The authenticated workspace adds settled reports, transaction history and audited management controls. This preview uses illustrative data.",
       },
       dashboard: analyticsPreviewImage,
     },

@@ -11,7 +11,7 @@ const contentSecurityPolicy = [
   "font-src 'self' data:",
   "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://www.googletagmanager.com",
   "media-src 'self'",
-  "frame-src https://challenges.cloudflare.com",
+  "frame-src 'self' https://challenges.cloudflare.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -88,6 +88,14 @@ const nextConfig: NextConfig = {
         headers: [...securityHeaders, ...stagingHeaders],
       },
       ...staticDocumentHeaders,
+      {
+        source: "/:locale(en|es|pt)/admin",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }, { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }],
+      },
+      {
+        source: "/:locale(en|es|pt)/demo/:path*",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }, { key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
       {
         source: "/:locale(en|es|pt)/contact",
         headers: [

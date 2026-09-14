@@ -65,7 +65,7 @@ test("all language versions have self canonicals and reciprocal alternates", () 
 });
 
 test("interactive components do not leave untranslated text outside the dictionaries", () => {
-  const properNames = new Set(["Google Analytics", "Website", "Telegram", "WhatsApp", "Play’n GO"]);
+  const properNames = new Set(["Google Analytics", "Website", "Telegram", "WhatsApp", "Play’n GO", "Aurevia Gaming", "AUREVIA GAMING", "EUR", "· 10,000 EUR"]);
   const root = new URL("../src/components/", import.meta.url);
   for (const file of readdirSync(root, { recursive: true }).filter(file => file.endsWith(".tsx"))) {
     const source = ts.createSourceFile(file, readFileSync(new URL(file.replaceAll("\\", "/"), root), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);

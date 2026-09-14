@@ -1,7 +1,7 @@
 import { mediaPath } from "@/lib/media";
 import type { GameCatalogItem, GamePreview } from "@/types/content";
 
-export const sandboxUrl = "https://aureviagaming.com/playngo-sandbox/lab/";
+export const demoUrl = "/demo/wildframes";
 
 // The nine titles selected by playngo-api-integration/scripts/game-manifest.json.
 // Honey Rush is the original game (375), not Black and Yellow (922).
@@ -26,7 +26,7 @@ export const preparedGames: readonly GameCatalogItem[] = titles.map((game) => ({
     width: 500,
     height: 350,
   },
-  primaryAction: { label: "Open Sandbox", href: sandboxUrl, external: true },
+  primaryAction: { label: "Open Demo", href: `/demo/${game.id}` },
   secondaryAction: {
     label: "Discuss Integration",
     href: `/contact?project=${encodeURIComponent(`${game.title} API integration`)}`,
@@ -37,13 +37,13 @@ export const gameShowcase: GamePreview = {
   label: "Play’n GO · Integration showcase",
   statusLabel: "Sandbox capture",
   title: "Wild Frames",
-  description: "A real gameplay capture from our prepared integration. Explore the nine-game catalog in the sandbox lobby with a simulated wallet.",
+  description: "A real gameplay capture from our prepared integration. Try any of the nine games with your own 10,000-credit demo balance.",
   image: {
     src: mediaPath("/media/games/wildframes-gameplay.webp"),
     alt: "Wild Frames running in the prepared integration, showing its seven-column grid, wild symbols and simulated balance",
     width: 1366,
     height: 768,
   },
-  primaryAction: { label: "Open Sandbox", href: sandboxUrl, external: true },
+  primaryAction: { label: "Open Demo", href: demoUrl },
   secondaryAction: { label: "View All Games", href: "/games#game-library" },
 };

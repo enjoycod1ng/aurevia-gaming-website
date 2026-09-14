@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/json-ld";
 import { ScrollRevealInit } from "@/components/scroll-reveal-init";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFrame } from "@/components/site-frame";
 import { getSiteContent, getUiContent, requireLocale } from "@/content/localized-content";
 import { siteContent } from "@/content/site-content";
 import { locales } from "@/lib/i18n";
@@ -37,11 +38,10 @@ export default async function RootLayout({ children, params }: Readonly<{ childr
       <body className={`${manrope.variable} ${sora.variable}`}>
         <a className="fixed top-3 left-3 z-1000 -translate-y-[160%] rounded-lg bg-gold-soft px-4 py-3 text-[#100a06] focus:translate-y-0" href="#main-content">{ui.skip}</a>
         <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", "@id": `${content.brand.url}/#organization`, name: content.brand.name, url: content.brand.url, logo: `${content.brand.url}/logo.svg`, description: content.brand.description, sameAs: [content.contact.telegramUrl] }} />
-        <SiteHeader key={locale} locale={locale} ui={ui} content={{ brand: content.brand, navigation: content.navigation, primaryCta: content.primaryCta }} />
         <ScrollRevealInit />
-        {children}
-        <SiteFooter content={content} ui={ui} locale={locale} />
-        <AnalyticsConsent ui={ui} locale={locale} />
+        <SiteFrame header={<SiteHeader key={locale} locale={locale} ui={ui} content={{ brand: content.brand, navigation: content.navigation, primaryCta: content.primaryCta }} />} footer={<><SiteFooter content={content} ui={ui} locale={locale} /><AnalyticsConsent ui={ui} locale={locale} /></>}>
+          {children}
+        </SiteFrame>
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 import guide from "@/content/developer-guide.json";
 import { requireLocale } from "@/content/localized-content";
+import { getDemoCopy } from "@/content/demo-copy";
 import { siteContent } from "@/content/site-content";
 import { createPageMetadata } from "@/lib/metadata";
 import { JsonLd } from "@/components/json-ld";
@@ -40,7 +41,7 @@ export default async function DeveloperDocsPage({ params }: Props) {
           <p className="mt-4 text-sm text-muted">{label("updated")} {guide.version}</p>
           <div className="mt-7 flex flex-wrap gap-3">
             <a href="/developer-downloads/client-sandbox-integration.zip" className="button button-primary" download>{label("bundle")}</a>
-            <a href="https://aureviagaming.com/playngo-sandbox/lab/" className="button button-secondary">{label("sandbox")}</a>
+            <a href={`/${locale}/games`} className="button button-secondary">{getDemoCopy(locale).demo}</a>
           </div>
         </header>
         <div className="mt-12 grid min-w-0 gap-10 lg:grid-cols-[15rem_minmax(0,1fr)] xl:gap-16">

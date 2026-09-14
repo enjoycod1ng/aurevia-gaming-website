@@ -1,5 +1,9 @@
 /** Editorial translations shared by repeated content. Product names and API values stay stable. */
 export const translations: Record<string, readonly [string, string]> = {
+  "Expand the dashboard preview in a dialog": ["Ampliar la vista previa del panel en un diálogo", "Ampliar a prévia do painel em uma caixa de diálogo"],
+  "Dashboard preview · Illustrative clients and sample activity. The authenticated admin workspace displays actual operating records.": ["Vista previa del panel · Clientes ilustrativos y actividad de ejemplo. El espacio de administración autenticado muestra registros operativos reales.", "Prévia do painel · Clientes ilustrativos e atividade de exemplo. A área de administração autenticada mostra registros operacionais reais."],
+  "Open Demo": ["Abrir demo", "Abrir demo"],
+  "A real gameplay capture from our prepared integration. Try any of the nine games with your own 10,000-credit demo balance.": ["Una captura real de nuestra integración. Prueba cualquiera de los nueve juegos con tu propio saldo de 10.000 créditos de demostración.", "Uma captura real da nossa integração. Experimente qualquer um dos nove jogos com seu próprio saldo de 10.000 créditos de demonstração."],
   "Developers": ["Desarrolladores", "Desenvolvedores"],
   "Skip to content": ["Ir al contenido", "Ir para o conteúdo"],
   "Primary navigation": ["Navegación principal", "Navegação principal"],
@@ -364,4 +368,5 @@ export const translations: Record<string, readonly [string, string]> = {
   "Sending…": ["Enviando…", "Enviando…"],
   "Human verification is temporarily unavailable.": ["La verificación humana no está disponible temporalmente.", "A verificação humana está temporariamente indisponível."],
   "Protected by Cloudflare Turnstile.": ["Protegido por Cloudflare Turnstile.", "Protegido pelo Cloudflare Turnstile."],
+  "Preview client access, game activity and service health in both themes. The authenticated workspace adds settled reports, transaction history and audited management controls. This preview uses illustrative data.": ["Consulta el acceso de clientes, la actividad de juegos y el estado del servicio en ambos temas. El área autenticada añade informes liquidados, historial de transacciones y controles de gestión auditados. Esta vista previa usa datos ilustrativos.", "Veja o acesso de clientes, a atividade dos jogos e o estado do serviço nos dois temas. A área autenticada oferece relatórios liquidados, histórico de transações e controles de gestão auditados. Esta prévia usa dados ilustrativos."],
 };

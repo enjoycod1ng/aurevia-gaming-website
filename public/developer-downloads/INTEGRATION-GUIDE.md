@@ -1,7 +1,7 @@
 # Aurevia Gaming Play’n GO integration
 
 **Package version:** 1.0.1 — single-VPS sandbox software release.
-**Availability:** Nine games are supported in the sandbox: Wild Frames, Demon, original Honey Rush, Hugo’s Adventure, Secret of the Dead, Wheel of Mictlan, Troll Hunters 2, Legacy of Egypt and Moon Princess. Query the catalog for your operator’s assigned games. Two persistent simulated wallets are provided; public admission is four sessions total and two per operator. EUR and English are supported. Use simulated funds only. Production client access is not enabled.
+**Availability:** Nine games are supported in the sandbox: Wild Frames, Demon, original Honey Rush, Hugo’s Adventure, Secret of the Dead, Wheel of Mictlan, Troll Hunters 2, Legacy of Egypt and Moon Princess. Query the catalog for your operator’s assigned games. Integration clients have separate simulated wallets. Public website demos use isolated visitor accounts starting with 10,000.00 EUR; admission remains four sessions total and two per operator. EUR and English are supported. Use simulated funds only. Production client access is not enabled.
 **Wallet model:** your platform owns the player balance. Aurevia Gaming sends signed wallet callbacks during game play.
 
 The associated OpenAPI files describe the implemented sandbox contract. Your platform holds the authoritative balance. This service wraps the existing VPS replay runtime; it is not the official Play’n GO developer API.
@@ -335,7 +335,7 @@ A confirmed debit later refunded keeps its original success record, with `cancel
 
 Run `node examples/test-examples.mjs` and `php examples/test-examples.php` from this package. The fixture uses an example secret and a fixed test time. The complete persistent Python sample wallet is in the provider source under `playngo_integration/simulator.py`; its internal fault controls are not public endpoints.
 
-The public [sandbox lobby](https://aureviagaming.com/playngo-sandbox/lab/) selects client A or B and the same simulated `player-123` identity. Each client owns a separate wallet. This simulated client selector is not a real player login implementation.
+The public [game demos](https://aureviagaming.com/en/games) launch a selected game with an isolated visitor wallet starting at 10,000.00 EUR. The website handles its demo credentials server-side. These simulated visitor accounts are separate from your integration player identities and wallet acceptance tests. The retired lab is restricted; authorized staff use the [administration workspace](https://aureviagaming.com/en/admin).
 
 ## 10. Automated wallet acceptance
 

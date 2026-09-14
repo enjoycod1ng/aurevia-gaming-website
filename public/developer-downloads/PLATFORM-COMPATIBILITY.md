@@ -1,6 +1,6 @@
 # Platform compatibility and setup
 
-**Package 1.0.1 — public sandbox.** Nine games and two simulated operator wallets are available. EUR and English game content are supported, with four concurrent sessions overall and two per operator. Use simulated funds only. Each client platform needs wallet and browser acceptance before production enablement. This is a controlled single-VPS deployment; large-scale concurrency targets are not claimed. Read the developer guide in [English](GUIDE.en.html), [Español](GUIDE.es.html) or [Português](GUIDE.pt.html).
+**Package 1.0.1 — public sandbox.** Nine games, separate integration wallets and isolated public demo visitor wallets are available. EUR and English game content are supported, with four concurrent sessions overall and two per operator. Use simulated funds only. Each client platform needs wallet and browser acceptance before production enablement. This is a controlled single-VPS deployment; large-scale concurrency targets are not claimed. Read the developer guide in [English](GUIDE.en.html), [Español](GUIDE.es.html) or [Português](GUIDE.pt.html).
 
 ## Can my platform integrate?
 
