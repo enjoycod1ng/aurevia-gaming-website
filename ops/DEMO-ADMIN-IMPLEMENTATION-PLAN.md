@@ -1,6 +1,6 @@
 # Public demos and administration implementation plan
 
-Updated: 2026-09-14. Status: implementation complete; live deployment awaiting root console access. Checked items describe source implementation and local verification, not a live deployment.
+Updated: 2026-09-14. Status: implemented, verified and deployed. The owner completed password and authenticator enrollment and opened the live administration workspace. Exact releases and acceptance evidence are recorded below.
 
 ## Outcome and order
 
@@ -20,7 +20,7 @@ Deliver isolated public game demos, remove public access to the integration lab,
 - [x] Change game cards and showcase links to localized Open Demo routes for all nine published games.
 - [x] Add a localized game player page with loading/error states, a clear simulated-credit notice, full-screen control, exit and restart. Start the selected game without an API-key form or client selector.
 - [x] Preserve website language and theme. Website UI supports EN/ES/PT; game runtime remains within its currently qualified English/EUR scope.
-- [ ] Finish native-runtime browser acceptance for all nine games after root installation. Local layout, keyboard dialogs, failure states, isolation, expiry and reconnect/restart logic are verified; native gameplay is not available in the local fixture.
+- [x] Verify all nine native launch responses with a new 10,000.00 balance, then inspect all nine native game screens in the live browser. Automated verification placed no wagers. Existing visitor balances survived switching games; exiting released the owned session. Local layout, keyboard dialogs, failure states, isolation, expiry and reconnect/restart logic also passed.
 
 ### 3. Correct the dashboard preview in light mode
 
@@ -53,18 +53,18 @@ Architecture: Next.js supplies the localized, responsive user interface. A dedic
 
 - [x] Add meaningful backend tests for access control, MFA/replay, expiry/revocation, CSRF, visitor isolation, wallet provisioning, launch idempotency, data filters, aggregates, CSV safety and audited management actions.
 - [x] Run existing provider regression tests and website typecheck/lint/tests/production build. Verify migrations preserve existing records and fail closed when portal secrets are missing.
-- [ ] Exercise the local website in a browser in EN/ES/PT and both themes, including admin login and the public demo flow against an isolated fixture environment. Verify representative runtime launching against the deployed sandbox only after the new isolated operator is installed.
+- [x] Exercise the local website in EN/ES/PT and both themes, including admin login and the public demo flow against an isolated fixture. Verify native launching on the live isolated operator after installation. Inspect live client records, overview, reports and the light dashboard preview.
 - [x] Package an immutable backend release with explicit dependencies, new service configuration, migration, private bootstrap instructions, health checks and rollback steps. Preserve current database volumes and existing credentials.
-- [ ] Deploy backend using the authorized root console, verify routes/authentication/health, then deploy the matching website through the existing release workflow. Keep maintenance and capacity state unchanged unless explicitly needed for the release.
-- [ ] Verify live anonymous lab denial, 10,000-credit public demos, authenticated management data, themes/translations, CDN/media behavior and existing localized docs. Record exact revisions and evidence.
+- [x] Deploy backend using the authorized root console, verify routes/authentication/health, then deploy the matching website through staging and production workflows. Restore initial maintenance state and preserve the existing capacity limits, database storage and qualified runtime images.
+- [x] Verify live anonymous lab denial, 10,000-credit public demos, authenticated management data, themes/translations, CDN/media behavior and localized docs. Record exact revisions and evidence.
 
 ## Current constraints and decisions
 
-- The website deploy key works. It cannot manage the root-owned game stack; backend installation requires the root console. Prepare the complete reviewed release before requesting that final login action.
+- Backend installation used the authorized root console; website releases used the existing restricted deploy account and GitHub workflows. The website deploy account did not receive Docker or general root access.
 - Existing public sandbox is a small single-VPS deployment: four concurrent sessions globally and two per operator. Public availability is bounded by these limits; show a useful busy state instead of silently increasing load.
 - This release does not qualify real-money production clients, new runtime currencies/languages, off-host disaster recovery, billing or automated external notifications.
 - A client whose callback secret or deployment scope has not been installed cannot be activated through an attractive but nonfunctional form. Onboarding must expose and validate these prerequisites.
-- Preserve the previous seven website/documentation improvements. Legacy documentation redirects remain part of the root deployment work.
+- The previous seven website/documentation improvements are preserved. Legacy documentation redirects are installed. Public metadata/canonicals/language alternates passed on all 21 localized pages, all nine artwork images loaded, and a versioned image returned a Cloudflare cache HIT. EN/ES/PT guides retain working Node.js, PHP, C# and Java selectors and downloads. Saved language preferences, browser language and the Cloudflare country fallback remain in place.
 
 ## Reference material
 
@@ -81,4 +81,16 @@ Architecture: Next.js supplies the localized, responsive user interface. A dedic
 - 2026-09-14: Local backend regression: **171 passed, 2 PostgreSQL-only skips**. Website: **19 tests passed**, TypeScript, lint and production build passed. Root preparation runs the complete backend suite against the dedicated PostgreSQL test database.
 - 2026-09-14: Browser verified local owner sign-in, actual client data and typed confirmation dialog, EN/ES/PT administration, compact 390px mobile navigation, light/dark modes and full-size theme-aware preview including Escape dismissal. Local fixture contains no production credentials or real funds.
 - 2026-09-14: Backend source archive uploaded and remote checksums verified. Archive SHA-256: `16d2b3fd16248eb7e76c6f2197b0728e385813ca62f9cd350bf71764397fd158`. Installer SHA-256: `72a25001d8ee57703a78376052a4e7983131c904bb5c82fb381cce539ae198d0`. Files are in `/home/deploy/aurevia-incoming/`. Private bootstrap, maintenance, snapshots, immutable image pinning, safe containment and recovery instructions are in backend `docs/28-public-demo-admin-release.md`.
-- 2026-09-14: Requested root-console sign-in after the tested release was concrete and uploaded. No live backend or frontend routes have been changed for this release. Website deploy access is available; deploy the coordinated website after backend acceptance.
+- 2026-09-14, before installation: Requested root-console sign-in after the tested release was concrete and uploaded. No live routes had changed at that point.
+- 2026-09-14: Root preparation passed **171 PostgreSQL-backed tests**, with two Node-dependent checks skipped because the native base image has no Node executable; those two checks passed locally. Apply waited for existing rounds to settle, took database snapshots and deployed the portal without restoring or discarding accepted activity. Both databases and all qualified native/runtime/recovery image IDs were preserved.
+- 2026-09-14: All nine HTTP launch checks passed with 10,000.00 starting balances, valid native session markup and zero automated wagers. Browser inspection covered Wild Frames, Honey Rush, Moon Princess, Wheel of Mictlan, Secret of Dead, Legacy of Egypt, Hugo’s Adventure, Troll Hunters 2 and Demon. All nine updated catalog artwork images loaded.
+- 2026-09-14: The user activated the private owner invitation with their own password and authenticator. Live administration displayed three configured clients, actual session/history totals, settled reports, healthy services and no pending settlements. Existing clients A/B remain explicit integration test records in authenticated administration; the public client selector and shared lab helpers are retired.
+- 2026-09-14: Final read-only public checks passed for 21 localized pages, anonymous lab/assets/helpers/admin denial (401), all four language examples and the integration ZIP (200), legacy docs redirect to `/en/docs`, and versioned Cloudflare media caching (HIT). Local TypeScript, lint, **19 website tests** and production build passed again after removing obsolete lobby instructions in EN/ES/PT.
+
+## Deployed release and evidence
+
+- Backend: `/opt/PlaynGo_Integration/releases/aurevia-portal-1.0.0-16d2b3fd1624`; portal image `sha256:2030b55ba71bd2980b0c70100819f3607519f9619fae53997c26eeea10a2e847`. The portal runs as `10001:10001` with a read-only root filesystem.
+- Website: `702a8b76e2d1484bce1d8e4743ecb120f29bc054` on `feature/public-demo-admin`, including implementation commit `d3e4a89a50cb856bb7eb75a03484e571cbbcc80e` and the final localized catalog copy correction.
+- [Successful staging release](https://github.com/enjoycod1ng/aurevia-gaming-website/actions/runs/34829793551) and [successful production release](https://github.com/enjoycod1ng/aurevia-gaming-website/actions/runs/34829941874). Both loopback health endpoints returned the exact deployed website revision.
+- Root-only evidence: `/opt/PlaynGo_Integration/shared/portal-release-evidence.json` and `/opt/PlaynGo_Integration/shared/portal-operational-verification.json`. Local API-workspace evidence: `.audit/portal-release/website-release.json` and `.audit/portal-release/public-website-verification.json`.
+- Recovery and containment: API-workspace `docs/28-public-demo-admin-release.md`. Do not restore a pre-release database snapshot over accepted newer transactions. This checklist update documents the deployed code; it does not require another application deployment.
