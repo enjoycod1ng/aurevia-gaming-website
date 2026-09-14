@@ -3,7 +3,7 @@ import { requireLocale } from "@/content/localized-content";
 import { siteContent } from "@/content/site-content";
 import { createPageMetadata } from "@/lib/metadata";
 import { JsonLd } from "@/components/json-ld";
-import { DeveloperExamples } from "@/components/developer-examples";
+import { DeveloperExamples, type ExampleLabels } from "@/components/developer-examples";
 
 type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props) {
@@ -14,6 +14,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function DeveloperDocsPage({ params }: Props) {
   const locale = requireLocale((await params).locale);
   const label = (key: keyof typeof guide.labels) => guide.labels[key][locale];
+  const exampleLabels = Object.fromEntries(Object.entries(guide.labels).map(([key, value]) => [key, value[locale]])) as ExampleLabels;
   const url = new URL(`/${locale}/docs`, siteContent.brand.url).href;
   const downloads = [
     ["providerSchema", "provider-api.openapi.json"], ["walletSchema", "wallet-callbacks.openapi.json"],
@@ -54,7 +55,7 @@ export default async function DeveloperDocsPage({ params }: Props) {
             </nav>
           </aside>
           <article className="min-w-0 space-y-12">
-            <DeveloperExamples locale={locale} />
+            <DeveloperExamples labels={exampleLabels} />
             {guide.sections.map(section => <section key={section.id} id={section.id} className="docs-section border-b border-line pb-10" aria-labelledby={`title-${section.id}`}>
               <h2 id={`title-${section.id}`} className="text-2xl font-semibold leading-snug text-ink sm:text-3xl">{section.title[locale]}</h2>
               {section.paragraphs.map((paragraph, index) => <p key={index} className="mt-5 break-words leading-relaxed text-ink-soft">{paragraph[locale]}</p>)}

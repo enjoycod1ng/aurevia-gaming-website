@@ -2,8 +2,9 @@
 
 import { useState, useSyncExternalStore } from "react";
 import examples from "@/content/developer-examples.json";
-import guide from "@/content/developer-guide.json";
-import type { Locale } from "@/lib/i18n";
+import type guide from "@/content/developer-guide.json";
+
+export type ExampleLabels = { [Key in keyof typeof guide.labels]: string };
 
 const storageKey = "aurevia-code-language";
 const changeEvent = "aurevia-code-language-change";
@@ -17,7 +18,7 @@ function snapshot() {
   catch { return "node"; }
 }
 
-export function DeveloperExamples({ locale }: { locale: Locale }) {
+export function DeveloperExamples({ labels }: { labels: ExampleLabels }) {
   const savedLanguage = useSyncExternalStore(subscribe, snapshot, () => "node");
   const [fallbackLanguage, setFallbackLanguage] = useState<string | null>(null);
   const [sampleId, setSampleId] = useState("quickstart");
@@ -25,7 +26,7 @@ export function DeveloperExamples({ locale }: { locale: Locale }) {
   const language = fallbackLanguage ?? savedLanguage;
   const example = examples.find(item => item.id === language) ?? examples[0];
   const sample = example.samples.find(item => item.id === sampleId) ?? example.samples[0];
-  const label = (key: keyof typeof guide.labels) => guide.labels[key][locale];
+  const label = (key: keyof ExampleLabels) => labels[key];
   function selectLanguage(value: string) {
     setCopyStatus(null);
     try { localStorage.setItem(storageKey, value); setFallbackLanguage(null); window.dispatchEvent(new Event(changeEvent)); }

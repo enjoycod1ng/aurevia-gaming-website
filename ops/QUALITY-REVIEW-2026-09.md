@@ -1,9 +1,9 @@
 # September 2026 website quality pass
 
-## Implemented in the working tree
+## Implemented and published
 
 - English, Spanish and Portuguese server-rendered pages, translated forms, privacy copy, status messages, accessible labels and image descriptions. Product names and form API values remain stable.
-- Explicit locale URLs, permanent legacy English redirects, uncached homepage preference negotiation, locale-aware metadata, reciprocal hreflang and 18 sitemap entries. Removed artificial `lastModified: new Date()` entries.
+- Explicit locale URLs, permanent legacy English redirects, uncached homepage preference negotiation, locale-aware metadata, reciprocal hreflang and 21 sitemap entries. Removed artificial `lastModified: new Date()` entries.
 - Organization, website, page, breadcrumb, service, game catalog and visible FAQ structured data. No invented ratings, pricing, customer counts or results were added.
 - Shared light/dark/system color tokens, a persistent theme button, readable type sizes, reusable button/form styles, larger interactive targets, keyboard menu dismissal and narrow-screen overflow fixes.
 - Content-hashed versions of 13 images (753,734 bytes), a generated image manifest, dimension/checksum tests and a repeatable `images:version` command.
@@ -93,3 +93,23 @@ environment was inspected: no deployment branch restriction or environment revie
 gate is configured. The supported manual production workflow can publish the
 verified staging branch ref without changing protected master/dev branches.
 Deployment revision and public verification are recorded below when complete.
+
+
+## Production publication
+
+The initial full release `0740b2e2f26038222571cd49e15b73207d846b99` passed
+[staging workflow 34804749643](https://github.com/enjoycod1ng/aurevia-gaming-website/actions/runs/34804749643)
+and [production workflow 34804942680](https://github.com/enjoycod1ng/aurevia-gaming-website/actions/runs/34804942680).
+Production became healthy at 2026-09-14 04:09 UTC. Each Linux package verified
+39 assets, localized routes, native Sharp optimization and contact rejection.
+The 21-page HTTP suite also passed against the live production origin.
+`npm audit --omit=dev --audit-level=high` reported zero vulnerabilities.
+
+A follow-up performance edit passes only the selected UI labels to the client
+code selector; full translated article bodies stay in server-rendered content.
+The compiled browser chunks were checked to confirm those bodies are absent.
+
+Legacy `/playngo-sandbox/docs` routing is a separate Nginx update. It is prepared
+in the provider project's `.ops/publish_developer_routes.py` and requires root
+console sign-in; ordinary deploy SSH cannot edit that configuration. The new
+localized portal and public integration kit are already served by the website.
