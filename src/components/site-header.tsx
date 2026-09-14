@@ -1,84 +1,47 @@
 "use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-
+import { useEffect, useRef, useState } from "react";
 import { BrandLogo } from "@/components/brand-logo";
 import { ButtonLink } from "@/components/button-link";
-import { siteContent } from "@/content/site-content";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import type { SiteContent } from "@/types/content";
+import type { UiContent } from "@/content/ui-content";
 
-function Brand() {
-  return (
-    <span
-      className="inline-flex items-center gap-3 text-gold-bright"
-      aria-hidden="true"
-    >
-      <BrandLogo className="h-9.5 w-10 md:h-10.5 md:w-11.25" />
-      <span className="font-display text-sm font-bold tracking-[0.015em] uppercase whitespace-nowrap md:text-base">
-        {siteContent.brand.name}
-      </span>
-    </span>
-  );
-}
-
-export function SiteHeader() {
+type HeaderContent = Pick<SiteContent, "brand" | "navigation" | "primaryCta">;
+export function SiteHeader({ content, ui, locale }: { content: HeaderContent; ui: UiContent; locale: Locale }) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); toggle.current?.focus(); } };
+    const onPointer = (event: PointerEvent) => { if (event.target instanceof Node && !header.current?.contains(event.target)) setOpen(false); };
+    if (open) { document.addEventListener("keydown", onKey); document.addEventListener("pointerdown", onPointer); }
+    return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onPointer); };
+  }, [open]);
   return (
-    <header className="sticky top-0 z-100 min-h-19 border-b border-line bg-canvas md:min-h-24">
-      <div className="container grid min-h-19 grid-cols-[1fr_auto] items-center gap-6 md:min-h-24 lg:grid-cols-[260px_1fr_auto] lg:gap-10">
-        <Link
-          className="inline-flex w-fit items-center"
-          href="/"
-          aria-label={`${siteContent.brand.name} home`}
-        >
-          <Brand />
+    <header ref={header} className="sticky top-0 z-100 border-b border-line bg-canvas/95 backdrop-blur-md">
+      <div className="container flex min-h-20 flex-wrap items-center justify-between gap-x-3 gap-y-3 py-3">
+        <Link href={localizedPath("/", locale)} aria-label={`${content.brand.name} · ${ui.home}`} className="inline-flex min-h-11 items-center gap-2 text-gold-bright" onClick={() => setOpen(false)}>
+          <BrandLogo className="size-8 sm:size-9" aria-hidden="true" /><span className="font-display text-xs font-bold uppercase sm:text-base">{content.brand.name}</span>
         </Link>
-
-        <nav
-          className="hidden items-center justify-end gap-7 lg:flex xl:gap-12"
-          aria-label="Primary navigation"
-        >
-          {siteContent.navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={item.href === pathname ? "page" : undefined}
-              className={`text-sm font-medium transition-colors hover:text-gold-bright ${item.href === pathname ? "text-gold-bright" : "text-muted"}`}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-5 xl:flex" aria-label={ui.primaryNavigation}>
+          {content.navigation.map(item => <Link key={item.href} href={item.href} aria-current={item.href === pathname ? "page" : undefined} className={`nav-link ${item.href === pathname ? "text-gold-bright" : "text-ink-soft"}`}>{item.label}</Link>)}
         </nav>
-
-        <details key={pathname} className="justify-self-end lg:hidden">
-          <summary
-            className="grid size-11.5 cursor-pointer list-none place-items-center rounded-xl border border-line-strong bg-surface text-ink marker:hidden"
-            aria-label="Open navigation"
-          >
-            <span className="grid w-5 gap-1.5" aria-hidden="true">
-              <span className="h-0.5 rounded-full bg-ink" />
-              <span className="h-0.5 rounded-full bg-ink" />
-            </span>
-            <span className="sr-only">Menu</span>
-          </summary>
-          <nav
-            className="absolute top-full right-0 left-0 grid gap-1 border-b border-line bg-canvas/98 px-6 pt-4.5 pb-6 shadow-panel"
-            aria-label="Mobile navigation"
-          >
-            {siteContent.navigation.map((item) => (
-              <Link
-                className="border-b border-line px-1.5 py-3 text-ink-soft"
-                key={item.href}
-                href={item.href}
-                aria-current={item.href === pathname ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <ButtonLink href={siteContent.primaryCta.href} variant="primary">
-              {siteContent.primaryCta.label}
-            </ButtonLink>
+        <div className="hidden items-center gap-2 xl:flex"><ThemeToggle labels={ui} /><LanguageSwitcher locale={locale} label={ui.language} /></div>
+        <button ref={toggle} type="button" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line-strong bg-surface px-3 text-sm font-semibold xl:hidden" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>
+          <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d={open ? "M6 6l12 12M6 18L18 6" : "M4 7h16M4 12h16M4 17h16"} /></svg>{open ? ui.closeMenu : ui.menu}
+        </button>
+        <div id="mobile-navigation" hidden={!open} className="max-h-[calc(100svh-6rem)] w-full overflow-y-auto border-t border-line pt-3 xl:hidden">
+          <nav className="grid gap-1" aria-label={ui.mobileNavigation}>
+            {content.navigation.map(item => <Link key={item.href} href={item.href} onClick={() => setOpen(false)} aria-current={item.href === pathname ? "page" : undefined} className={`nav-link rounded-lg px-3 ${item.href === pathname ? "bg-surface text-gold-bright" : "text-ink-soft"}`}>{item.label}</Link>)}
           </nav>
-        </details>
+          <div className="my-4 flex flex-wrap gap-3"><ThemeToggle labels={ui} /><LanguageSwitcher locale={locale} label={ui.language} /></div>
+          <div onClick={() => setOpen(false)}><ButtonLink href={content.primaryCta.href} className="mb-2 w-full">{content.primaryCta.label}</ButtonLink></div>
+        </div>
       </div>
     </header>
   );

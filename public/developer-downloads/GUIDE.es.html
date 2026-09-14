@@ -1,0 +1,389 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Integra juegos con tu plataforma | Aurevia Gaming</title><meta name="description" content="Una guía práctica de la API con ejemplos de Node.js, PHP, C# y Java: lanzamientos autenticados, callbacks de monedero firmados y transacciones fiables."><link rel="canonical" href="https://aureviagaming.com/es/docs"><style>html{color-scheme:light dark;scroll-behavior:smooth}body{margin:auto;max-width:75rem;padding:1.5rem;background:light-dark(#f8f7f3,#0b0d10);color:light-dark(#17202b,#f4f3ef);font:16px/1.7 system-ui,sans-serif}a{color:light-dark(#765416,#ebc77b);text-underline-offset:.2em}nav{display:flex;gap:1rem;flex-wrap:wrap}a,summary{min-height:44px}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.15}h2{font-size:1.5rem;line-height:1.3;padding-top:2rem}p{max-width:80ch}pre{padding:1.25rem;border:1px solid #807455;border-radius:.75rem;overflow:auto;font:14px/1.65 ui-monospace,monospace}section{scroll-margin-top:1rem}summary{cursor:pointer}details{margin:1rem 0}main{min-width:0}code{overflow-wrap:anywhere}</style></head><body><header><a href="https://aureviagaming.com/es/docs">Aurevia Gaming · Documentación para desarrolladores</a><nav><a hreflang="en" lang="en" href="GUIDE.en.html">English</a><a hreflang="es" lang="es" href="GUIDE.es.html">Español</a><a hreflang="pt" lang="pt" href="GUIDE.pt.html">Português</a></nav></header><main><h1>Integra juegos con tu plataforma</h1><p>Contrato v1 · Versión de pruebas 1.0.1</p><p>Una guía práctica de la API con ejemplos de Node.js, PHP, C# y Java: lanzamientos autenticados, callbacks de monedero firmados y transacciones fiables.</p><nav aria-label="En esta página"><ol><li><a href="#overview">1. Comprende la integración</a></li><li><a href="#setup">2. Configura tu backend</a></li><li><a href="#catalog">3. Consulta los juegos asignados</a></li><li><a href="#launch">4. Inicia el juego para el jugador autenticado</a></li><li><a href="#browser">5. Abre y cierra el juego correctamente</a></li><li><a href="#signatures">6. Verifica los callbacks del monedero</a></li><li><a href="#money">7. Aplica el contrato del monedero</a></li><li><a href="#idempotency">8. Garantiza un único efecto financiero</a></li><li><a href="#rollback">9. Gestiona cancelaciones y recuperación</a></li><li><a href="#reconciliation">10. Consulta sesiones y transacciones</a></li><li><a href="#errors">11. Gestiona errores y capacidad</a></li><li><a href="#acceptance">12. Prueba antes de activar clientes</a></li><li><a href="#compatibility">13. Versionado y soporte</a></li><li><a href="#examples">Elige tu lenguaje de desarrollo</a></li></ol></nav><section id="examples"><h2>Elige tu lenguaje de desarrollo</h2><p>Ejecuta estos ejemplos en tu backend. Muestran llamadas a la API y verificación de firmas; conéctalos a la sesión autenticada del jugador, los registros persistentes de lanzamiento y tu monedero transaccional. Los identificadores del código no cambian entre idiomas.</p><p>Antes de enviar un lanzamiento, guarda el símbolo elegido, el cuerpo exacto y la clave de idempotencia. Reintenta directamente esa solicitud guardada; no vuelvas a elegir el juego, generar una clave o modificar el jugador o dispositivo. El inicio rápido ilustra solo un lanzamiento nuevo.</p><details><summary>Node.js · Node.js 20+</summary><h3>Iniciar un juego</h3><a href="examples/quickstart.mjs" download>Descargar código fuente</a><pre><code>// Node.js 20+. Call this from your authenticated backend route.
+import {providerRequest, launchGame} from &#x27;./provider.mjs&#x27;;
+
+export async function createPlayerLaunch(authenticatedPlayerId, persistedLaunchKey, approvedReturnUrl) {
+  const base = process.env.PROVIDER_BASE_URL;
+  const key = process.env.OPERATOR_API_KEY;
+  if (!base || !key) throw new Error(&#x27;Configure server-side provider credentials&#x27;);
+  const catalog = await providerRequest(base, key, &#x27;GET&#x27;, &#x27;api/provider/v1/games?provider_id=playngo&#x27;);
+  if (!catalog.items.length) throw new Error(&#x27;No games assigned&#x27;);
+  const session = await launchGame(base, key, authenticatedPlayerId, approvedReturnUrl,
+    persistedLaunchKey, catalog.items[0].symbol, &#x27;desktop&#x27;);
+  // Store session.session_id with this player for lookup and close.
+  // Return ONLY session.launch_url to their authenticated browser; do not log it.
+  return session;
+}
+
+// Reconcile: providerRequest(base, key, &#x27;GET&#x27;, &#x27;api/provider/v1/transactions?limit=50&#x27;);
+// Close: providerRequest(base, key, &#x27;POST&#x27;,
+//   `api/provider/v1/sessions/${encodeURIComponent(storedSessionId)}/close`);
+// A timed-out launch must reuse the SAME persisted key AND request body.
+</code></pre><h3>Cliente API y verificación de callbacks</h3><a href="examples/provider.mjs" download>Descargar código fuente</a><pre><code>// Node.js 20+ server-side helper. Never bundle this file with credentials into a browser.
+import {createHmac, timingSafeEqual} from &#x27;node:crypto&#x27;;
+
+export function verifyCallback(secret, rawBody, headers, operation, operatorId, now = Date.now() / 1000) {
+  if (!secret || !operatorId || ![&#x27;balance&#x27;,&#x27;debit&#x27;,&#x27;credit&#x27;,&#x27;rollback&#x27;].includes(operation)) throw new Error(&#x27;Wallet verifier is not configured&#x27;);
+  const timestamp = headers[&#x27;x-pp-timestamp&#x27;];
+  const signature = headers[&#x27;x-pp-signature&#x27;];
+  if (!/^\d{1,12}$/.test(timestamp ?? &#x27;&#x27;) || Math.abs(now - Number(timestamp)) &gt; 300 || !/^[a-f0-9]{64}$/.test(signature ?? &#x27;&#x27;)) {
+    throw new Error(&#x27;Invalid callback signature or timestamp&#x27;);
+  }
+  const raw = Buffer.isBuffer(rawBody) ? rawBody : Buffer.from(rawBody, &#x27;utf8&#x27;);
+  const expected = createHmac(&#x27;sha256&#x27;, secret).update(timestamp + &#x27;.&#x27;).update(raw).digest();
+  if (!timingSafeEqual(expected, Buffer.from(signature, &#x27;hex&#x27;))) throw new Error(&#x27;Invalid callback signature&#x27;);
+  const payload = JSON.parse(raw.toString(&#x27;utf8&#x27;));
+  if (typeof payload?.request_id !== &#x27;string&#x27; || !payload.request_id || payload.request_id !== headers[&#x27;x-pp-request-id&#x27;] || payload.operator_id !== operatorId || payload.transaction_type !== operation) {
+    throw new Error(&#x27;Callback identity mismatch&#x27;);
+  }
+  return payload;
+}
+
+export async function providerRequest(baseUrl, apiKey, method, path, body, idempotencyKey) {
+  const base = new URL(baseUrl.endsWith(&#x27;/&#x27;) ? baseUrl : baseUrl + &#x27;/&#x27;);
+  if (base.protocol !== &#x27;https:&#x27;) throw new Error(&#x27;Provider URL must use HTTPS&#x27;);
+  if (!path.startsWith(&#x27;api/provider/v1/&#x27;)) throw new Error(&#x27;Invalid provider path&#x27;);
+  const headers = {&#x27;X-Provider-API-Key&#x27;: apiKey, &#x27;Accept&#x27;: &#x27;application/json&#x27;};
+  if (body !== undefined) headers[&#x27;Content-Type&#x27;] = &#x27;application/json&#x27;;
+  if (idempotencyKey) headers[&#x27;Idempotency-Key&#x27;] = idempotencyKey;
+  const response = await fetch(new URL(path, base), {
+    method, headers, body: body === undefined ? undefined : JSON.stringify(body),
+    redirect: &#x27;error&#x27;, signal: AbortSignal.timeout(15000),
+  });
+  const result = await response.json();
+  if (!response.ok) {
+    const error = new Error(result.message ?? &#x27;Provider request failed&#x27;);
+    error.status = response.status;
+    error.code = result.error;
+    error.retryAfter = response.headers.get(&#x27;retry-after&#x27;);
+    throw error;
+  }
+  return result.data;
+}
+
+export function launchGame(baseUrl, apiKey, authenticatedPlayerId, returnUrl, idempotencyKey, symbol = &#x27;wildframes&#x27;, device = &#x27;desktop&#x27;) {
+  if (!idempotencyKey) throw new Error(&#x27;Persist one idempotency key per launch attempt and reuse it on retries&#x27;);
+  if (![&#x27;desktop&#x27;,&#x27;mobile&#x27;].includes(device)) throw new Error(&#x27;Device must be desktop or mobile&#x27;);
+  return providerRequest(baseUrl, apiKey, &#x27;POST&#x27;, &#x27;api/provider/v1/launch-url&#x27;, {
+    symbol, external_player_id: authenticatedPlayerId, currency: &#x27;EUR&#x27;, lang: &#x27;en&#x27;, device, return_url: returnUrl,
+  }, idempotencyKey);
+}
+
+// In an Express callback route use express.raw({type:&#x27;application/json&#x27;}) BEFORE
+// any JSON parser. Verify req.body, then atomically lock the player&#x27;s wallet,
+// enforce the (operator_id,transaction_id) unique key, apply the ledger mutation,
+// and store the immutable response in the same database transaction.
+</code></pre></details><details><summary>PHP · PHP 8+ · cURL</summary><h3>Iniciar un juego</h3><a href="examples/quickstart.php" download>Descargar código fuente</a><pre><code>&lt;?php
+declare(strict_types=1);
+// PHP 8+ with cURL. Call from your authenticated backend route.
+require_once __DIR__ . &#x27;/provider.php&#x27;;
+
+function createPlayerLaunch(string $authenticatedPlayerId, string $persistedLaunchKey, string $approvedReturnUrl): array {
+    $base = getenv(&#x27;PROVIDER_BASE_URL&#x27;);
+    $key = getenv(&#x27;OPERATOR_API_KEY&#x27;);
+    if (!$base || !$key) throw new RuntimeException(&#x27;Configure server-side provider credentials&#x27;);
+    $catalog = providerRequest($base, $key, &#x27;GET&#x27;, &#x27;api/provider/v1/games?provider_id=playngo&#x27;);
+    if (empty($catalog[&#x27;items&#x27;])) throw new RuntimeException(&#x27;No games assigned&#x27;);
+    $session = launchGame($base, $key, $authenticatedPlayerId, $approvedReturnUrl,
+        $persistedLaunchKey, $catalog[&#x27;items&#x27;][0][&#x27;symbol&#x27;], &#x27;desktop&#x27;);
+    // Store session_id with this player. Return only launch_url to their browser.
+    // Never log the launch URL or expose operator credentials to the frontend.
+    return $session;
+}
+
+// Reconcile: providerRequest($base, $key, &#x27;GET&#x27;, &#x27;api/provider/v1/transactions?limit=50&#x27;);
+// Close: providerRequest($base, $key, &#x27;POST&#x27;,
+//     &#x27;api/provider/v1/sessions/&#x27; . rawurlencode($storedSessionId) . &#x27;/close&#x27;);
+// A timed-out launch must reuse the SAME persisted key AND request body.
+</code></pre><h3>Cliente API y verificación de callbacks</h3><a href="examples/provider.php" download>Descargar código fuente</a><pre><code>&lt;?php
+declare(strict_types=1);
+// PHP 8+ with cURL. Server-side only; load credentials from your secret store.
+
+function verifyCallback(string $secret, string $rawBody, array $headers, string $operation, string $operatorId, ?int $now = null): array {
+    if ($secret === &#x27;&#x27; || $operatorId === &#x27;&#x27; || !in_array($operation, [&#x27;balance&#x27;,&#x27;debit&#x27;,&#x27;credit&#x27;,&#x27;rollback&#x27;], true)) throw new RuntimeException(&#x27;Wallet verifier is not configured&#x27;);
+    $headers = array_change_key_case($headers, CASE_LOWER);
+    $timestamp = $headers[&#x27;x-pp-timestamp&#x27;] ?? &#x27;&#x27;;
+    $signature = $headers[&#x27;x-pp-signature&#x27;] ?? &#x27;&#x27;;
+    if (!preg_match(&#x27;/^\d{1,12}$/D&#x27;, $timestamp) || abs(($now ?? time()) - (int)$timestamp) &gt; 300 || !preg_match(&#x27;/^[a-f0-9]{64}$/D&#x27;, $signature)) {
+        throw new RuntimeException(&#x27;Invalid callback signature or timestamp&#x27;);
+    }
+    if (!hash_equals(hash_hmac(&#x27;sha256&#x27;, $timestamp . &#x27;.&#x27; . $rawBody, $secret), $signature)) {
+        throw new RuntimeException(&#x27;Invalid callback signature&#x27;);
+    }
+    $payload = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+    if (!is_string($payload[&#x27;request_id&#x27;] ?? null) || $payload[&#x27;request_id&#x27;] === &#x27;&#x27; || ($payload[&#x27;request_id&#x27;] ?? null) !== ($headers[&#x27;x-pp-request-id&#x27;] ?? null)
+        || ($payload[&#x27;operator_id&#x27;] ?? null) !== $operatorId || ($payload[&#x27;transaction_type&#x27;] ?? null) !== $operation) {
+        throw new RuntimeException(&#x27;Callback identity mismatch&#x27;);
+    }
+    return $payload;
+}
+
+function providerRequest(string $baseUrl, string $apiKey, string $method, string $path, ?array $body = null, ?string $idempotencyKey = null): array {
+    if (parse_url($baseUrl, PHP_URL_SCHEME) !== &#x27;https&#x27; || !str_starts_with($path, &#x27;api/provider/v1/&#x27;)) {
+        throw new InvalidArgumentException(&#x27;Invalid provider HTTPS URL or API path&#x27;);
+    }
+    if (strpbrk($apiKey . ($idempotencyKey ?? &#x27;&#x27;), &quot;\r\n&quot;) !== false) throw new InvalidArgumentException(&#x27;Invalid header&#x27;);
+    $headers = [&#x27;X-Provider-API-Key: &#x27; . $apiKey, &#x27;Accept: application/json&#x27;];
+    if ($body !== null) $headers[] = &#x27;Content-Type: application/json&#x27;;
+    if ($idempotencyKey !== null) $headers[] = &#x27;Idempotency-Key: &#x27; . $idempotencyKey;
+    $handle = curl_init(rtrim($baseUrl, &#x27;/&#x27;) . &#x27;/&#x27; . $path);
+    curl_setopt_array($handle, [CURLOPT_RETURNTRANSFER =&gt; true, CURLOPT_CUSTOMREQUEST =&gt; $method,
+        CURLOPT_HTTPHEADER =&gt; $headers, CURLOPT_CONNECTTIMEOUT =&gt; 5, CURLOPT_TIMEOUT =&gt; 15,
+        CURLOPT_FOLLOWLOCATION =&gt; false, CURLOPT_SSL_VERIFYPEER =&gt; true, CURLOPT_SSL_VERIFYHOST =&gt; 2]);
+    if ($body !== null) curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($body, JSON_THROW_ON_ERROR));
+    $raw = curl_exec($handle);
+    $status = curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+    $failed = $raw === false;
+    $errorNumber = curl_errno($handle);
+    curl_close($handle);
+    if ($failed) throw new RuntimeException(&#x27;Provider connection failed (cURL &#x27; . $errorNumber . &#x27;); retry launch with the same idempotency key&#x27;);
+    $result = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+    if ($status &lt; 200 || $status &gt;= 300) throw new RuntimeException($result[&#x27;message&#x27;] ?? &#x27;Provider request failed&#x27;, $status);
+    return $result[&#x27;data&#x27;];
+}
+
+function launchGame(string $baseUrl, string $apiKey, string $authenticatedPlayerId, string $returnUrl, string $idempotencyKey, string $symbol = &#x27;wildframes&#x27;, string $device = &#x27;desktop&#x27;): array {
+    if ($idempotencyKey === &#x27;&#x27;) throw new InvalidArgumentException(&#x27;Persist an idempotency key before launching&#x27;);
+    if (!in_array($device, [&#x27;desktop&#x27;,&#x27;mobile&#x27;], true)) throw new InvalidArgumentException(&#x27;Device must be desktop or mobile&#x27;);
+    return providerRequest($baseUrl, $apiKey, &#x27;POST&#x27;, &#x27;api/provider/v1/launch-url&#x27;, [
+        &#x27;symbol&#x27; =&gt; $symbol, &#x27;external_player_id&#x27; =&gt; $authenticatedPlayerId, &#x27;currency&#x27; =&gt; &#x27;EUR&#x27;,
+        &#x27;lang&#x27; =&gt; &#x27;en&#x27;, &#x27;device&#x27; =&gt; $device, &#x27;return_url&#x27; =&gt; $returnUrl,
+    ], $idempotencyKey);
+}
+
+// Callback route: $raw = file_get_contents(&#x27;php://input&#x27;);
+// $payload = verifyCallback($walletSecret, $raw, getallheaders(), $operation, $operatorId);
+// Then apply the financial operation and store its response atomically in YOUR
+// wallet database. Verification alone is not a wallet implementation.
+</code></pre></details><details><summary>C# · .NET 8+</summary><h3>Iniciar un juego</h3><a href="examples/Quickstart.cs" download>Descargar código fuente</a><pre><code>// .NET 8+. Register/reuse AureviaProvider in your backend&#x27;s dependency container.
+using System.Text.Json;
+
+public static class Quickstart
+{
+    public static async Task&lt;JsonElement&gt; CreatePlayerLaunch(AureviaProvider provider,
+        string authenticatedPlayerId, string persistedLaunchKey, string approvedReturnUrl)
+    {
+        var catalog = await provider.RequestAsync(HttpMethod.Get, &quot;api/provider/v1/games?provider_id=playngo&quot;);
+        var games = catalog.GetProperty(&quot;items&quot;);
+        if (games.GetArrayLength() == 0) throw new InvalidOperationException(&quot;No games assigned.&quot;);
+        var session = await provider.LaunchAsync(authenticatedPlayerId, approvedReturnUrl,
+            persistedLaunchKey, games[0].GetProperty(&quot;symbol&quot;).GetString()!, &quot;desktop&quot;);
+        // Store session_id with this player. Return only launch_url to their browser.
+        // Never log launch URLs or expose provider credentials to the frontend.
+        return session;
+    }
+}
+
+// Configure the reusable client from your server&#x27;s secret store:
+// new AureviaProvider(PROVIDER_BASE_URL, OPERATOR_API_KEY)
+// Reconcile: provider.RequestAsync(HttpMethod.Get, &quot;api/provider/v1/transactions?limit=50&quot;)
+// Close: provider.RequestAsync(HttpMethod.Post,
+//     $&quot;api/provider/v1/sessions/{Uri.EscapeDataString(storedSessionId)}/close&quot;)
+// A timed-out launch must reuse the SAME persisted key AND request body.
+</code></pre><h3>Cliente API y verificación de callbacks</h3><a href="examples/AureviaProvider.cs" download>Descargar código fuente</a><pre><code>// .NET 8+. Server-side only. Reuse this client; obtain credentials from a secret store.
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+
+public sealed class AureviaProvider : IDisposable
+{
+    private readonly HttpClient http;
+    private readonly Uri baseUri;
+    private readonly string apiKey;
+
+    public AureviaProvider(string baseUrl, string apiKey)
+    {
+        baseUri = new Uri(baseUrl.TrimEnd(&#x27;/&#x27;) + &quot;/&quot;);
+        if (baseUri.Scheme != &quot;https&quot; || baseUri.UserInfo != &quot;&quot; || baseUri.Query != &quot;&quot; || baseUri.Fragment != &quot;&quot;)
+            throw new ArgumentException(&quot;Use the assigned HTTPS provider base URL.&quot;);
+        if (string.IsNullOrEmpty(apiKey) || apiKey.Contains(&#x27;\r&#x27;) || apiKey.Contains(&#x27;\n&#x27;))
+            throw new ArgumentException(&quot;Invalid API key header.&quot;);
+        this.apiKey = apiKey;
+        http = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false })
+            { Timeout = TimeSpan.FromSeconds(15) };
+    }
+
+    public async Task&lt;JsonElement&gt; RequestAsync(HttpMethod method, string path, object? body = null,
+        string? idempotencyKey = null, CancellationToken cancellationToken = default)
+    {
+        if (!path.StartsWith(&quot;api/provider/v1/&quot;, StringComparison.Ordinal) || path.Contains(&quot;..&quot;) || path.Contains(&#x27;\\&#x27;))
+            throw new ArgumentException(&quot;Invalid provider path.&quot;);
+        using var request = new HttpRequestMessage(method, new Uri(baseUri, path));
+        request.Headers.Add(&quot;X-Provider-API-Key&quot;, apiKey);
+        request.Headers.Add(&quot;Accept&quot;, &quot;application/json&quot;);
+        if (idempotencyKey != null) request.Headers.Add(&quot;Idempotency-Key&quot;, idempotencyKey);
+        if (body != null) request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, &quot;application/json&quot;);
+        using var response = await http.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+            throw new ProviderException(response.StatusCode, response.Headers.RetryAfter?.ToString());
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+        return document.RootElement.GetProperty(&quot;data&quot;).Clone();
+    }
+
+    public Task&lt;JsonElement&gt; LaunchAsync(string authenticatedPlayerId, string returnUrl, string persistedKey,
+        string symbol = &quot;wildframes&quot;, string device = &quot;desktop&quot;, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(persistedKey)) throw new ArgumentException(&quot;Persist a key before launching; reuse it with the exact body on retries.&quot;);
+        if (device != &quot;desktop&quot; &amp;&amp; device != &quot;mobile&quot;) throw new ArgumentException(&quot;Invalid device.&quot;);
+        return RequestAsync(HttpMethod.Post, &quot;api/provider/v1/launch-url&quot;, new {
+            symbol, external_player_id = authenticatedPlayerId, currency = &quot;EUR&quot;, lang = &quot;en&quot;, device, return_url = returnUrl
+        }, persistedKey, cancellationToken);
+    }
+
+    public static JsonElement VerifyCallback(string secret, byte[] rawBody, string timestamp, string signature,
+        string requestId, string operation, string operatorId, long? now = null)
+    {
+        if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(operatorId) ||
+            !new[] { &quot;balance&quot;, &quot;debit&quot;, &quot;credit&quot;, &quot;rollback&quot; }.Contains(operation))
+            throw new ArgumentException(&quot;Wallet verifier is not configured.&quot;);
+        if (!Regex.IsMatch(timestamp, @&quot;\A[0-9]{1,12}\z&quot;) ||
+            Math.Abs((now ?? DateTimeOffset.UtcNow.ToUnixTimeSeconds()) - long.Parse(timestamp)) &gt; 300 ||
+            !Regex.IsMatch(signature, @&quot;\A[a-f0-9]{64}\z&quot;)) throw new CryptographicException(&quot;Invalid signature or timestamp.&quot;);
+        using var hmac = IncrementalHash.CreateHMAC(HashAlgorithmName.SHA256, Encoding.UTF8.GetBytes(secret));
+        hmac.AppendData(Encoding.ASCII.GetBytes(timestamp + &quot;.&quot;));
+        hmac.AppendData(rawBody);
+        if (!CryptographicOperations.FixedTimeEquals(hmac.GetHashAndReset(), Convert.FromHexString(signature)))
+            throw new CryptographicException(&quot;Invalid signature.&quot;);
+        using var document = JsonDocument.Parse(rawBody);
+        var payload = document.RootElement;
+        if (string.IsNullOrEmpty(requestId) || payload.GetProperty(&quot;request_id&quot;).GetString() != requestId ||
+            payload.GetProperty(&quot;operator_id&quot;).GetString() != operatorId || payload.GetProperty(&quot;transaction_type&quot;).GetString() != operation)
+            throw new InvalidOperationException(&quot;Callback identity mismatch.&quot;);
+        return payload.Clone();
+    }
+
+    public void Dispose() =&gt; http.Dispose();
+}
+
+public sealed class ProviderException(HttpStatusCode status, string? retryAfter) : Exception($&quot;Provider HTTP {(int)status}&quot;)
+{
+    public HttpStatusCode Status { get; } = status;
+    public string? RetryAfter { get; } = retryAfter;
+}
+
+// ASP.NET: read Request.Body as bytes BEFORE JSON deserialization. Pass the four
+// x-pp-* header/route values to VerifyCallback. Next validate the entire payload,
+// ownership and money fields, and commit wallet + immutable response atomically.
+// Signature verification alone is not a wallet implementation.
+</code></pre></details><details><summary>Java · Java 17+ · Jackson 2.20.1 · Maven</summary><h3>Iniciar un juego</h3><a href="examples/java/Quickstart.java" download>Descargar código fuente</a><pre><code>import com.fasterxml.jackson.databind.JsonNode;
+
+// Java 17+. Reuse AureviaProvider from your authenticated backend controller.
+public final class Quickstart {
+    public static JsonNode createPlayerLaunch(AureviaProvider provider, String authenticatedPlayerId,
+        String persistedLaunchKey, String approvedReturnUrl) throws Exception {
+        var catalog = provider.request(&quot;GET&quot;, &quot;api/provider/v1/games?provider_id=playngo&quot;, null, null);
+        var games = catalog.required(&quot;items&quot;);
+        if (games.isEmpty()) throw new IllegalStateException(&quot;No games assigned.&quot;);
+        var session = provider.launch(authenticatedPlayerId, approvedReturnUrl, persistedLaunchKey,
+            games.get(0).required(&quot;symbol&quot;).asText(), &quot;desktop&quot;);
+        // Store session_id with this player. Return only launch_url to their browser.
+        // Never log launch URLs or expose provider credentials to the frontend.
+        return session;
+    }
+}
+
+// Configure the reusable client with your server&#x27;s secret store:
+// new AureviaProvider(PROVIDER_BASE_URL, OPERATOR_API_KEY)
+// Reconcile: provider.request(&quot;GET&quot;, &quot;api/provider/v1/transactions?limit=50&quot;, null, null)
+// Close: provider.request(&quot;POST&quot;, &quot;api/provider/v1/sessions/&quot; +
+//     java.net.URLEncoder.encode(storedSessionId, java.nio.charset.StandardCharsets.UTF_8)
+//       .replace(&quot;+&quot;, &quot;%20&quot;) + &quot;/close&quot;, null, null)
+// A timed-out launch must reuse the SAME persisted key AND request body.
+</code></pre><h3>Cliente API y verificación de callbacks</h3><a href="examples/java/AureviaProvider.java" download>Descargar código fuente</a><pre><code>// Java 17+ and Jackson (see pom.xml). Backend only; never expose API keys to a browser.
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
+import java.net.http.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+public final class AureviaProvider {
+    private static final ObjectMapper JSON = new ObjectMapper();
+    private final HttpClient http = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER)
+        .connectTimeout(Duration.ofSeconds(5)).build();
+    private final URI base;
+    private final String key;
+
+    public AureviaProvider(String baseUrl, String apiKey) {
+        base = URI.create(baseUrl.replaceAll(&quot;/+$&quot;, &quot;&quot;) + &quot;/&quot;);
+        if (!&quot;https&quot;.equals(base.getScheme()) || base.getHost() == null || base.getUserInfo() != null ||
+            base.getQuery() != null || base.getFragment() != null) throw new IllegalArgumentException(&quot;Use the assigned HTTPS base URL.&quot;);
+        if (apiKey == null || apiKey.isEmpty() || apiKey.contains(&quot;\r&quot;) || apiKey.contains(&quot;\n&quot;))
+            throw new IllegalArgumentException(&quot;Invalid API key header.&quot;);
+        key = apiKey;
+    }
+
+    public JsonNode request(String method, String path, Object body, String persistedKey) throws Exception {
+        if (!path.startsWith(&quot;api/provider/v1/&quot;) || path.contains(&quot;..&quot;) || path.contains(&quot;\\&quot;))
+            throw new IllegalArgumentException(&quot;Invalid provider path.&quot;);
+        var builder = HttpRequest.newBuilder(base.resolve(path)).timeout(Duration.ofSeconds(15))
+            .header(&quot;X-Provider-API-Key&quot;, key).header(&quot;Accept&quot;, &quot;application/json&quot;);
+        if (persistedKey != null) builder.header(&quot;Idempotency-Key&quot;, persistedKey);
+        var publisher = HttpRequest.BodyPublishers.noBody();
+        if (body != null) {
+            builder.header(&quot;Content-Type&quot;, &quot;application/json&quot;);
+            publisher = HttpRequest.BodyPublishers.ofString(JSON.writeValueAsString(body), StandardCharsets.UTF_8);
+        }
+        var response = http.send(builder.method(method, publisher).build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (response.statusCode() &lt; 200 || response.statusCode() &gt;= 300)
+            throw new ProviderException(response.statusCode(), response.headers().firstValue(&quot;Retry-After&quot;).orElse(null));
+        return JSON.readTree(response.body()).required(&quot;data&quot;);
+    }
+
+    public JsonNode launch(String authenticatedPlayerId, String returnUrl, String persistedKey, String symbol, String device) throws Exception {
+        if (persistedKey == null || persistedKey.isEmpty()) throw new IllegalArgumentException(&quot;Persist the launch key before sending; reuse it on retries.&quot;);
+        if (!Set.of(&quot;desktop&quot;, &quot;mobile&quot;).contains(device)) throw new IllegalArgumentException(&quot;Invalid device.&quot;);
+        return request(&quot;POST&quot;, &quot;api/provider/v1/launch-url&quot;, Map.of(&quot;symbol&quot;, symbol,
+            &quot;external_player_id&quot;, authenticatedPlayerId, &quot;currency&quot;, &quot;EUR&quot;, &quot;lang&quot;, &quot;en&quot;, &quot;device&quot;, device,
+            &quot;return_url&quot;, returnUrl), persistedKey);
+    }
+
+    public static JsonNode verifyCallback(String secret, byte[] rawBody, String timestamp, String signature,
+        String requestId, String operation, String operatorId, long now) throws Exception {
+        if (secret == null || secret.isEmpty() || operatorId == null || operatorId.isEmpty() ||
+            !Set.of(&quot;balance&quot;, &quot;debit&quot;, &quot;credit&quot;, &quot;rollback&quot;).contains(operation)) throw new IllegalArgumentException(&quot;Verifier is not configured.&quot;);
+        if (timestamp == null || !timestamp.matches(&quot;[0-9]{1,12}&quot;) ||
+            Math.abs(now - Long.parseLong(timestamp)) &gt; 300 || signature == null || !signature.matches(&quot;[a-f0-9]{64}&quot;))
+            throw new SecurityException(&quot;Invalid signature or timestamp.&quot;);
+        var mac = Mac.getInstance(&quot;HmacSHA256&quot;);
+        mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), &quot;HmacSHA256&quot;));
+        mac.update((timestamp + &quot;.&quot;).getBytes(StandardCharsets.US_ASCII));
+        if (!MessageDigest.isEqual(mac.doFinal(rawBody), HexFormat.of().parseHex(signature))) throw new SecurityException(&quot;Invalid signature.&quot;);
+        var payload = JSON.readTree(rawBody);
+        if (requestId == null || requestId.isEmpty() || !payload.path(&quot;request_id&quot;).isTextual() ||
+            !requestId.equals(payload.path(&quot;request_id&quot;).asText()) || !operatorId.equals(payload.path(&quot;operator_id&quot;).asText()) ||
+            !operation.equals(payload.path(&quot;transaction_type&quot;).asText())) throw new SecurityException(&quot;Callback identity mismatch.&quot;);
+        return payload;
+    }
+
+    public static final class ProviderException extends Exception {
+        public final int status;
+        public final String retryAfter;
+        ProviderException(int status, String retryAfter) {
+            super(&quot;Provider HTTP &quot; + status); this.status = status; this.retryAfter = retryAfter;
+        }
+    }
+}
+// In your callback controller preserve raw byte[] before parsing, use
+// Instant.now().getEpochSecond() for now, then validate the full wallet contract
+// and commit ownership checks, ledger mutation and immutable response atomically.
+</code></pre></details></section><section id="overview"><h2>1. Comprende la integración</h2><p>Tu backend autentica al jugador, consulta los juegos asignados y solicita una URL de lanzamiento. Tu frontend abre esa URL. Tu monedero mantiene el saldo autorizado e implementa cuatro callbacks HTTPS: balance, debit, credit y rollback. El juego alojado gestiona sus recursos y su protocolo nativo.</p><p>La versión 1.0.1 es un entorno de pruebas con nueve juegos y dos monederos de operadores simulados. Usa solo fondos simulados. Actualmente admite EUR y juegos en inglés, con cuatro sesiones simultáneas en total y dos por operador. El acceso de clientes a producción requiere validación y activación independientes. La documentación en español o portugués no habilita esos idiomas en la API del juego. Este servicio integra el runtime del VPS; no es la API oficial para desarrolladores de Play’n GO.</p></section><section id="setup"><h2>2. Configura tu backend</h2><p>Usa https://aureviagaming.com/playngo-sandbox como PROVIDER_BASE_URL. Guarda OPERATOR_API_KEY en el almacén de secretos del servidor. Envía x-provider-api-key en cada solicitud, o Authorization: Bearer, usando solo un método. Nunca pongas claves en URLs, código frontend o registros. La identidad del operador se obtiene de la clave; omite operator_id en las solicitudes al proveedor. El secreto de firma del monedero es una credencial independiente.</p><p>Durante la incorporación, facilita los orígenes web, las URLs HTTPS de retorno o lobby, las URLs base de callbacks, las monedas solicitadas y un contacto técnico. Las credenciales y la configuración son independientes en cada entorno. Tu servidor necesita HTTPS/JSON, relojes sincronizados, verificación HMAC del cuerpo original, registros persistentes y actualizaciones atómicas de saldos decimales. Las plataformas alojadas deben permitir un adaptador personalizado. Las webs estáticas necesitan backend; las apps nativas necesitan una integración probada de navegador o WebView.</p></section><section id="catalog"><h2>3. Consulta los juegos asignados</h2><p>GET /api/provider/v1/games?provider_id=playngo devuelve data.items con los juegos asignados y habilitados para tu operador. GET /api/provider/v1/games/{symbol} devuelve un juego. Usa los símbolos del catálogo y tolera campos de respuesta desconocidos. La disponibilidad no garantiza todas las funciones, idiomas o apuestas. El contrato v1 no incluye un endpoint para asignar tiradas gratis promocionales.</p><p>Los símbolos preparados son wildframes, honeyrush, moonprincess, wheelofmictlan, secretofdead, legacyofegypt, hugosadventure, trollhunters2 y demon. honeyrush corresponde al Honey Rush original; Honey Rush Black &amp; Yellow es otro título. No fijes el número de juegos del catálogo en tu integración.</p></section><section id="launch"><h2>4. Inicia el juego para el jugador autenticado</h2><p>POST /api/provider/v1/launch-url requiere Idempotency-Key. El cuerpo JSON requiere symbol, external_player_id, currency y return_url. El campo opcional lang usa en por defecto; device es desktop o mobile, con desktop por defecto. Usa EUR, un símbolo asignado y una URL HTTPS de retorno aprobada en este entorno. Los idiomas de juego no admitidos se rechazan. Obtén external_player_id de la sesión autenticada del servidor; nunca confíes directamente en un ID enviado por el navegador.</p><p>Los IDs de jugador son cadenas opacas de 1–128 caracteres y conservan mayúsculas, Unicode y espacios iniciales o finales. No los recortes ni normalices para convertirlos en otra identidad. Conserva exactamente session_id, round_id, transaction_id y request_id. La versión 1.0.0 recortaba los IDs; los reintentos antiguos con espacios pueden devolver 409. Concilia la sesión original antes de crear intencionadamente un nuevo lanzamiento.</p><p>Guarda una clave de lanzamiento y el cuerpo exacto antes de enviar. Los reintentos idénticos devuelven la respuesta y caducidad originales; un cuerpo distinto con la misma clave devuelve 409 idempotency_conflict. Conserva las claves al menos 24 horas. Tras consumir o caducar el ticket, un nuevo lanzamiento intencional necesita una clave nueva. Un timeout no autoriza a generar otra clave.</p><pre><code>{
+  &quot;symbol&quot;: &quot;wildframes&quot;,
+  &quot;external_player_id&quot;: &quot;player-123&quot;,
+  &quot;currency&quot;: &quot;EUR&quot;,
+  &quot;lang&quot;: &quot;en&quot;,
+  &quot;device&quot;: &quot;desktop&quot;,
+  &quot;return_url&quot;: &quot;https://client.example/lobby&quot;
+}</code></pre></section><section id="browser"><h2>5. Abre y cierra el juego correctamente</h2><p>Un lanzamiento correcto devuelve data.launch_url, session_id y expires_at. Entrega solo la URL al navegador autenticado correspondiente y ábrela pronto mediante redirección o iframe. El ticket es de un solo uso y dura 60 segundos. Usa título en el iframe, permiso de pantalla completa, política no-referrer y altura adaptable. Tu CSP frame-src debe permitir el origen del juego; el proveedor también debe aprobar tu origen para incrustarlo. Prueba móviles y cookies de terceros bloqueadas. CORS no controla la incrustación de iframes.</p><p>Una sesión dura hasta 30 minutos de inactividad o cuatro horas en total. Una reconexión de red dentro de la misma página usa una credencial de sesión independiente. Recargar la página, reiniciar el navegador o reabrir una URL copiada requiere otro lanzamiento. Cierra la sesión anterior con POST /api/provider/v1/sessions/{session_id}/close y solicita una nueva con otra clave. El cierre puede repetirse y bloquea nuevas jugadas sin impedir pagos o reembolsos aceptados. Los tickets no usados reservan capacidad hasta caducar. Volver al lobby no demuestra que la liquidación terminó.</p><pre><code>&lt;iframe id=&quot;game&quot; title=&quot;Game&quot; allow=&quot;fullscreen&quot; allowfullscreen
+  referrerpolicy=&quot;no-referrer&quot;
+  style=&quot;width:100%;height:100dvh;border:0&quot;&gt;&lt;/iframe&gt;</code></pre></section><section id="signatures"><h2>6. Verifica los callbacks del monedero</h2><p>Implementa POST /balance, /debit, /credit y /rollback bajo la URL base configurada de tu monedero. El proveedor envía content-type: application/json, x-pp-request-id, x-pp-timestamp (segundos Unix) y x-pp-signature. Calcula HMAC-SHA256 hexadecimal en minúsculas sobre ASCII(timestamp) + un punto + el cuerpo UTF-8 original exacto, usando el secreto del monedero. Compara en tiempo constante y rechaza desfases superiores a 300 segundos. Conserva los bytes antes de cualquier middleware JSON; analizar y serializar de nuevo cambia la firma.</p><p>Tras verificar la firma, analiza el JSON y exige que el ID de solicitud de la cabecera coincida con request_id, operator_id con tu operador configurado y transaction_type con el endpoint. Valida la titularidad del jugador y sesión y todo el esquema antes de acceder al libro contable. Los reintentos usan nuevos timestamps, firmas e IDs de solicitud, conservando el ID de transacción y los campos financieros. El fixture determinista descargable prueba los cuatro lenguajes sin contactar un monedero.</p><pre><code>HMAC-SHA256(wallet_secret, ASCII(timestamp) + &quot;.&quot; + raw_request_body)</code></pre></section><section id="money"><h2>7. Aplica el contrato del monedero</h2><p>Los importes y saldos son cadenas decimales con exactamente dos cifras fraccionarias, como &quot;2.00&quot;. Usa unidades menores enteras o un tipo decimal; nunca aritmética binaria de coma flotante. Las monedas habilitadas usan dos decimales, sin conversión de divisas automática. Los campos comunes son operator_id, player_id, session_id, game_symbol, currency, request_id, transaction_id, transaction_type, action_type y amount. El esquema OpenAPI define los tipos y límites exactos.</p><p>Balance usa amount &quot;0.00&quot; y action_type balance, omitiendo campos de ronda. Debit requiere importe positivo, round_id y round_closed false. Credit requiere round_id y round_closed, permite cero y cierra la ronda con el crédito final. Rollback requiere importe positivo, round_closed true y original_transaction_id. Varias etapas o tiradas gratis pueden compartir ronda; deduplica por transacción, nunca solo por ronda. action_type es descriptivo y no sustituye transaction_type.</p><p>Devuelve HTTP 200 con success true, el saldo autorizado, currency y transaction_id coincidentes. Los rechazos de negocio válidos usan HTTP 200 con success false y errores como insufficient_funds, unknown_player, currency_mismatch, player_blocked o transaction_cancelled. Usa 401 para firmas inválidas o timestamps antiguos; 403 para titularidad inválida; 400 para datos inválidos; 409 para identidades de transacción en conflicto; 503 para fallos temporales. Devuelve JSON UTF-8 sin comprimir en cinco segundos, con un máximo de 65.536 bytes; nunca una página HTML de error.</p><pre><code>{&quot;success&quot;:true,&quot;balance&quot;:&quot;98.00&quot;,&quot;currency&quot;:&quot;EUR&quot;,&quot;transaction_id&quot;:&quot;txn_debit_example_01&quot;}</code></pre></section><section id="idempotency"><h2>8. Garantiza un único efecto financiero</h2><p>Dentro de cada entorno y operador, registra un transaction_id único con una huella del jugador, sesión, juego, ronda, tipo, acción, moneda, importe, cierre de ronda y referencia al débito original. Excluye IDs de entrega y timestamps. En UNA transacción de base de datos: registra o comprueba el ID, bloquea o actualiza atómicamente el monedero, valida fondos y moneda, guarda el asiento y la respuesta inmutable, y confirma. Los duplicados simultáneos deben obtener el mismo resultado guardado. Guarda también los rechazos definitivos; cambiar campos financieros con el mismo ID produce idempotency_conflict.</p><p>Un callback financiero exitoso repetido devuelve su saldo y respuesta ORIGINALES guardados, aunque otras transacciones hayan cambiado el monedero. Nunca lo apliques dos veces. Otra solicitud balance consulta el saldo actual. Conserva los registros de deduplicación y cancelación mientras puedan existir reintentos o conciliación; los registros sin resolver no deben caducar. La conservación y el archivo se acuerdan durante la incorporación.</p></section><section id="rollback"><h2>9. Gestiona cancelaciones y recuperación</h2><p>Rollback referencia el débito original mediante original_transaction_id. El importe, moneda y titularidad deben coincidir. Si existe y no está cancelado, reembolsa una vez; si ya está cancelado, responde con éxito sin otro reembolso. Si falta, guarda una marca de cancelación y responde con éxito sin cambiar fondos; rechaza cualquier débito posterior con ese ID. Serializa tanto el ID de rollback como el del débito original para evitar reembolsos dobles mediante intentos distintos. Nunca reviertas un crédito no relacionado.</p><p>Una respuesta desconocida puede significar que el monedero confirmó antes de fallar la conexión. Detén el juego ante un débito desconocido y resuelve la misma transacción o cancélala mediante rollback. Mantén créditos y reembolsos pendientes hasta confirmarlos; los reintentos conservan sus IDs. El proveedor usa espera progresiva con variación (aproximadamente 1, 5, 15 y luego 60 segundos), revisada cada cinco segundos, con obligaciones persistentes. Sigue liquidando créditos y reembolsos aceptados tras cerrar el navegador o caducar la sesión. No se cancela una ronda revelada pagadera para evitar pagarla. Las rondas aceptadas cerradas se cobran automáticamente tras dos minutos de inactividad; gamble está deshabilitado en esta versión.</p></section><section id="reconciliation"><h2>10. Consulta sesiones y transacciones</h2><p>GET /api/provider/v1/transactions?limit=50 lista las transacciones de tu operador de más reciente a más antigua. El tamaño de página es de 1–100. Envía data.next_cursor sin modificar como cursor para la siguiente página; el límite del cursor es 2.048 caracteres. GET /api/provider/v1/transactions/{transaction_id} devuelve operación, importe, moneda, IDs de ronda y sesión, estado, número de intentos y último error. GET /api/provider/v1/sessions/{session_id} devuelve metadatos con control de titularidad. Codifica los IDs opacos como segmentos individuales de URL.</p><p>pending, sending y unknown siguen resolviéndose: no crees transacciones financieras de sustitución. success está confirmado por el monedero; rejected es un rechazo definitivo de débito o saldo; cancelled indica un débito sin resolver cancelado por rollback. Un débito correcto reembolsado conserva success con cancelled_by_rollback y un rollback exitoso independiente. Los créditos o reembolsos rechazados siguen pendientes de recuperación y atención del operador.</p></section><section id="errors"><h2>11. Gestiona errores y capacidad</h2><p>Los errores del proveedor contienen success false, error, message y request_id. Ante 400/422 corrige los datos o moneda e idioma no admitidos; 401 corrige credenciales; 403 revisa permisos del operador, juego y origen; 404 actualiza el catálogo o comprueba el recurso; 409 concilia la clave de lanzamiento en conflicto. Ante 429 respeta Retry-After. Ante 502/503 o timeouts de red, espera y reintenta con la clave y cuerpo originales guardados. Las solicitudes GET pueden repetirse. Conserva IDs de solicitud sin secretos para soporte.</p><p>El límite del entorno es de 60 solicitudes al proveedor por minuto y operador, excluyendo juego y callbacks salientes. Los cuerpos admiten 65.536 bytes y diez segundos (413 por tamaño, 408 por timeout). 503 capacity_reached y 503 maintenance incluyen Retry-After: 5; espera y repite la misma clave. El mantenimiento bloquea nuevas apuestas mientras continúan pagos y reembolsos aceptados. Cuatro sesiones totales y dos por operador son límites de admisión, no una capacidad de gran volumen. Una página de verificación de navegador no es una respuesta API: repórtala con su ID en vez de desactivar TLS o exponer credenciales en el navegador.</p></section><section id="acceptance"><h2>12. Prueba antes de activar clientes</h2><p>Ejecuta primero las pruebas de firma sin conexión incluidas. Después prueba catálogo y autenticación, aislamiento de jugadores, caducidad y reutilización de lanzamientos, iframes en escritorio y móvil, todos los callbacks, duplicados simultáneos, timeout tras confirmar, rollback antes del débito, fondos insuficientes, recuperación de créditos y reconexión durante funciones. Concilia los débitos aceptados con créditos finales o cancelaciones confirmadas. Un health check o demo funcional no certifica un monedero cliente.</p><p>La herramienta reanudable wallet-conformance.mjs requiere Node.js 20+, un jugador de pruebas dedicado e inactivo y al menos EUR 1.00 simulados. Copia su configuración de ejemplo a un archivo privado y ejecútala con un diario privado. Sus 17 comprobaciones dejan un cambio neto de saldo cero al completarse. Tras un fallo de conexión, reanuda con la MISMA configuración y diario; nunca borres el diario ni cambies IDs para reintentar. Mantén secretos, diarios financieros y fondos reales fuera del paquete público. El selector del lobby usa player-123 simulado y no es un sistema de login real.</p><pre><code>node examples/test-examples.mjs
+php examples/test-examples.php
+
+# Sandbox wallet acceptance:
+node examples/wallet-conformance.mjs private-wallet.json private-journal.json</code></pre></section><section id="compatibility"><h2>13. Versionado y soporte</h2><p>/api/provider/v1 y playngo-callback-v1 identifican los contratos; la versión de software 1.0.1 es independiente. Pueden añadirse campos opcionales y juegos; ignora campos de respuesta desconocidos y actualiza el catálogo. Los cambios incompatibles de campos, firma o semántica financiera requieren otro contrato versionado y una migración acordada. Conserva OpenAPI aceptado, diario de validación, orígenes, monedas, juegos y límites asignados y resultados de navegador con tu versión. Las credenciales de pruebas nunca se vuelven de producción cambiando la URL.</p><p>Para soporte técnico, facilita entorno, hora UTC, símbolo del juego, IDs de sesión, ronda y transacción, ID de solicitud del proveedor y errores sin secretos por el canal acordado. Nunca compartas claves API, secretos de firma o URLs activas de lanzamiento. Las alertas del operador y la activación de producción son pasos independientes de incorporación.</p></section></main></body></html>

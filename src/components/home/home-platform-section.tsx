@@ -16,11 +16,11 @@ export function HomePlatformSection({
     >
       <div className="container grid grid-cols-1 items-center gap-17 lg:gap-12 xl:grid-cols-[minmax(0,0.82fr)_minmax(620px,1.18fr)]">
         <div className="max-w-190">
-          <p className="mb-10 inline-flex min-h-10 items-center rounded-full border border-line-strong bg-surface-strong px-6 text-xs font-extrabold text-gold-bright uppercase">
+          <p className="mb-10 inline-flex min-h-10 items-center rounded-full border border-line-strong bg-surface-strong px-6 text-sm font-extrabold text-gold-bright uppercase">
             {content.heading.label}
           </p>
-          <h2 className="text-4xl leading-[1.08] uppercase md:text-5xl">
-            {content.heading.title}
+          <h2 className=" heading-2">
+            {content.heading.title}{" "}
             <span className="block text-ink">{content.highlightedTitle}</span>
           </h2>
           <p className="my-10 max-w-162.5 text-base leading-7 text-muted">
@@ -33,7 +33,7 @@ export function HomePlatformSection({
             {content.features.map((item) => (
               <li className="flex items-center gap-4 text-base font-semibold" key={item}>
                 <span
-                  className="grid size-6 shrink-0 place-items-center rounded-full bg-gold text-xs text-white"
+                  className="grid size-6 shrink-0 place-items-center rounded-full bg-gold text-sm text-white"
                   aria-hidden="true"
                 >
                   ✓

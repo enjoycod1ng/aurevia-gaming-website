@@ -2,7 +2,7 @@
 
 import { openCookiePreferences } from "./analytics-consent";
 
-export function CookiePreferencesButton() {
+export function CookiePreferencesButton({ label }: { label: string }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
 
   if (!gaId || !/^G-[A-Z0-9]+$/.test(gaId)) {
@@ -14,7 +14,7 @@ export function CookiePreferencesButton() {
       type="button"
       onClick={openCookiePreferences}
     >
-      Cookie preferences
+      {label}
     </button>
   );
 }

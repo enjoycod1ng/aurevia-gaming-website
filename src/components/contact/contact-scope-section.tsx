@@ -6,9 +6,9 @@ type ContactScopesContent = SiteContent["contactPage"]["scopes"];
 
 const toneClasses = {
   gold: "bg-gold-bright text-gold-bright",
-  blue: "bg-[#35b9f3] text-[#35b9f3]",
-  violet: "bg-[#b36cff] text-[#b36cff]",
-  green: "bg-[#46d79b] text-[#46d79b]",
+  blue: "bg-accent-blue text-accent-blue",
+  violet: "bg-accent-violet text-accent-violet",
+  green: "bg-success text-success",
 } as const;
 
 export function ContactScopeSection({ content }: { content: ContactScopesContent }) {
@@ -22,7 +22,7 @@ export function ContactScopeSection({ content }: { content: ContactScopesContent
               <span className={`grid size-12 place-items-center rounded-full text-white [&_svg]:size-6 ${toneClasses[item.tone].split(" ")[0]}`}><ServiceIcon name={item.icon} /></span>
               <h3 className="mt-6 text-2xl uppercase">{item.title}</h3>
               <p className="mt-4 text-sm leading-7 text-muted">{item.description}</p>
-              <a className={`mt-auto flex w-full items-center gap-2 border-t border-line pt-6 text-xs font-bold ${toneClasses[item.tone].split(" ")[1]}`} href={item.action.href}>{item.action.label} <span aria-hidden="true">→</span></a>
+              <a className={`mt-auto flex w-full items-center gap-2 border-t border-line pt-6 text-sm font-bold ${toneClasses[item.tone].split(" ")[1]}`} href={item.action.href}>{item.action.label} <span aria-hidden="true">→</span></a>
             </article>
           ))}
         </div>

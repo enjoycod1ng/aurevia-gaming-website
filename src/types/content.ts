@@ -7,7 +7,7 @@ export type SitePath =
 
 export interface NavigationItem {
   label: string;
-  href: SitePath;
+  href: string;
 }
 
 export interface ActionLink {
@@ -23,12 +23,15 @@ export interface MediaAsset {
   width: number;
   height: number;
   caption?: string;
+  previewLabel?: string;
+  openLabel?: string;
+  openAriaLabel?: string;
 }
 
 export interface SeoEntry {
   title: string;
   description: string;
-  path: SitePath;
+  path: string;
   keywords: readonly string[];
 }
 
@@ -249,6 +252,7 @@ export interface SiteContent {
     catalog: {
       ariaLabel: string;
       filterLabel: string;
+      countLabel: string;
       label: string;
       title: string;
       description: string;
@@ -309,6 +313,12 @@ export interface SiteContent {
       budgetOptions: readonly string[];
       consentLabel: string;
       submitLabel: string;
+      sendingLabel: string;
+      verificationLabel: string;
+      verificationUnavailable: string;
+      locale: string;
+      projectValues: readonly string[];
+      budgetValues: readonly string[];
       statusMessages: Readonly<Record<string, ContactStatusMessage>>;
     };
     scopes: {
@@ -335,6 +345,7 @@ export interface SiteContent {
 }
 
 export interface GamePreview {
+  statusLabel: string;
   label: string;
   title: string;
   description: string;

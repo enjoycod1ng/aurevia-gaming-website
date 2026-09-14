@@ -44,11 +44,11 @@ const stagingHeaders = isStaging
   : [];
 
 const staticDocumentPaths = [
-  "/",
-  "/services",
-  "/games",
-  "/casino-platforms",
-  "/privacy",
+  "/:locale(en|es|pt)",
+  "/:locale(en|es|pt)/services",
+  "/:locale(en|es|pt)/games",
+  "/:locale(en|es|pt)/casino-platforms",
+  "/:locale(en|es|pt)/privacy",
 ];
 
 const staticDocumentHeaders = staticDocumentPaths.map((source) => ({
@@ -89,7 +89,7 @@ const nextConfig: NextConfig = {
       },
       ...staticDocumentHeaders,
       {
-        source: "/contact",
+        source: "/:locale(en|es|pt)/contact",
         headers: [
           {
             key: "Cache-Control",

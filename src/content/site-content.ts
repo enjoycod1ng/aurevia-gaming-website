@@ -1,3 +1,4 @@
+import { mediaPath } from "@/lib/media";
 import { gameShowcase, preparedGames } from "@/content/prepared-games";
 import { analyticsPreviewImage } from "@/content/platform-preview";
 import type { SiteContent } from "@/types/content";
@@ -26,6 +27,7 @@ export const siteContent = {
     { label: "Services", href: "/services" },
     { label: "Games", href: "/games" },
     { label: "Casino Platforms", href: "/casino-platforms" },
+    { label: "Developers", href: "/docs" },
     { label: "Contact", href: "/contact" },
   ],
   primaryCta: {
@@ -320,7 +322,7 @@ export const siteContent = {
             "Low-bandwidth optimization",
             "Wallet and account integration",
           ],
-          image: { src: "/media/games/moonprincess-gameplay.webp", alt: "Moon Princess gameplay capture from the prepared integration", width: 1366, height: 768 },
+          image: { src: mediaPath("/media/games/moonprincess-gameplay.webp"), alt: "Moon Princess gameplay capture from the prepared integration", width: 1366, height: 768 },
         },
         {
           id: "casino-websites",
@@ -335,7 +337,7 @@ export const siteContent = {
             "Promotions and loyalty tools",
             "Game lobby and search",
           ],
-          image: { src: "/media/games/catalog-preview.webp", alt: "Aurevia game catalog with real Play’n GO game artwork", width: 1429, height: 1111 },
+          image: { src: mediaPath("/media/games/catalog-preview.webp"), alt: "Aurevia game catalog with real Play’n GO game artwork", width: 1429, height: 1111 },
         },
         {
           id: "admin-platforms",
@@ -445,6 +447,7 @@ export const siteContent = {
     catalog: {
       ariaLabel: "Filter the prepared Play’n GO catalog",
       filterLabel: "Game format",
+      countLabel: "Games shown: {count}",
       label: "Prepared catalog",
       title: "Nine titles. Real game artwork.",
       description: "These Play’n GO titles are available in Aurevia’s integration sandbox. Open the lobby and choose a title to explore it with a simulated wallet. Game titles and artwork belong to their respective owners; Aurevia provides the integration layer.",
@@ -654,6 +657,12 @@ export const siteContent = {
       consentLabel:
         "I understand this is a project inquiry and Aurevia may ask follow-up questions before quoting.",
       submitLabel: "Send project request",
+      sendingLabel: "Sending…",
+      verificationLabel: "Protected by Cloudflare Turnstile.",
+      verificationUnavailable: "Human verification is temporarily unavailable.",
+      locale: "en",
+      projectValues: ["Slot / betting game", "Web / mobile casino", "Casino website", "Admin panel"],
+      budgetValues: ["Under $25,000", "$25,000–$75,000", "$75,000–$150,000", "$150,000+", "Not decided yet"],
       statusMessages: {
         success: {
           tone: "success",

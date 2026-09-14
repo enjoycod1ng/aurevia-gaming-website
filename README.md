@@ -2,7 +2,7 @@
 
 A production-oriented, configuration-driven marketing website for `aureviagaming.com`.
 
-The project uses the Next.js App Router, React Server Components, TypeScript, local WebP media, responsive image optimization, server-rendered metadata, a Turnstile-protected contact form, consent-gated GA4, and standalone VPS deployment behind Cloudflare. Production currently uses Nginx and PM2; the Caddy and systemd files under `ops/` document the planned standalone migration.
+The project uses the Next.js App Router, React Server Components, TypeScript, versioned WebP media, responsive image optimization, localized metadata, a Turnstile-protected contact form, consent-gated GA4, and standalone VPS deployment behind Cloudflare. Production currently uses Nginx and PM2; the Caddy and systemd files under `ops/` document the planned standalone migration.
 
 ## Stack
 
@@ -31,8 +31,11 @@ ops/                       Caddy, systemd and VPS deployment files
 ```
 
 Component styling uses colocated Tailwind utilities. `src/app/globals.css`
-contains the Tailwind import, shared design tokens, base element defaults,
-and progressively enhanced scroll-reveal behavior. Content stays visible without JavaScript. Tailwind 4 discovers source classes
+contains shared color and typography tokens, reusable buttons and form controls,
+and progressively enhanced scroll-reveal behavior. Colors respond to light, dark,
+and system themes. Buttons use 16px text, navigation and secondary text use 14px,
+form fields use 16px, and primary controls have at least 44px touch targets.
+Content stays visible without JavaScript. Tailwind 4 discovers source classes
 automatically, so the project does not require a `tailwind.config.js` file.
 
 ## Local development
@@ -66,9 +69,35 @@ The file is checked against `SiteContent` with TypeScript's `satisfies` operator
 
 Operational secrets do **not** belong in the content file. They are read from environment variables on the VPS.
 
-## Replacing Figma SVG/image placeholders with WebP screenshots
+## Languages and preferences
 
-The bundled images are small sample WebP files, not final Figma exports.
+Pages are statically rendered at `/en`, `/es`, and `/pt`, with matching nested
+routes, HTML language attributes, canonicals, reciprocal hreflang links and sitemap
+entries. The contact pages remain dynamic. Existing English paths permanently
+redirect to their `/en` equivalents.
+
+Only `/` negotiates language: saved `aurevia-language` cookie, then weighted browser
+`Accept-Language`, then Cloudflare's country hint, then English. The preference
+redirect is private and uncached. Explicit language URLs always win, including
+shared links. No IP lookup service or IP storage is introduced. The selector saves
+the choice for one year; footer language links also work without JavaScript.
+
+Editable English content remains in `src/content/site-content.ts`; Spanish and
+Portuguese editorial translations live in `src/content/translations.ts`. The content
+loader runs on the server and passes only the copy needed by interactive components.
+Tests enforce translation coverage and stable API form values. Game names remain
+their original provider names; embedded game and dashboard screenshots retain their
+original interface language, with translated descriptions and captions.
+
+The theme button cycles System → Light → Dark and saves `aurevia-theme` in local
+storage. A small head script restores the choice before paint. With JavaScript or
+storage unavailable, content still renders and the system color scheme applies.
+
+## Updating game artwork and screenshots
+
+The catalog uses the nine prepared Play’n GO titles and their real artwork. Source
+attribution is recorded in `assets/game-artwork-sources.json`. The admin screenshot
+is explicitly labeled as a design preview with sample data.
 
 1. Export the approved screenshot from Figma at 2x as PNG, or use the original uploaded screenshot.
 2. Put raw files in a local directory such as `assets/raw`.
@@ -76,21 +105,28 @@ The bundled images are small sample WebP files, not final Figma exports.
 
    ```bash
    WEBP_QUALITY=82 IMAGE_MAX_WIDTH=1920 \
-   npm run images:optimize -- assets/raw public/media/optimized
+   npm run images:optimize -- assets/raw public/media/platforms
    ```
 
 4. Update the related image entry in `src/content/site-content.ts`, for example:
 
    ```ts
    image: {
-     src: "/media/platforms/operator-dashboard-v2.webp",
+     src: mediaPath("/media/platforms/operator-dashboard-v2.webp"),
      alt: "Casino operator dashboard showing players and revenue",
      width: 1600,
      height: 1000
    }
    ```
 
-Always use the real exported pixel width and height. Next.js uses them to reserve the aspect ratio and prevent cumulative layout shift. Use versioned filenames when replacing public media so long-lived browser and Caddy caches cannot serve an old screenshot.
+Always use the real exported pixel width and height. Next.js uses them to reserve
+the aspect ratio and prevent cumulative layout shift. After replacing originals,
+run `npm run images:version`. This copies content-hashed versions and regenerates
+`src/content/media-manifest.json`. Use `mediaPath("/media/games/name.webp")` in
+content; it resolves to the current hashed filename. Commit the originals, versioned
+assets and manifest together. Keep earlier hashed files while deployed releases may
+still reference them. The release archive includes public media and publishes it
+through the existing VPS → Cloudflare CDN flow; a separate R2 bucket is not required.
 
 Keep true UI icons as small vector/CSS assets when appropriate. Use WebP for screenshot-like material—game scenes, admin panels, product interfaces and large decorative raster artwork—not for tiny icons that need infinite scaling.
 
@@ -139,6 +175,7 @@ npm run typecheck
 npm run lint
 npm test
 npm run build
+node scripts/verify-site.mjs http://localhost:3100
 ```
 
 Or run all checks:
@@ -146,6 +183,11 @@ Or run all checks:
 ```bash
 npm run check
 ```
+
+Run `npm run verify:site -- http://localhost:3100` against a running local preview
+to exercise all language routes. This script expects an indexable build; staging
+deliberately has an empty sitemap. `release:verify` also checks the translated pages
+inside the extracted standalone artifact, including native image optimization.
 
 ## Deployments and release verification
 
@@ -202,7 +244,7 @@ not the active deployment procedure.
 
 - Marketing content remains server-rendered; client JavaScript is limited to existing interactions, Turnstile, and the analytics-consent control.
 - Content is local and build-time renderable; there are no data-fetch waterfalls.
-- The contact page and API endpoints are dynamic; the other marketing pages are prerendered.
+- The three contact pages and API endpoints are dynamic; the other localized marketing pages are prerendered.
 - Game and platform hero images are preloaded. Catalog and service images use responsive sizes and lazy loading. Artwork is served locally as optimized WebP.
 - Every responsive image has an explicit `sizes` rule and intrinsic dimensions.
 - WebP quality values are allowlisted in `next.config.ts`.
@@ -210,3 +252,27 @@ not the active deployment procedure.
 - `output: "standalone"` produces a minimal production server.
 - Scroll animations only observe newly added subtrees and skip the first screen, reduced motion and unsupported browsers.
 - Security headers, origin checks and a non-public application port are included by default.
+
+
+## Developer documentation
+
+`/[locale]/docs` shares the website's language navigation, theme and control styles.
+The portal has 13 translated contract sections, a saved programming-language
+selector, copy/source download controls, OpenAPI/Postman downloads and an offline kit.
+English, Spanish and Portuguese are documentation languages; the current game
+launch contract still permits only `lang: "en"` and sandbox EUR.
+
+The source of truth is `client/developer-guide.json` and `client/examples/` in the
+sibling `Play'nGo/playngo-api-integration` project. Update there, run its four
+backend example checks, then regenerate the public mirror:
+
+```powershell
+.venv/Scripts/python.exe scripts/build_docs.py
+python scripts/export_developer_docs.py --website 'D:\Work\Job\Casino\aurevia-gaming-nextjs'
+```
+
+The exporter uses an explicit public-file allowlist; private wallet journals,
+credentials, compiled binaries and build folders are never included. Website tests
+verify translation coverage and that every displayed sample matches its download.
+Use the provider project's `client/examples/README.md` for C#, Java, PHP and Node
+verification commands. The examples demonstrate integration, not a complete wallet.

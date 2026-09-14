@@ -1,3 +1,4 @@
+import { mediaPath } from "@/lib/media";
 import type { GameCatalogItem, GamePreview } from "@/types/content";
 
 export const sandboxUrl = "https://aureviagaming.com/playngo-sandbox/lab/";
@@ -20,7 +21,7 @@ export const preparedGames: readonly GameCatalogItem[] = titles.map((game) => ({
   ...game,
   categoryLabel: game.category === "grid-slots" ? "Grid slot" : "Video slot",
   image: {
-    src: `/media/games/${game.id}.webp`,
+    src: mediaPath(`/media/games/${game.id}.webp`),
     alt: `${game.title} — Play’n GO game artwork`,
     width: 500,
     height: 350,
@@ -34,10 +35,11 @@ export const preparedGames: readonly GameCatalogItem[] = titles.map((game) => ({
 
 export const gameShowcase: GamePreview = {
   label: "Play’n GO · Integration showcase",
+  statusLabel: "Sandbox capture",
   title: "Wild Frames",
   description: "A real gameplay capture from our prepared integration. Explore the nine-game catalog in the sandbox lobby with a simulated wallet.",
   image: {
-    src: "/media/games/wildframes-gameplay.webp",
+    src: mediaPath("/media/games/wildframes-gameplay.webp"),
     alt: "Wild Frames running in the prepared integration, showing its seven-column grid, wild symbols and simulated balance",
     width: 1366,
     height: 768,

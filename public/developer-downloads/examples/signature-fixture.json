@@ -1,0 +1,14 @@
+{
+  "description": "Deterministic offline fixture. Secret is an example, never a production credential. Use timestamp as verifier now when testing.",
+  "example_secret": "EXAMPLE_SECRET_DO_NOT_USE",
+  "now": 1789142400,
+  "endpoint": "/debit",
+  "expected_operator_id": "client-a",
+  "raw_body": "{\"action_type\":\"spin\",\"amount\":\"2.00\",\"currency\":\"EUR\",\"game_symbol\":\"wildframes\",\"operator_id\":\"client-a\",\"player_id\":\"player-123\",\"request_id\":\"req_debit_example_01\",\"round_closed\":false,\"round_id\":\"rnd_example_01\",\"session_id\":\"ses_example_01\",\"transaction_id\":\"txn_debit_example_01\",\"transaction_type\":\"debit\"}",
+  "headers": {
+    "content-type": "application/json",
+    "x-pp-request-id": "req_debit_example_01",
+    "x-pp-timestamp": "1789142400",
+    "x-pp-signature": "9278817eb8308e5833421da45433ce086162272f4033ef562024724d0c1195f8"
+  }
+}

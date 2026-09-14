@@ -68,6 +68,7 @@ try {
   let canonical;
   for (const route of [
     "/", "/services", "/games", "/casino-platforms", "/contact", "/privacy",
+    ...["en", "es", "pt"].flatMap(locale => ["", "/services", "/games", "/casino-platforms", "/contact", "/privacy", "/docs"].map(path => `/${locale}${path}`)),
     "/contact?status=constructor", "/contact?status=__proto__",
     "/contact?status=invalid&status=success&project=Slots&project=Casino",
   ]) {
@@ -75,6 +76,11 @@ try {
     assert.equal(response.status, 200, route);
     const html = await response.text();
     assert.match(html, /id="main-content"/, route);
+    const locale = route.match(/^\/(en|es|pt)(?:\/|$)/)?.[1];
+    if (locale) {
+      assert.match(html, new RegExp(`<html[^>]+lang="${locale}"`));
+      for (const language of ["en", "es", "pt"]) assert.match(html, new RegExp(`hrefLang="${language}"`, "i"));
+    }
     if (route === "/") {
       const title = html.match(/<title>(.*?)<\/title>/)?.[1];
       assert.equal(title, "Casino Game Development Agency | Aurevia Gaming");
@@ -82,7 +88,7 @@ try {
     }
     for (const match of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
       const url = match[1].replaceAll("&amp;", "&");
-      if (url.startsWith("/_next/") || url.startsWith("/media/")) assets.add(url);
+      if (url.startsWith("/_next/") || url.startsWith("/media/") || url.startsWith("/developer-downloads/")) assets.add(url);
     }
   }
   for (const asset of assets) {

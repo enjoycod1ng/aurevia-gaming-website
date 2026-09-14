@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "Aurevia Gaming Play’n GO — Sandbox 1.0.1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Sandbox integration. Set operator_api_key privately. Use an approved return_url and your authenticated player identity. Never commit credentials."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://aureviagaming.com/playngo-sandbox"
+    },
+    {
+      "key": "operator_api_key",
+      "value": ""
+    },
+    {
+      "key": "symbol",
+      "value": "wildframes"
+    },
+    {
+      "key": "player_id",
+      "value": "player-123"
+    },
+    {
+      "key": "currency",
+      "value": "EUR"
+    },
+    {
+      "key": "return_url",
+      "value": "https://aureviagaming.com/playngo-sandbox/lab/"
+    },
+    {
+      "key": "launch_idempotency_key",
+      "value": "REPLACE_WITH_UNIQUE_LOGICAL_REQUEST_ID"
+    },
+    {
+      "key": "transaction_id",
+      "value": ""
+    },
+    {
+      "key": "session_id",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-provider-api-key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{operator_api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "List assigned Play’n GO games",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/provider/v1/games?provider_id=playngo"
+      }
+    },
+    {
+      "name": "Get game",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/provider/v1/games/{{symbol}}"
+      }
+    },
+    {
+      "name": "Create sandbox launch",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/provider/v1/launch-url",
+        "description": "Use a new idempotency key for each new launch, retain it and the exact body for retries. No auto-generated key on retry.",
+        "header": [
+          {
+            "key": "content-type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{launch_idempotency_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"symbol\": \"{{symbol}}\",\n  \"external_player_id\": \"{{player_id}}\",\n  \"currency\": \"{{currency}}\",\n  \"lang\": \"en\",\n  \"device\": \"desktop\",\n  \"return_url\": \"{{return_url}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Launch accepted\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) pm.collectionVariables.set(\"session_id\", pm.response.json().data.session_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List transactions",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/provider/v1/transactions?limit=20"
+      }
+    },
+    {
+      "name": "Get transaction",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/provider/v1/transactions/{{transaction_id}}"
+      }
+    },
+    {
+      "name": "Get session",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/provider/v1/sessions/{{session_id}}"
+      }
+    },
+    {
+      "name": "Close session",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/provider/v1/sessions/{{session_id}}/close"
+      }
+    }
+  ]
+}

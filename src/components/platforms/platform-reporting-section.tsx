@@ -9,7 +9,7 @@ export function PlatformReportingSection({ content }: { content: SiteContent["pl
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {content.items.map((item, index) => (
             <article className="rounded-2xl border border-line bg-surface p-7" key={item.title}>
-              <span className="text-xs font-bold text-gold-bright">0{index + 1}</span>
+              <span className="text-sm font-bold text-gold-bright">0{index + 1}</span>
               <h3 className="mt-5 text-xl">{item.title}</h3>
               <p className="mt-4 text-sm leading-6 text-muted">{item.description}</p>
             </article>

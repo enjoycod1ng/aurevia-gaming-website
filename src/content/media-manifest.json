@@ -1,0 +1,93 @@
+{
+  "/media/games/catalog-preview.webp": {
+    "src": "/media/games/catalog-preview.68bb63799117.webp",
+    "sha256": "68bb63799117cc403e9459ce29ec69e915380de3093d8affb321742332ec2a35",
+    "width": 1429,
+    "height": 1111,
+    "bytes": 106060
+  },
+  "/media/games/demon.webp": {
+    "src": "/media/games/demon.25ddb40fc265.webp",
+    "sha256": "25ddb40fc2653b6b101c3f21c160633c9fc733e656d5c48ebdea0ce718de4c3d",
+    "width": 500,
+    "height": 350,
+    "bytes": 34380
+  },
+  "/media/games/honeyrush.webp": {
+    "src": "/media/games/honeyrush.e0ba641c944c.webp",
+    "sha256": "e0ba641c944c54ad128b13d015a3b30d942d32ba5cfa18576d887e94f448b08b",
+    "width": 500,
+    "height": 350,
+    "bytes": 36450
+  },
+  "/media/games/hugosadventure.webp": {
+    "src": "/media/games/hugosadventure.d8a87079d809.webp",
+    "sha256": "d8a87079d809fddba231f5e8ce3a060c873f7f84f9933951834ef37bf54e9036",
+    "width": 500,
+    "height": 350,
+    "bytes": 24174
+  },
+  "/media/games/legacyofegypt.webp": {
+    "src": "/media/games/legacyofegypt.65776473321c.webp",
+    "sha256": "65776473321cc99d6cedd9d314b7b7169be3c9461d7ab45972773fb65904cbab",
+    "width": 500,
+    "height": 350,
+    "bytes": 37728
+  },
+  "/media/games/moonprincess-gameplay.webp": {
+    "src": "/media/games/moonprincess-gameplay.aeff90c9a8bd.webp",
+    "sha256": "aeff90c9a8bda1c4c22a856ea56ae0de95e1787b79c1040a9aa3e96b66f5731e",
+    "width": 1366,
+    "height": 768,
+    "bytes": 133828
+  },
+  "/media/games/moonprincess.webp": {
+    "src": "/media/games/moonprincess.a7aee7e5acf9.webp",
+    "sha256": "a7aee7e5acf92aa8a2e23b0a8069ac5bc8554c1fde7c3904e3432cf4deb326a1",
+    "width": 500,
+    "height": 350,
+    "bytes": 34808
+  },
+  "/media/games/secretofdead.webp": {
+    "src": "/media/games/secretofdead.d08f69e1e9ec.webp",
+    "sha256": "d08f69e1e9ec08b7fdcde8bba2902954e1d478b78c505ceae37d9d38047db932",
+    "width": 500,
+    "height": 350,
+    "bytes": 24666
+  },
+  "/media/games/trollhunters2.webp": {
+    "src": "/media/games/trollhunters2.5cb19bc51adc.webp",
+    "sha256": "5cb19bc51adc27afa9fa68e3120fd23b763fde4eb141ab34e4755a7e21d4775e",
+    "width": 500,
+    "height": 350,
+    "bytes": 30818
+  },
+  "/media/games/wheelofmictlan.webp": {
+    "src": "/media/games/wheelofmictlan.d68893a2912e.webp",
+    "sha256": "d68893a2912ec25f305cb707f2f7f41919b52f9460db209b6484982e310bf6b5",
+    "width": 500,
+    "height": 350,
+    "bytes": 41834
+  },
+  "/media/games/wildframes-gameplay.webp": {
+    "src": "/media/games/wildframes-gameplay.0be751c06a3a.webp",
+    "sha256": "0be751c06a3a9504159f12c37ebefbd9b03c80dfaea3247d6fa197f4e90f48c3",
+    "width": 1366,
+    "height": 768,
+    "bytes": 122404
+  },
+  "/media/games/wildframes.webp": {
+    "src": "/media/games/wildframes.d3f131699b55.webp",
+    "sha256": "d3f131699b5554576f219d7086c8a4b453d1525320d5da747043da31375f7f14",
+    "width": 500,
+    "height": 350,
+    "bytes": 27858
+  },
+  "/media/platforms/admin-analytics-preview.webp": {
+    "src": "/media/platforms/admin-analytics-preview.051576a3316c.webp",
+    "sha256": "051576a3316ca47dcf074d7a448c2608f8e77051617688ceab121aae73ab6f8e",
+    "width": 1440,
+    "height": 1120,
+    "bytes": 98726
+  }
+}
