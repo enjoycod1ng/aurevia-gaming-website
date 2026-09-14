@@ -5,7 +5,7 @@ import type { AnalyticsEventName } from "@/components/analytics/analytics-consen
 interface ButtonLinkProps {
   href: string;
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "text";
+  variant?: "primary" | "secondary";
   external?: boolean;
   ariaLabel?: string;
   className?: string;
@@ -48,7 +48,6 @@ export function ButtonLink({
       "border-transparent bg-linear-to-br from-gold-bright to-gold text-white shadow-[0_12px_34px_rgb(205_164_52/0.18)]",
     secondary:
       "border-line-strong bg-white/3 text-ink hover:border-gold-bright/60 hover:bg-gold/8",
-    text: "min-h-0 border-transparent bg-transparent px-0 py-2 text-gold-bright shadow-none hover:text-ink",
   } as const;
   const classes = [
     "inline-flex min-h-13 cursor-pointer appearance-none items-center justify-center gap-3 rounded-xl border px-6 font-sans text-base font-bold leading-none transition duration-160 hover:-translate-y-0.5",

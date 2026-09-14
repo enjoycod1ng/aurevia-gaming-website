@@ -3,7 +3,7 @@
 The protected release flow is:
 
 ```text
-feature branch -> pull request -> dev -> staging -> approved auto-merge -> master -> production
+feature branch -> pull request -> dev -> staging -> approved manual merge -> master -> production
 ```
 
 | Branch | Domain | App root | Port | PM2 process |
@@ -14,6 +14,8 @@ feature branch -> pull request -> dev -> staging -> approved auto-merge -> maste
 Direct pushes, force pushes and deletion are disabled on both protected branches.
 The `master` rule requires the successful staging deployment, the
 `policy/dev-to-master` status and one fresh owner approval.
+
+A push to a `staging/**` branch also builds, verifies and deploys that candidate to the shared staging environment. These verification runs do not create a production promotion PR. Manual staging dispatches follow the same rule; promotion is limited to pushes on `dev`.
 
 ## One-time VPS bootstrap
 
@@ -112,7 +114,7 @@ on staging.
 
 ## Deployment and rollback
 
-The workflow builds the standalone artifact once, uploads the archive and its
+The workflow builds the standalone artifact once and smoke-tests the extracted archive, including native image optimization, before it uploads the archive and its
 SHA-256 checksum, and calls:
 
 ```bash

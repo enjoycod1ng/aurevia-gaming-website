@@ -1,12 +1,11 @@
 import { SectionHeading } from "@/components/section-heading";
 import type { SiteContent } from "@/types/content";
 
-import { PlatformMetricCard } from "./platform-ui";
+import { PlatformActivityList, platformTones, PlatformMetricCard } from "./platform-ui";
 import { PlatformVisual } from "./platform-visual";
 
 type RtpContent = SiteContent["platformPage"]["rtp"];
 type Panel = RtpContent["panel"];
-const tones = { gold: "#d4af37", blue: "#34b7ee", violet: "#a85af5", green: "#46d49a", red: "#ff6f6a" } as const;
 const statuses = { active: "bg-[#0d3427] text-success", draft: "bg-[#293041] text-[#a9b0bc]", test: "bg-[#34280c] text-gold-bright" } as const;
 
 function RtpPanel({ content }: { content: Panel }) {
@@ -19,8 +18,8 @@ function RtpPanel({ content }: { content: Panel }) {
       <div className="min-w-0 p-4 sm:p-7.5">
         <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center"><div><h3 className="text-2xl">{content.title}</h3><p className="mt-2 text-xs text-[#9ca4b0]">{content.description}</p></div><span className="inline-flex min-h-11 items-center rounded-xl border border-[#2a3442] bg-[#171d27] px-6 text-xs font-semibold">{content.actionLabel}</span></header>
         <div className="mt-9 grid grid-cols-2 gap-3 lg:grid-cols-4">{content.metrics.map((metric) => <PlatformMetricCard metric={metric} key={metric.label} />)}</div>
-        <section className="mt-5 rounded-[14px] border border-[#293340] bg-surface p-4 sm:p-5"><strong className="text-xs">{content.payoutTitle}</strong><ul className="mt-4.5 grid list-none gap-4 p-0">{content.payouts.map((payout) => <li className="grid grid-cols-[86px_1fr_34px] items-center gap-2.5 text-xs sm:grid-cols-[105px_1fr_38px] sm:gap-4" key={payout.label}><span>{payout.label}</span><b className="block h-2.5 overflow-hidden rounded-full bg-[#252e3a]"><span className="block h-full rounded-[inherit]" style={{ width: `${payout.value}%`, background: tones[payout.tone] }} /></b><strong className="text-right">{payout.value}%</strong></li>)}</ul></section>
-        <section className="mt-5 rounded-[14px] border border-[#293340] bg-surface p-4 sm:p-5"><strong className="text-xs">{content.auditTitle}</strong><ul className="mt-2.5 list-none p-0">{content.audit.map((activity) => <li className="grid min-h-11 grid-cols-[28px_1fr_auto] items-center gap-3 border-b border-[#293340] text-xs last:border-b-0 sm:grid-cols-[28px_1fr_1.5fr_auto]" key={activity.label}><span className="grid size-6 place-items-center rounded-full text-white" style={{ background: tones[activity.tone] }}>✓</span><b>{activity.label}</b><small className="hidden text-[#9ca4b0] sm:block">{activity.detail}</small><time className="text-[#9ca4b0]">{activity.time}</time></li>)}</ul></section>
+        <section className="mt-5 rounded-[14px] border border-[#293340] bg-surface p-4 sm:p-5"><strong className="text-xs">{content.payoutTitle}</strong><ul className="mt-4.5 grid list-none gap-4 p-0">{content.payouts.map((payout) => <li className="grid grid-cols-[86px_1fr_34px] items-center gap-2.5 text-xs sm:grid-cols-[105px_1fr_38px] sm:gap-4" key={payout.label}><span>{payout.label}</span><b className="block h-2.5 overflow-hidden rounded-full bg-[#252e3a]"><span className="block h-full rounded-[inherit]" style={{ width: `${payout.value}%`, background: platformTones[payout.tone] }} /></b><strong className="text-right">{payout.value}%</strong></li>)}</ul></section>
+        <section className="mt-5 rounded-[14px] border border-[#293340] bg-surface p-4 sm:p-5"><strong className="text-xs">{content.auditTitle}</strong><PlatformActivityList items={content.audit} /></section>
       </div>
     </div>
   );

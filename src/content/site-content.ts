@@ -30,15 +30,9 @@ export const siteContent = {
     label: "Request a Quote",
     href: "/contact",
   },
-  secondaryCta: {
-    label: "Message on Telegram",
-    href: "https://t.me/bettingssupporter",
-    external: true,
-    ariaLabel: "Message Aurevia Gaming on Telegram",
-  },
   seo: {
     home: {
-      title: "Aurevia Gaming | Casino Game Development Agency",
+      title: "Casino Game Development Agency",
       description:
         "Aurevia Gaming develops slot and betting games, casino websites, mobile experiences and operator admin platforms with source-code ownership and configurable RTP controls.",
       path: "/",
@@ -349,8 +343,6 @@ export const siteContent = {
       description:
         "Tell us about your game, platform or operator workflow. We will shape a clear development plan and quote.",
       primaryAction: { label: "Request a Quote", href: "/contact" },
-      telegramLabel: "Telegram",
-      phoneLabel: "Call",
     },
   },
   servicesPage: {
@@ -560,7 +552,6 @@ export const siteContent = {
       description:
         "Share your scope and receive a practical delivery plan and quote.",
       primaryAction: { label: "Request a Quote", href: "/contact" },
-      telegramLabel: "Telegram",
     },
   },
   gamesPage: {
@@ -730,77 +721,11 @@ export const siteContent = {
         },
       ],
     },
-    delivery: {
-      label: "Behind the experience",
-      title: "More than a beautiful game screen.",
-      description:
-        "Aurevia combines creative direction, game mathematics, production engineering and operator controls in one delivery team.",
-      pillars: [
-        {
-          icon: "spark",
-          tone: "gold",
-          title: "Game concept & UX",
-          description:
-            "Theme, narrative, symbols, sound direction, player flows and responsive interaction design.",
-          footer: "Included in delivery",
-        },
-        {
-          icon: "target",
-          tone: "green",
-          title: "Math & RTP models",
-          description:
-            "Probability tables, volatility, payout distribution, bonus logic and configurable operating profiles.",
-          footer: "Included in delivery",
-        },
-        {
-          icon: "devices",
-          tone: "blue",
-          title: "Production engineering",
-          description:
-            "HTML5 and WebGL clients, secure services, wallet hooks, telemetry and deployment-ready packaging.",
-          footer: "Included in delivery",
-        },
-        {
-          icon: "controls",
-          tone: "violet",
-          title: "Operator tooling",
-          description:
-            "Analytics, game configuration, player controls, campaigns, reporting and performance monitoring.",
-          footer: "Included in delivery",
-        },
-      ],
-      processAriaLabel: "Aurevia game delivery process",
-      processSteps: [
-        "Concept",
-        "Math",
-        "Prototype",
-        "Production",
-        "QA",
-        "Release",
-      ],
-    },
-    deployment: {
-      label: "Demo to deployment",
-      title: "Ready for your brand, wallet and platform.",
-      description:
-        "From a single game to a catalog of games or a fully integrated casino experience with operator tooling.",
-      capabilitiesAriaLabel: "Deployment capabilities",
-      capabilities: [
-        "Custom branding",
-        "Wallet API",
-        "Game aggregator",
-        "Bonus engine",
-        "RTP profiles",
-        "Telemetry",
-        "Multi-language",
-      ],
-    },
     cta: {
       title: "Have a game idea? Let's make it playable.",
       description:
         "Share your theme, mechanics or market goals and receive a development plan.",
       primaryAction: { label: "Request a Quote", href: "/contact" },
-      telegramLabel: "Telegram",
     },
   },
   platformPage: {
@@ -1149,31 +1074,8 @@ export const siteContent = {
       description:
         "Share your business model, modules and integration requirements.",
       primaryAction: { label: "Request a Quote", href: "/contact" },
-      telegramLabel: "Telegram",
     },
   },
-  faq: [
-    {
-      question: "Do you provide the full source code?",
-      answer:
-        "Yes. Source-code ownership and the exact handoff scope are written into the project agreement before development starts.",
-    },
-    {
-      question: "Can RTP and game settings be configurable?",
-      answer:
-        "They can be designed as controlled configuration workflows with permissions, validation and audit history appropriate to the product.",
-    },
-    {
-      question: "Can you build both the game and the admin platform?",
-      answer:
-        "Yes. The engagement can cover a single game, a player-facing website, operator tooling or the full product stack.",
-    },
-    {
-      question: "Can the site link to live game demos?",
-      answer:
-        "Yes. Add each hosted demo URL in src/content/site-content.ts and the existing cards will automatically display the live-demo action.",
-    },
-  ],
   contactPage: {
     hero: {
       label: "Start a project",
@@ -1391,13 +1293,10 @@ export const siteContent = {
       description:
         "Send the form, message us on Telegram or call to begin a focused technical conversation.",
       primaryAction: { label: "Request a quote", href: "#quote-form" },
-      telegramLabel: "Telegram",
     },
   },
   footer: {
     description: "Casino game development for a global market.",
-    legalLine:
-      "All product names and demo visuals shown are illustrative unless otherwise stated.",
     telegramLabel: "Telegram",
   },
 } satisfies SiteContent;

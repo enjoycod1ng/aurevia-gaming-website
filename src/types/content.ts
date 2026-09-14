@@ -38,11 +38,6 @@ export interface SectionCopy {
   description: string;
 }
 
-export interface HomeProofPoint {
-  number: string;
-  label: string;
-}
-
 export type ServiceIconName =
   | "spark"
   | "devices"
@@ -122,8 +117,6 @@ export interface ProjectCta {
   title: string;
   description: string;
   primaryAction: ActionLink;
-  telegramLabel: string;
-  phoneLabel?: string;
 }
 
 export interface ContactStatusMessage {
@@ -137,12 +130,6 @@ export interface ContactScopeItem {
   title: string;
   description: string;
   action: ActionLink;
-}
-
-export interface ContactProcessStep {
-  number: string;
-  title: string;
-  description: string;
 }
 
 export type GameCategory = "slots" | "crash" | "instant-win" | "table-inspired";
@@ -172,14 +159,6 @@ export interface GameCatalogItem {
 export interface GameFilter {
   label: string;
   value: "all" | GameCategory;
-}
-
-export interface DeliveryPillar {
-  icon: ServiceIconName;
-  tone: ServiceTone;
-  title: string;
-  description: string;
-  footer: string;
 }
 
 export type PlatformTone = ServiceTone | "red";
@@ -252,7 +231,6 @@ export interface SiteContent {
   };
   navigation: readonly NavigationItem[];
   primaryCta: ActionLink;
-  secondaryCta: ActionLink;
   seo: {
     home: SeoEntry;
     services: SeoEntry;
@@ -326,7 +304,7 @@ export interface SiteContent {
       heading: SectionCopy;
       items: readonly HomeReason[];
     };
-    cta: ProjectCta & { phoneLabel: string };
+    cta: ProjectCta;
   };
   servicesPage: {
     hero: {
@@ -378,21 +356,6 @@ export interface SiteContent {
       description: string;
       filters: readonly GameFilter[];
       games: readonly GameCatalogItem[];
-    };
-    delivery: {
-      label: string;
-      title: string;
-      description: string;
-      pillars: readonly DeliveryPillar[];
-      processAriaLabel: string;
-      processSteps: readonly string[];
-    };
-    deployment: {
-      label: string;
-      title: string;
-      description: string;
-      capabilitiesAriaLabel: string;
-      capabilities: readonly string[];
     };
     cta: ProjectCta;
   };
@@ -479,7 +442,6 @@ export interface SiteContent {
     };
     cta: ProjectCta;
   };
-  faq: readonly FaqItem[];
   contactPage: {
     hero: SectionCopy & {
       telegramDescription: string;
@@ -510,7 +472,7 @@ export interface SiteContent {
     };
     process: {
       heading: SectionCopy;
-      steps: readonly ContactProcessStep[];
+      steps: readonly ProcessStep[];
     };
     brief: {
       heading: SectionCopy;
@@ -523,7 +485,6 @@ export interface SiteContent {
   };
   footer: {
     description: string;
-    legalLine: string;
     telegramLabel: string;
   };
 }

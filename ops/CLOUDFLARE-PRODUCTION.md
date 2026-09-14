@@ -286,8 +286,8 @@ Build and deploy through the repository release workflow, then test:
 ```bash
 curl -I http://aureviagaming.com
 curl -I https://www.aureviagaming.com/contact?project=test
-curl -I https://aureviagaming.com/media/hero/hero-platform.webp
-curl -I https://aureviagaming.com/media/hero/hero-platform.webp
+curl -I https://aureviagaming.com/media/services/slot-development.webp
+curl -I https://aureviagaming.com/media/services/slot-development.webp
 curl -I https://aureviagaming.com/api/health
 ```
 

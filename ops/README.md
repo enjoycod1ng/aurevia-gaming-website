@@ -4,9 +4,7 @@ The GitHub Actions staging/production release flow is documented in
 [`AUTO-DEPLOY.md`](AUTO-DEPLOY.md).
 
 Production currently runs Nginx -> Next.js on `127.0.0.1:3000`, supervised by
-the enabled `pm2-deploy` systemd service. The files below describe the optional
-future migration to Caddy and the standalone Next.js server; they are not the
-active production proxy or supervisor.
+the enabled `pm2-deploy` systemd service. Staging uses port 3001. Both run the packaged Next.js standalone server. `Caddyfile` and `aurevia-gaming.service` are optional proxy/supervisor migration examples; the other deployment files support the active PM2 flow.
 
 - `aurevia-gaming.service`: systemd unit for the standalone Next.js server.
 - `Caddyfile`: domain redirect, TLS reverse proxy, compression and cache headers.
@@ -17,7 +15,7 @@ active production proxy or supervisor.
 - `aurevia-deploy.sudoers`: restricted sudo entry for the `deploy` account.
 - `CLOUDFLARE-PRODUCTION.md`: exact Cloudflare Free, Turnstile, GA4 and verification checklist.
 
-The service expects:
+The optional standalone systemd example expects:
 
 - application symlink: `/var/www/aurevia-gaming/current`
 - runtime user/group: `aurevia:aurevia`
@@ -25,7 +23,7 @@ The service expects:
 - server binding: `127.0.0.1:3000`
 - environment file: `/etc/aurevia-gaming.env`
 
-If Node is installed elsewhere, change `ExecStart` in the unit before installing it. Keep port 3000 private; Caddy is the only public entry point.
+If Node is installed elsewhere, change `ExecStart` in the unit before installing it. Keep port 3000 private; only the selected reverse proxy should be public.
 
 The Caddyfile trusts only Cloudflare's published proxy ranges when restoring the
 visitor IP. Re-check those ranges before each infrastructure change and restrict

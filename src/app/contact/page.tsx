@@ -10,15 +10,15 @@ export const metadata = createPageMetadata(siteContent.seo.contact);
 
 interface ContactPageProps {
   searchParams: Promise<{
-    status?: string;
-    project?: string;
+    status?: string | string[];
+    project?: string | string[];
   }>;
 }
 
 function getStatusMessage(status: string | undefined) {
   const statusMessages = siteContent.contactPage.form.statusMessages;
 
-  return status && status in statusMessages
+  return status && Object.hasOwn(statusMessages, status)
     ? statusMessages[status as keyof typeof statusMessages]
     : undefined;
 }
@@ -26,8 +26,10 @@ function getStatusMessage(status: string | undefined) {
 export default async function ContactPage({ searchParams }: ContactPageProps) {
   const params = await searchParams;
   const { contact, contactPage } = siteContent;
-  const status = getStatusMessage(params.status);
-  const requestedProject = params.project?.slice(0, 120) ?? "";
+  const statusParam = Array.isArray(params.status) ? params.status[0] : params.status;
+  const projectParam = Array.isArray(params.project) ? params.project[0] : params.project;
+  const status = getStatusMessage(statusParam);
+  const requestedProject = projectParam?.slice(0, 120) ?? "";
 
   return (
     <main id="main-content" className="bg-canvas">

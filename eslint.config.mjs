@@ -8,6 +8,7 @@ export default defineConfig([
   {
     ignores: [
       ".next/**",
+      ".codex-tmp/**",
       "release/**",
       "dist/**",
       "node_modules/**",

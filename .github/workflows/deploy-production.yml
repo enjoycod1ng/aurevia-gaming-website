@@ -42,6 +42,9 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
+      - name: Test
+        run: npm test
+
       - name: Lint
         run: npm run lint
 
@@ -54,6 +57,7 @@ jobs:
         run: |
           archive="$RUNNER_TEMP/aurevia-gaming-$GITHUB_SHA.tar.gz"
           npm run release:package -- "$archive"
+          npm run release:verify -- "$archive"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
 
       - name: Deploy and verify on production VPS

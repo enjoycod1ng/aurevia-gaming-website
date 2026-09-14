@@ -121,17 +121,15 @@
 }
 
 .scroll-reveal {
-  opacity: 0;
-  transform: translateY(18px);
   transition:
     opacity 780ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
 }
 
-.scroll-reveal.is-revealed {
-  opacity: 1;
-  transform: none;
+.scroll-reveal-pending {
+  opacity: 0;
+  transform: translateY(18px);
+  will-change: opacity, transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -144,8 +142,7 @@
     animation-iteration-count: 1 !important;
   }
 
-  .scroll-reveal,
-  .scroll-reveal.is-revealed {
+  .scroll-reveal-pending {
     opacity: 1 !important;
     transform: none !important;
   }

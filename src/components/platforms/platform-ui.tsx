@@ -1,4 +1,4 @@
-import type { PlatformMetric } from "@/types/content";
+import type { PlatformActivity, PlatformMetric } from "@/types/content";
 
 interface PlatformSidebarProps {
   brandName: string;
@@ -51,5 +51,24 @@ export function PlatformLineChart({ points, label }: PlatformLineChartProps) {
       <polyline points={polyline} className="fill-none stroke-gold-bright stroke-[1.5] [stroke-linecap:round] [stroke-linejoin:round]" />
       {points.map(([x, y], index) => <circle className="fill-gold-bright" cx={x} cy={y} r="1.7" key={`${x}-${y}-${index}`} />)}
     </svg>
+  );
+}
+
+export const platformTones = {
+  gold: "#d4af37", blue: "#34b7ee", violet: "#a85af5", green: "#46d49a", red: "#ff6f6a",
+} as const;
+
+export function PlatformActivityList({ items }: { items: readonly PlatformActivity[] }) {
+  return (
+    <ul className="mt-2.5 list-none p-0">
+      {items.map((activity) => (
+        <li className="grid min-h-11 grid-cols-[28px_1fr_auto] items-center gap-3 border-b border-[#293340] text-xs last:border-b-0 sm:grid-cols-[28px_1fr_1.5fr_auto]" key={activity.label}>
+          <span className="grid size-6 place-items-center rounded-full text-white" style={{ background: platformTones[activity.tone] }}>✓</span>
+          <b>{activity.label}</b>
+          <small className="hidden text-[#9ca4b0] sm:block">{activity.detail}</small>
+          <time className="text-[#9ca4b0]">{activity.time}</time>
+        </li>
+      ))}
+    </ul>
   );
 }

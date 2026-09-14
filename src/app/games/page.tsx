@@ -15,7 +15,6 @@ export default function GamesPage() {
       <GamesHeroSection content={gamesPage.hero} />
       <GameCatalogSection content={gamesPage.catalog} />
       <HomeCtaSection
-        className="games-page__cta"
         content={gamesPage.cta}
       />
     </main>

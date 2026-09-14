@@ -6,7 +6,7 @@ The project uses the Next.js App Router, React Server Components, TypeScript, lo
 
 ## Stack
 
-- Next.js 16.3.0
+- Next.js 16.3.5
 - React 19.2.8
 - TypeScript
 - Tailwind CSS 4 with CSS-first theme tokens and a minimal global base layer
@@ -15,7 +15,6 @@ The project uses the Next.js App Router, React Server Components, TypeScript, lo
 - Nginx and PM2 on the live VPS; Caddy and a standalone systemd unit are available for a future migration
 - Cloudflare Free for DNS, CDN, WAF, DDoS protection, rate limiting and Turnstile
 - Google Analytics 4 behind an explicit analytics-consent control
-- systemd for process supervision
 
 ## Project structure
 
@@ -32,8 +31,8 @@ ops/                       Caddy, systemd and VPS deployment files
 ```
 
 Component styling uses colocated Tailwind utilities. `src/app/globals.css`
-contains only the Tailwind import, shared design tokens, base element defaults,
-and the global scroll-reveal behavior. Tailwind 4 discovers source classes
+contains the Tailwind import, shared design tokens, base element defaults,
+and progressively enhanced scroll-reveal behavior. Content stays visible without JavaScript. Tailwind 4 discovers source classes
 automatically, so the project does not require a `tailwind.config.js` file.
 
 ## Local development
@@ -48,7 +47,7 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-After the first install, commit the generated `package-lock.json`. Production and CI can then use deterministic `npm ci` installs.
+The committed lockfile supports deterministic `npm ci` installs in CI and on release builders.
 
 ## Configurable content
 
@@ -61,7 +60,6 @@ Edit `src/content/site-content.ts` to change:
 - Game catalog, filters, artwork themes, optional images and action URLs
 - Casino platform modules, dashboard data, RTP profiles, integrations and security controls
 - Contact-page copy, quote fields, project types, proof points, process steps and common questions
-- Process steps and FAQs
 - Screenshot paths, alt text and intrinsic dimensions
 
 The file is checked against `SiteContent` with TypeScript's `satisfies` operator, so missing or malformed fields fail during type-checking.
@@ -173,107 +171,76 @@ Telegram is attempted first. If it is not configured, the route uses the webhook
 ```bash
 npm run typecheck
 npm run lint
+npm test
 npm run build
 ```
 
-Or run all three:
+Or run all checks:
 
 ```bash
 npm run check
 ```
 
-## Automated deployments
+## Deployments and release verification
 
-Pull requests merge into `dev`, which deploys to the Access-protected staging
-site. A successful staging deployment creates or updates the `dev` to `master`
-promotion pull request and enables auto-merge; production deploys only after
-the required owner approval. See [`ops/AUTO-DEPLOY.md`](ops/AUTO-DEPLOY.md) for
-the complete GitHub, VPS, Nginx and Cloudflare setup.
+The active deployment uses Nginx, PM2 and the Next.js standalone server on Node.js 24.
 
-## Create a VPS release
+- Pull requests merge into `dev`, which deploys to public staging at `staging.aureviagaming.com`.
+- A successful `dev` deployment prepares a promotion PR. Production changes require a manual approved merge into `master`.
+- Push a `staging/**` branch to verify a candidate on the staging VPS without preparing production promotion. These runs share the staging site and deployment concurrency group.
+- Once the updated workflow is on the default branch, a manual staging workflow dispatch can also verify a selected ref.
+- Staging uses noindex headers and a disallowing robots file; it is not protected by Cloudflare Access.
+
+See [ops/AUTO-DEPLOY.md](ops/AUTO-DEPLOY.md) for account setup, environment variables, protected branches and recovery.
+Runtime secrets stay in `/etc/aurevia-gaming/staging.env` and `/etc/aurevia-gaming/production.env`.
+The root-owned `/usr/local/sbin/aurevia-deploy` helper is installed separately and must not be overwritten by a workflow.
+
+Build a release on **Linux with Node.js 24** so native dependencies match the VPS:
 
 ```bash
 npm run release
 ```
 
-This builds and verifies the application, copies the minimal Next.js standalone server, static build output and public files, then creates:
+This installs the locked dependencies, checks types and lint, runs tests, builds the site,
+and packages `release/aurevia-gaming-YYYYMMDD-HHMMSS.tar.gz` plus its SHA-256 checksum.
+It then extracts that archive into a temporary directory and starts the packaged server.
+The smoke check verifies pages, static assets, native Sharp image optimization, metadata,
+contact query edge cases, and rejection of invalid form submissions. It never delivers contact messages.
 
-```text
-release/aurevia-gaming-YYYYMMDD-HHMMSS.tar.gz
-```
-
-The standalone copy is important: `.next/standalone` does not automatically include `public` or `.next/static`, so the release script adds both explicitly.
-
-## First-time VPS setup
-
-These commands assume Ubuntu, an existing Node.js 24 installation at `/usr/bin/node`, and Caddy already installed.
+For an existing build:
 
 ```bash
-sudo useradd --system --home /var/lib/aurevia --create-home --shell /usr/sbin/nologin aurevia
-sudo install -d -o aurevia -g aurevia /var/www/aurevia-gaming/releases
-sudo install -m 0644 ops/aurevia-gaming.service /etc/systemd/system/aurevia-gaming.service
-sudo install -m 0600 .env.example /etc/aurevia-gaming.env
-sudo systemctl daemon-reload
-sudo systemctl enable aurevia-gaming
+npm run release:package -- release/candidate.tar.gz
+npm run release:verify -- release/candidate.tar.gz
 ```
 
-For the live Nginx/PM2 deployment, edit `/etc/aurevia-gaming/production.env` and add the production Turnstile, GA4, and contact delivery values. Keep this file owned by `deploy` and mode `0600`. The standalone systemd example below instead uses `/etc/aurevia-gaming.env`. Follow [`ops/CLOUDFLARE-PRODUCTION.md`](ops/CLOUDFLARE-PRODUCTION.md) for the current Cloudflare Free and GA4 account settings.
+Git Bash can package a Windows build for local verification, but that artifact must not be deployed to Linux.
+GitHub Actions builds and verifies a Linux archive before uploading it to the VPS.
+The package includes `public` and `.next/static`, which Next.js does not copy into standalone output automatically.
 
-Add the contents of `ops/Caddyfile` to the active Caddy configuration. Do not overwrite other site blocks already on the server.
+The deployment helper takes three arguments:
 
 ```bash
-sudo caddy validate --config /etc/caddy/Caddyfile
-sudo systemctl reload caddy
+sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/ARCHIVE.tar.gz COMMIT_SHA
 ```
 
-Port `3000` is bound to `127.0.0.1` and must not be publicly opened. After validating SSH access, restrict public HTTP and HTTPS at the VPS firewall to Cloudflare's published proxy ranges so traffic cannot bypass the WAF.
+Use `scripts/deploy-vps.sh` or the workflow to upload the archive and checksum together.
+The helper switches the release symlink, restarts PM2, checks the exact revision and environment
+through the origin health endpoint, and rolls back automatically if startup fails.
+It retains five releases. Keep app ports 3000 and 3001 bound to localhost behind Nginx.
 
-## Deploy a release
-
-From your development machine:
-
-```bash
-scp release/aurevia-gaming-*.tar.gz root@YOUR_SERVER:/tmp/
-scp ops/deploy-release.sh root@YOUR_SERVER:/tmp/
-```
-
-On the VPS:
-
-```bash
-sudo bash /tmp/deploy-release.sh /tmp/aurevia-gaming-*.tar.gz
-```
-
-The script creates a timestamped release, atomically updates `/var/www/aurevia-gaming/current`, restarts the systemd service, verifies `/api/health`, and retains the latest five releases.
-
-Useful commands:
-
-```bash
-sudo systemctl status aurevia-gaming
-sudo journalctl -u aurevia-gaming -f
-curl -fsS http://127.0.0.1:3000/api/health
-sudo caddy validate --config /etc/caddy/Caddyfile
-```
-
-## Rollback
-
-List releases and repoint `current` to the last healthy one:
-
-```bash
-ls -1dt /var/www/aurevia-gaming/releases/*
-sudo ln -sfn /var/www/aurevia-gaming/releases/PREVIOUS_RELEASE /var/www/aurevia-gaming/current.next
-sudo mv -Tf /var/www/aurevia-gaming/current.next /var/www/aurevia-gaming/current
-sudo systemctl restart aurevia-gaming
-```
+The Caddy and standalone systemd files under `ops/` are optional migration examples,
+not the active deployment procedure.
 
 ## Performance decisions
 
 - Marketing content remains server-rendered; client JavaScript is limited to existing interactions, Turnstile, and the analytics-consent control.
 - Content is local and build-time renderable; there are no data-fetch waterfalls.
-- The only dynamic routes are the contact endpoint and health endpoint.
-- Hero imagery is preloaded; below-the-fold images remain lazy by default.
+- The contact page and API endpoints are dynamic; the other marketing pages are prerendered.
+- Current hero previews use HTML/SVG; service images remain lazy by default. Optional platform hero images are preloaded.
 - Every responsive image has an explicit `sizes` rule and intrinsic dimensions.
 - WebP quality values are allowlisted in `next.config.ts`.
 - `next/font` self-hosts the selected fonts, avoiding a render-blocking remote font request.
 - `output: "standalone"` produces a minimal production server.
-- Caddy applies Zstandard/Gzip compression and immutable caching to hashed Next.js assets.
+- Scroll animations only observe newly added subtrees and skip the first screen, reduced motion and unsupported browsers.
 - Security headers, origin checks and a non-public application port are included by default.

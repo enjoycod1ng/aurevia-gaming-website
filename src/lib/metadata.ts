@@ -12,7 +12,9 @@ const openGraphImage = {
 
 export function createPageMetadata(entry: SeoEntry): Metadata {
   return {
-    title: entry.title,
+    title: entry.path === "/"
+      ? { absolute: `${entry.title} | ${siteContent.brand.name}` }
+      : entry.title,
     description: entry.description,
     keywords: [...entry.keywords],
     alternates: {

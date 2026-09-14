@@ -41,6 +41,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={item.href === pathname ? "page" : undefined}
               className={`text-sm font-medium transition-colors hover:text-gold-bright ${item.href === pathname ? "text-gold-bright" : "text-muted"}`}
             >
               {item.label}
@@ -48,7 +49,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <details className="justify-self-end lg:hidden">
+        <details key={pathname} className="justify-self-end lg:hidden">
           <summary
             className="grid size-11.5 cursor-pointer list-none place-items-center rounded-xl border border-line-strong bg-surface text-ink marker:hidden"
             aria-label="Open navigation"
@@ -68,6 +69,7 @@ export function SiteHeader() {
                 className="border-b border-line px-1.5 py-3 text-ink-soft"
                 key={item.href}
                 href={item.href}
+                aria-current={item.href === pathname ? "page" : undefined}
               >
                 {item.label}
               </Link>

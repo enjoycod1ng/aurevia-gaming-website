@@ -17,6 +17,9 @@ fi
 
 npm run typecheck
 npm run lint
+npm test
 npm run build
 
 bash "$PROJECT_ROOT/scripts/package-release.sh" "$ARCHIVE"
+
+npm run release:verify -- "$ARCHIVE"

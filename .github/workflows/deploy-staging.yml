@@ -2,7 +2,8 @@ name: Deploy staging
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, "staging/**"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -41,6 +42,9 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
+      - name: Test
+        run: npm test
+
       - name: Lint
         run: npm run lint
 
@@ -53,6 +57,7 @@ jobs:
         run: |
           archive="$RUNNER_TEMP/aurevia-gaming-$GITHUB_SHA.tar.gz"
           npm run release:package -- "$archive"
+          npm run release:verify -- "$archive"
           echo "archive=$archive" >> "$GITHUB_OUTPUT"
 
       - name: Deploy and verify on staging VPS
@@ -67,6 +72,7 @@ jobs:
 
   promote:
     name: Prepare production promotion
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     needs: deploy
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -121,7 +127,7 @@ jobs:
             -f target_url="$GITHUB_SERVER_URL/$repository/actions/runs/$GITHUB_RUN_ID" \
             >/dev/null
 
-            echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
+          echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
 
       - name: Write promotion summary
         run: |
