@@ -38,7 +38,7 @@ export const siteContent = {
     home: {
       title: "Casino Game Development Agency",
       description:
-        "Aurevia Gaming builds casino websites, game API integrations and admin analytics platforms. Explore nine prepared Play’n GO titles in our integration sandbox.",
+        "Aurevia Gaming builds casino websites, game API integrations and admin analytics platforms. Explore nine Play’n GO game demos with 10,000 simulated credits.",
       path: "/",
       keywords: [
         "casino game development",
@@ -64,12 +64,12 @@ export const siteContent = {
     games: {
       title: "Games",
       description:
-        "Explore nine prepared Play’n GO games in Aurevia’s API integration sandbox, with real game artwork and simulated client wallets.",
+        "Open nine Play’n GO game demos directly, each starting with 10,000 simulated credits. No API key is required.",
       path: "/games",
       keywords: [
         "Play’n GO API integration",
         "casino game integration",
-        "game integration sandbox",
+        "game demos",
         "casino game catalog"
       ],
     },
@@ -188,7 +188,7 @@ export const siteContent = {
       heading: {
         label: "Prepared game catalog",
         title: "Real games. Connected through our API.",
-        description: "Explore Play’n GO titles from our integration sandbox. Open the lobby, select a game and try it with a simulated wallet. Aurevia provides the integration layer; game titles and artwork belong to their respective owners.",
+        description: "Choose a Play’n GO title and open its demo directly with 10,000 simulated credits. No API key is required. Aurevia provides the integration layer; game titles and artwork belong to their respective owners.",
       },
       items: preparedGames.slice(0, 3),
     },
@@ -439,7 +439,7 @@ export const siteContent = {
     hero: {
       label: "Play’n GO integration",
       titleLines: ["Real games.", "Ready to explore."],
-      description: "Nine prepared titles, one integration sandbox. Explore the game catalog and discuss how to connect your own client wallet and website.",
+      description: "Nine game demos, ready to open. Explore the catalog with simulated credits and discuss how to connect your own client wallet and website.",
       primaryAction: { label: "Browse All Games", href: "#game-library" },
       secondaryAction: { label: "Discuss Integration", href: "/contact?project=Game%20API%20integration" },
       featured: gameShowcase,
@@ -450,7 +450,7 @@ export const siteContent = {
       countLabel: "Games shown: {count}",
       label: "Prepared catalog",
       title: "Nine titles. Real game artwork.",
-      description: "These Play’n GO titles are available in Aurevia’s integration sandbox. Open the lobby and choose a title to explore it with a simulated wallet. Game titles and artwork belong to their respective owners; Aurevia provides the integration layer.",
+      description: "Choose a Play’n GO title to open its demo directly with 10,000 simulated credits. No API key is required. Game titles and artwork belong to their respective owners; Aurevia provides the integration layer.",
       filters: [ { label: "All Games", value: "all" }, { label: "Grid Slots", value: "grid-slots" }, { label: "Video Slots", value: "video-slots" } ],
       games: preparedGames,
     },
