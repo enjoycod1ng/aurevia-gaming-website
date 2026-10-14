@@ -51,9 +51,13 @@ is that push, and the setting would block their approval. If master also has a
 classic branch protection rule, review it and delete it once the ruleset is
 active; GitHub combines both.
 
-Merge pull requests into `dev` with a merge commit as well, so `dev` keeps
-`master` in its history. After a squash merge, the promotion PR reports that
-`dev` is out of date; use **Update branch**, let staging redeploy, then merge.
+Feature pull requests into `dev` may be squashed. Promotions must not be: with
+a merge commit, the next promotion's merge base is the previously promoted
+`dev` commit and it merges cleanly. A squashed promotion leaves `master` with a
+commit `dev` lacks, the production workflow refuses to deploy it, and the next
+promotion conflicts. To recover, merge `master` into `dev` without changing any
+files (`git merge -s ours origin/master` on a branch from `dev`), merge that
+pull request into `dev` with **Create a merge commit**, and promote again.
 
 Do not deploy production from any other branch, and never use a manual
 production dispatch to publish unmerged work. If production needs an urgent

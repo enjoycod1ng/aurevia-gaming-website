@@ -10,6 +10,11 @@ set -Eeuo pipefail
 #     staging and is merged with a merge commit, with no bypass;
 #   - auto-merge is disabled.
 #
+# The ruleset does not require the promotion branch to be up to date: master
+# keeps each promotion's merge commit, which dev never contains, and dev rejects
+# direct pushes. scripts/verify-promotion.sh enforces the stronger property that
+# the deployed tree equals the staged dev commit.
+#
 # Run it with a GitHub CLI session that has admin rights on the repository. It
 # is idempotent and prints anything it cannot fix automatically.
 #
@@ -81,7 +86,7 @@ RULESET="$(cat <<JSON
     {
       "type": "required_status_checks",
       "parameters": {
-        "strict_required_status_checks_policy": true,
+        "strict_required_status_checks_policy": false,
         "required_status_checks": [
           { "context": "Deploy staging" },
           { "context": "policy/dev-to-master" }
