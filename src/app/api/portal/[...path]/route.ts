@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
 
+import { getClientIp } from "@/lib/client-ip";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -28,13 +30,22 @@ async function forward(
     const value = request.headers.get(key);
     if (value) headers.set(key, value);
   }
+  // Without these the backend sees every visitor as 127.0.0.1, so per-IP
+  // login and demo limits would apply to everyone at once.
+  const clientIp = getClientIp(request.headers);
+  if (clientIp) {
+    headers.set("x-real-ip", clientIp);
+    headers.set("x-forwarded-for", clientIp);
+  }
+  // The non-__Host- test cookies exist only for local HTTP development; any
+  // sibling subdomain (staging included) could plant them in production.
+  const cookieName =
+    process.env.NODE_ENV === "production"
+      ? /^__Host-aurevia_(?:admin|demo)$/
+      : /^(?:__Host-aurevia_(?:admin|demo)|aurevia_(?:admin|demo)_test)$/;
   const cookies = request.cookies
     .getAll()
-    .filter(({ name }) =>
-      /^(?:__Host-aurevia_(?:admin|demo)|aurevia_(?:admin|demo)_test)$/.test(
-        name,
-      ),
-    );
+    .filter(({ name }) => cookieName.test(name));
   if (cookies.length)
     headers.set(
       "cookie",

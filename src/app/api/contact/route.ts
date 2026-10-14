@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { siteContent } from "@/content/site-content";
+import { getClientIp } from "@/lib/client-ip";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export const runtime = "nodejs";
@@ -53,15 +54,6 @@ type ContactStatus =
   | "unavailable"
   | "error"
   | "rate-limited";
-
-function getClientIp(request: Request): string {
-  return (
-    request.headers.get("cf-connecting-ip") ??
-    request.headers.get("x-real-ip") ??
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown"
-  );
-}
 
 function getRateLimitRetryAfter(clientIp: string): number | null {
   const now = Date.now();
@@ -248,7 +240,9 @@ async function deliverToWebhook(payload: QuoteRequest): Promise<boolean> {
 }
 
 export async function POST(request: Request) {
-  const retryAfter = getRateLimitRetryAfter(getClientIp(request));
+  const retryAfter = getRateLimitRetryAfter(
+    getClientIp(request.headers) ?? "unknown",
+  );
 
   if (retryAfter) {
     return contactResponse(request, "rate-limited", 429, {
@@ -306,7 +300,7 @@ export async function POST(request: Request) {
   const verification = await verifyTurnstileToken({
     token: turnstileToken,
     expectedAction: TURNSTILE_ACTION,
-    remoteIp: getClientIp(request),
+    remoteIp: getClientIp(request.headers) ?? undefined,
   });
 
   if (!verification.ok) {

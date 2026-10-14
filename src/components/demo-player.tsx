@@ -10,6 +10,11 @@ import {
 import { useRouter } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
 import type { DemoCopy } from "@/content/demo-copy";
+import {
+  DEMO_FRAME_SANDBOX,
+  demoRuntimeOrigin,
+  isDemoRuntimeUrl,
+} from "@/lib/demo-runtime";
 import { PortalError, portalRequest } from "@/lib/portal-client";
 
 type Launch = { session_id: string; launch_url: string; currency: string };
@@ -69,11 +74,7 @@ export function DemoPlayer({
   );
   const accept = useCallback(
     (result: Launch) => {
-      const url = new URL(result.launch_url, location.origin);
-      if (
-        url.origin !== location.origin ||
-        !url.pathname.startsWith(`/playngo-sandbox/runtime/${game}/`)
-      )
+      if (!isDemoRuntimeUrl(result.launch_url, game, location.origin))
         throw new Error("Unexpected game destination");
       session.current = result.session_id;
       setLaunch(result);
@@ -149,6 +150,9 @@ export function DemoPlayer({
   }
   function frameLoaded(event: SyntheticEvent<HTMLIFrameElement>) {
     if (!launch || session.current !== launch.session_id) return;
+    // A runtime on its own origin cannot be inspected from here; it reports
+    // its own failures inside the frame.
+    if (demoRuntimeOrigin(location.origin) !== location.origin) return;
     try {
       const frame = event.currentTarget.contentWindow as
         (Window & { __pngSession?: { id?: string } }) | null;
@@ -230,6 +234,7 @@ export function DemoPlayer({
               title={`${title} — ${copy.title}`}
               className="absolute inset-0 h-full min-h-[55svh] w-full border-0 sm:min-h-0"
               allow="fullscreen; autoplay"
+              sandbox={DEMO_FRAME_SANDBOX}
               referrerPolicy="no-referrer"
             />
           )}

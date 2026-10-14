@@ -27,7 +27,7 @@ src/
   types/content.ts        Strongly typed content schema
 public/media/              WebP game and admin screenshots
 scripts/                   Image optimization and release packaging
-ops/                       Caddy, systemd and VPS deployment files
+ops/                       Nginx, PM2 helper, GitHub protection and VPS deployment files
 ```
 
 Component styling uses colocated Tailwind utilities. `src/app/globals.css`
@@ -233,9 +233,15 @@ sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/ARCHIV
 ```
 
 Use `scripts/deploy-vps.sh` or the workflow to send the archive and checksum together.
-The helper switches the release symlink, restarts PM2, checks the exact revision and environment
-through the origin health endpoint, and rolls back automatically if startup fails.
+The helper switches the release symlink and reloads a single PM2 cluster worker, which keeps
+the port listening while the new release starts. It checks the exact revision and environment
+through the origin health endpoint and rolls back automatically if startup fails. The workflow
+then checks the same revision through the public URL (Cloudflare and Nginx).
 It retains five releases. Keep app ports 3000 and 3001 bound to localhost behind Nginx.
+
+Nginx accepts web traffic only from Cloudflare and passes the verified visitor address as
+`X-Real-IP`; the app ignores client-supplied `CF-Connecting-IP` and `X-Forwarded-For`.
+See [ops/ORIGIN-HARDENING.md](ops/ORIGIN-HARDENING.md) for the VPS steps.
 
 The Caddy and standalone systemd files under `ops/` are optional migration examples,
 not the active deployment procedure.

@@ -60,14 +60,19 @@ ARCHIVE="$WORK_DIR/release.tar.gz"
 chown root:deploy "$WORK_DIR"
 chmod 0750 "$WORK_DIR"
 
+# The inbox belongs to the deploy account, which can swap a checked path for a
+# symlink at any moment. Every inbox access therefore runs as deploy, so a swap
+# can only reach files that account could already read or delete.
 cleanup() {
-  rm -f -- "$ARCHIVE_SOURCE" "$CHECKSUM_SOURCE"
+  runuser -u deploy -- rm -f -- "$ARCHIVE_SOURCE" "$CHECKSUM_SOURCE" || true
   rm -rf -- "${WORK_DIR:?}"
 }
 trap cleanup EXIT
 
-install -o root -g deploy -m 0640 "$ARCHIVE_SOURCE" "$ARCHIVE"
-EXPECTED_HASH="$(awk 'NR == 1 { print $1 }' "$CHECKSUM_SOURCE")"
+runuser -u deploy -- cat -- "$ARCHIVE_SOURCE" > "$ARCHIVE"
+chown root:deploy "$ARCHIVE"
+chmod 0640 "$ARCHIVE"
+EXPECTED_HASH="$(runuser -u deploy -- head -c 4096 -- "$CHECKSUM_SOURCE" | awk 'NR == 1 { print $1 }')"
 ACTUAL_HASH="$(sha256sum "$ARCHIVE" | awk '{ print $1 }')"
 
 if [[ ! "$EXPECTED_HASH" =~ ^[0-9a-f]{64}$ || "$ACTUAL_HASH" != "$EXPECTED_HASH" ]]; then
@@ -177,18 +182,31 @@ run_pm2() {
     "$PM2_BIN" "${@:2}"
 }
 
+# One PM2 cluster worker: `pm2 reload` starts the new worker and waits until it
+# listens before stopping the old one, so the port never goes dark. A process
+# that is missing, or still in fork mode from older deploys, is (re)started once.
 restart_release() {
-  local revision="$1"
+  local revision="$1" description="" exists=false
 
-  if run_pm2 "$revision" describe "$PROCESS_NAME" >/dev/null 2>&1; then
-    run_pm2 "$revision" delete "$PROCESS_NAME" || return 1
+  if description="$(run_pm2 "$revision" describe "$PROCESS_NAME" 2>/dev/null)"; then
+    exists=true
   fi
 
-  run_pm2 "$revision" start "$CURRENT_LINK/server.js" \
-    --name "$PROCESS_NAME" \
-    --cwd "$CURRENT_LINK" \
-    --node-args="--env-file=$ENV_FILE" \
-    --time || return 1
+  if [[ "$exists" == "true" ]] && grep -Eq 'exec mode[^a-z]+cluster_mode' <<<"$description"; then
+    run_pm2 "$revision" reload "$PROCESS_NAME" --update-env || return 1
+  else
+    if [[ "$exists" == "true" ]]; then
+      run_pm2 "$revision" delete "$PROCESS_NAME" || return 1
+    fi
+
+    run_pm2 "$revision" start "$CURRENT_LINK/server.js" \
+      --name "$PROCESS_NAME" \
+      --cwd "$CURRENT_LINK" \
+      --instances 1 \
+      --exec-mode cluster \
+      --node-args="--env-file=$ENV_FILE" \
+      --time || return 1
+  fi
 
   run_pm2 "$revision" save || return 1
 }
