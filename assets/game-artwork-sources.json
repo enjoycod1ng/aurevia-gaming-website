@@ -1,0 +1,96 @@
+{
+  "catalogSource": "Prepared integration release 1.0.1; scripts/game-manifest.json",
+  "artworkSource": "Play’n GO master catalog saved in Play’nGo_Games/output/master-playngo-games.json",
+  "games": [
+    {
+      "id": "wildframes",
+      "title": "Wild Frames",
+      "provider": "Play'n GO",
+      "category": "grid-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/wild-frames",
+      "sourceImage": "https://static.wixstatic.com/media/709d1e_6a31471ecf984404bbdc38d81299a168~mv2.webp"
+    },
+    {
+      "id": "honeyrush",
+      "title": "Honey Rush",
+      "provider": "Play'n GO",
+      "category": "grid-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/honey-rush",
+      "sourceImage": "https://static.wixstatic.com/media/6ba67a_5ed0ff62a370472b98f069ef02d50674~mv2.webp"
+    },
+    {
+      "id": "moonprincess",
+      "title": "Moon Princess",
+      "provider": "Play'n GO",
+      "category": "grid-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/moon-princess",
+      "sourceImage": "https://static.wixstatic.com/media/e1fece_3a2eb914bf654690a5e8e4c7b7f74670~mv2.webp"
+    },
+    {
+      "id": "wheelofmictlan",
+      "title": "Wheel of Mictlan",
+      "provider": "Play'n GO",
+      "category": "video-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/wheel-of-mictlan",
+      "sourceImage": "https://static.wixstatic.com/media/9dadc5_ef8f90a9bd0a4e308d1a99904ffc2537~mv2.webp"
+    },
+    {
+      "id": "secretofdead",
+      "title": "Secret of Dead",
+      "provider": "Play'n GO",
+      "category": "video-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/secret-of-dead",
+      "sourceImage": "https://static.wixstatic.com/media/64b98f_2afaeb1c5aa14319ad0a5cffb3412430~mv2.webp"
+    },
+    {
+      "id": "legacyofegypt",
+      "title": "Legacy of Egypt",
+      "provider": "Play'n GO",
+      "category": "video-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/legacy-of-egypt",
+      "sourceImage": "https://static.wixstatic.com/media/20f25b_c4bc6561729d43baaeeecf869b6f1537~mv2.webp"
+    },
+    {
+      "id": "hugosadventure",
+      "title": "Hugo's Adventure",
+      "provider": "Play'n GO",
+      "category": "video-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/hugo's-adventure",
+      "sourceImage": "https://static.wixstatic.com/media/d0b3f6_2707ae8da4184a889f2d9a0efab4c390~mv2.webp"
+    },
+    {
+      "id": "trollhunters2",
+      "title": "Troll Hunters 2",
+      "provider": "Play'n GO",
+      "category": "grid-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/troll-hunters-2",
+      "sourceImage": "https://static.wixstatic.com/media/4e4725_06061959b741404db5b31e378cb44302~mv2.webp"
+    },
+    {
+      "id": "demon",
+      "title": "Demon",
+      "provider": "Play'n GO",
+      "category": "video-slots",
+      "width": 500,
+      "height": 350,
+      "sourcePage": "https://www.playngo.com/games/demon",
+      "sourceImage": "https://static.wixstatic.com/media/89a1dc_c380a9d4f06a44c892e9b333936e68d9~mv2.webp"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "environment": "sandbox",
+  "dedicated_test_player": true,
+  "wallet_url": "https://wallet.client.example/provider/callback",
+  "wallet_secret": "REPLACE_WITH_PRIVATE_SANDBOX_SIGNING_SECRET",
+  "operator_id": "your-sandbox-operator",
+  "player_id": "dedicated-funded-test-player",
+  "currency": "EUR",
+  "game_symbol": "wildframes"
+}
