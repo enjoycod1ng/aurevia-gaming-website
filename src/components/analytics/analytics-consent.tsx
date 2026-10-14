@@ -4,6 +4,9 @@ import { GoogleAnalytics, sendGAEvent } from "@next/third-parties/google";
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
+import type { UiContent } from "@/content/ui-content";
+import { localizedPath, type Locale } from "@/lib/i18n";
+
 const consentStorageKey = "aurevia.analytics-consent.v1";
 const preferencesEventName = "aurevia:open-cookie-preferences";
 const consentChangedEventName = "aurevia:analytics-consent-changed";
@@ -92,7 +95,7 @@ export function openCookiePreferences() {
   window.dispatchEvent(new Event(preferencesEventName));
 }
 
-export function AnalyticsConsent() {
+export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale }) {
   const configuredGaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
   const gaId =
     configuredGaId && /^G-[A-Z0-9]+$/.test(configuredGaId)
@@ -204,23 +207,21 @@ export function AnalyticsConsent() {
 
       {hydrated && !consent && !preferencesOpen ? (
         <section
-          className="fixed right-6 bottom-6 left-6 z-1000 mx-auto w-[min(760px,calc(100%-48px))] rounded-[18px] border border-line-strong bg-[#0c0d10]/98 p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:p-5"
+          className="fixed right-6 bottom-6 left-6 z-1000 mx-auto w-[min(760px,calc(100%-48px))] rounded-[18px] border border-line-strong bg-surface p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:p-5"
           role="dialog"
           aria-labelledby="cookie-notice-title"
           aria-describedby="cookie-notice-description"
         >
           <div>
-            <h2 className="text-base uppercase" id="cookie-notice-title">Your privacy choices</h2>
-            <p className="mt-2.5 text-xs leading-5 text-muted" id="cookie-notice-description">
-              We use optional Google Analytics cookies to understand site
-              usage. Turnstile security and essential site functions do not
-              depend on analytics consent. Read our{" "}
-              <Link className="text-gold-bright underline underline-offset-3" href="/privacy">privacy policy</Link>.
+            <h2 className="text-base " id="cookie-notice-title">{ui.cookieTitle}</h2>
+            <p className="mt-2.5 text-sm leading-5 text-muted" id="cookie-notice-description">
+              {ui.cookieDescription}{" "}
+              <Link className="text-gold-bright underline underline-offset-3" href={localizedPath("/privacy", locale)}>{ui.privacy}</Link>.
             </p>
           </div>
-          <div className="mt-5 flex flex-wrap items-center gap-2.5 max-sm:flex-col max-sm:items-stretch [&_button]:min-h-10.5 [&_button]:cursor-pointer [&_button]:rounded-[10px] [&_button]:border [&_button]:border-line-strong [&_button]:bg-surface [&_button]:px-4 [&_button]:text-xs [&_button]:font-bold [&_button]:text-ink">
+          <div className="mt-5 flex flex-wrap items-center gap-2.5 max-sm:flex-col max-sm:items-stretch [&_button]:min-h-11 [&_button]:cursor-pointer [&_button]:rounded-[10px] [&_button]:border [&_button]:border-line-strong [&_button]:bg-surface [&_button]:px-4 [&_button]:text-sm [&_button]:font-bold [&_button]:text-ink">
             <button type="button" onClick={() => persistConsent("denied")}>
-              Reject analytics
+              {ui.rejectAnalytics}
             </button>
             <button
               type="button"
@@ -229,14 +230,14 @@ export function AnalyticsConsent() {
                 setPreferencesOpen(true);
               }}
             >
-              Manage preferences
+              {ui.managePreferences}
             </button>
             <button
-              className="!border-gold !bg-gold-bright !text-[#160d05]"
+              className="!border-gold !bg-action !text-action-ink"
               type="button"
               onClick={() => persistConsent("granted")}
             >
-              Accept analytics
+              {ui.acceptAnalytics}
             </button>
           </div>
         </section>
@@ -244,21 +245,21 @@ export function AnalyticsConsent() {
 
       {preferencesOpen ? (
         <section
-          className="fixed bottom-6 left-1/2 z-1000 w-[min(580px,calc(100%-48px))] -translate-x-1/2 rounded-[18px] border border-line-strong bg-[#0c0d10]/98 p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:translate-x-0 max-sm:p-5"
+          className="fixed bottom-6 left-1/2 z-1000 w-[min(580px,calc(100%-48px))] -translate-x-1/2 rounded-[18px] border border-line-strong bg-surface p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:translate-x-0 max-sm:p-5"
           role="dialog"
           aria-labelledby="cookie-preferences-title"
         >
           <div className="flex items-center justify-between gap-6">
             <div>
-              <h2 className="text-base uppercase" id="cookie-preferences-title">Cookie preferences</h2>
-              <p className="mt-2 text-xs leading-5 text-muted">Choose whether optional analytics may run on this device.</p>
+              <h2 className="text-base " id="cookie-preferences-title">{ui.cookiePreferences}</h2>
+              <p className="mt-2 text-sm leading-5 text-muted">{ui.preferencesDescription}</p>
             </div>
             {consent ? (
               <button
-                className="size-9.5 shrink-0 cursor-pointer rounded-full border border-line bg-transparent text-2xl text-muted"
+                className="size-11 shrink-0 cursor-pointer rounded-full border border-line bg-transparent text-2xl text-muted"
                 type="button"
                 onClick={() => setPreferencesOpen(false)}
-                aria-label="Close cookie preferences"
+                aria-label={ui.closePreferences}
               >
                 ×
               </button>
@@ -267,16 +268,16 @@ export function AnalyticsConsent() {
 
           <div className="mt-5 flex items-center justify-between gap-6 border-t border-line py-4.5">
             <span className="grid gap-1">
-              <strong>Necessary</strong>
-              <small className="text-xs leading-5 text-muted">Security, form delivery, and saved privacy choice.</small>
+              <strong>{ui.necessary}</strong>
+              <small className="text-sm leading-5 text-muted">{ui.necessaryDescription}</small>
             </span>
-            <span className="whitespace-nowrap text-xs font-bold text-success">Always on</span>
+            <span className="whitespace-nowrap text-sm font-bold text-success">{ui.alwaysOn}</span>
           </div>
 
           <label className="flex items-center justify-between gap-6 border-t border-line py-4.5">
             <span className="grid gap-1">
               <strong>Google Analytics</strong>
-              <small className="text-xs leading-5 text-muted">Site usage and conversion measurement.</small>
+              <small className="text-sm leading-5 text-muted">{ui.analyticsDescription}</small>
             </span>
             <input
               className="size-5.5 shrink-0 accent-gold"
@@ -287,15 +288,15 @@ export function AnalyticsConsent() {
           </label>
 
           <div className="flex items-center justify-between gap-6 border-t border-line pt-4.5 max-sm:flex-col max-sm:items-stretch">
-            <Link className="text-gold-bright underline underline-offset-3 max-sm:text-center" href="/privacy">Privacy policy</Link>
+            <Link className="text-gold-bright underline underline-offset-3 max-sm:text-center" href={localizedPath("/privacy", locale)}>{ui.privacy}</Link>
             <button
-              className="min-h-10.5 cursor-pointer rounded-[10px] border border-gold bg-gold-bright px-4 text-xs font-bold text-[#160d05]"
+              className="min-h-11 cursor-pointer rounded-[10px] border border-gold bg-action px-4 text-sm font-bold text-action-ink"
               type="button"
               onClick={() =>
                 persistConsent(analyticsEnabled ? "granted" : "denied")
               }
             >
-              Save preferences
+              {ui.savePreferences}
             </button>
           </div>
         </section>

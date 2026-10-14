@@ -6,6 +6,9 @@ ARCHIVE="${2:-}"
 REVISION="${3:-}"
 VPS_PORT="${VPS_PORT:-22}"
 VPS_INBOX="/home/deploy/aurevia-incoming"
+# legacy: upload with scp, then run the sudo helper over a shell session.
+# gated: the environment's key is pinned to ops/aurevia-ssh-gate.sh on the VPS.
+VPS_DEPLOY_PROTOCOL="${VPS_DEPLOY_PROTOCOL:-legacy}"
 
 required_variables=(VPS_HOST VPS_USER VPS_SSH_KEY VPS_KNOWN_HOSTS)
 
@@ -23,6 +26,11 @@ fi
 
 if [[ ! "$REVISION" =~ ^[0-9a-f]{40}$ ]]; then
   echo "Revision must be a lowercase 40-character Git commit SHA." >&2
+  exit 1
+fi
+
+if [[ "$VPS_DEPLOY_PROTOCOL" != "legacy" && "$VPS_DEPLOY_PROTOCOL" != "gated" ]]; then
+  echo "VPS_DEPLOY_PROTOCOL must be legacy or gated." >&2
   exit 1
 fi
 
@@ -77,6 +85,26 @@ ARCHIVE_HASH="$(awk 'NR == 1 { print $1 }' "$ARCHIVE.sha256")"
 if [[ ! "$ARCHIVE_HASH" =~ ^[0-9a-f]{64}$ ]]; then
   echo "Release checksum is invalid: $ARCHIVE.sha256" >&2
   exit 1
+fi
+
+if [[ "$VPS_DEPLOY_PROTOCOL" == "gated" ]]; then
+  # One connection carries the archive; the VPS decides which site it deploys.
+  # Only connection failures (exit 255) are retried: the gate rejects a partial
+  # upload by checksum and the helper serializes and health-checks deployments.
+  for attempt in 1 2 3 4 5; do
+    status=0
+    ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" \
+      "$DEPLOY_ENVIRONMENT $REVISION $ARCHIVE_HASH" < "$ARCHIVE" || status=$?
+
+    if (( status != 255 )); then
+      exit "$status"
+    fi
+
+    echo "SSH connection attempt $attempt failed; retrying in 5 seconds..." >&2
+    sleep 5
+  done
+
+  exit 255
 fi
 
 printf '%s  %s\n' "$ARCHIVE_HASH" "$REMOTE_NAME" > "$SSH_DIR/release.sha256"
