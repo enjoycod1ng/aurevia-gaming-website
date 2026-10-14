@@ -1,5 +1,9 @@
 name: Deploy production
 
+# Production deploys only from master. The job guard and promotion check below
+# are defense in depth; the enforcing controls are the production environment's
+# master-only deployment branch policy, its required reviewer and the master
+# ruleset (ops/configure-github-protection.sh, ops/AUTO-DEPLOY.md).
 on:
   push:
     branches: [master]
@@ -15,8 +19,12 @@ concurrency:
 jobs:
   deploy:
     name: Deploy production
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      statuses: read
     environment:
       name: production
       url: https://aureviagaming.com
@@ -29,6 +37,15 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The promotion check compares the merge commit with its dev parent.
+          fetch-depth: 2
+
+      - name: Verify the commit passed staging from dev
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/verify-promotion.sh "$GITHUB_SHA"
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -68,5 +85,5 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_DEPLOY_PROTOCOL: ${{ vars.VPS_DEPLOY_PROTOCOL }}
         run: bash scripts/deploy-vps.sh production "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
-

@@ -13,6 +13,10 @@ the enabled `pm2-deploy` systemd service. Staging uses port 3001. Both run the p
   `/usr/local/sbin/aurevia-deploy`; workflows must never overwrite it.
 - `nginx-staging.conf`: isolated staging reverse proxy on port 3001.
 - `aurevia-deploy.sudoers`: restricted sudo entry for the `deploy` account.
+- `aurevia-ssh-gate.sh`: forced command that pins each GitHub Actions deploy key
+  to one environment. Install it root-owned as `/usr/local/sbin/aurevia-ssh-gate`.
+- `configure-github-protection.sh`: applies the environment branch policies,
+  production reviewer, `master` ruleset and auto-merge setting.
 - `CLOUDFLARE-PRODUCTION.md`: exact Cloudflare Free, Turnstile, GA4 and verification checklist.
 
 The optional standalone systemd example expects:

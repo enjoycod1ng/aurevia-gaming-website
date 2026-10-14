@@ -94,6 +94,11 @@ gate is configured. The supported manual production workflow can publish the
 verified staging branch ref without changing protected master/dev branches.
 Deployment revision and public verification are recorded below when complete.
 
+> **Superseded (2026-10):** publishing from a non-`master` ref left production
+> ahead of `master`. Production now deploys only reviewed `master` merge commits
+> that passed staging, enforced by GitHub environment rules. See
+> [AUTO-DEPLOY.md](AUTO-DEPLOY.md).
+
 
 ## Production publication
 

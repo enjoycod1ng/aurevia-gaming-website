@@ -193,10 +193,10 @@ inside the extracted standalone artifact, including native image optimization.
 
 The active deployment uses Nginx, PM2 and the Next.js standalone server on Node.js 24.
 
-- Pull requests merge into `dev`, which deploys to public staging at `staging.aureviagaming.com`.
-- A successful `dev` deployment prepares a promotion PR. Production changes require a manual approved merge into `master`.
-- Push a `staging/**` branch to verify a candidate on the staging VPS without preparing production promotion. These runs share the staging site and deployment concurrency group.
-- Once the updated workflow is on the default branch, a manual staging workflow dispatch can also verify a selected ref.
+- Pull requests merge into `dev`. Only `dev` deploys to public staging at `staging.aureviagaming.com`.
+- A successful staging deployment opens or refreshes the `dev -> master` promotion PR. Auto-merge is disabled: the owner reviews, approves and merges it with a merge commit.
+- Only `master` deploys to production, and only a merge commit identical to a `dev` commit that passed staging. The production environment also waits for the owner to approve the deployment.
+- GitHub enforces these rules through environment branch policies and a `master` ruleset; apply them with `ops/configure-github-protection.sh`. On the VPS, each environment has its own deploy key pinned to `ops/aurevia-ssh-gate.sh`.
 - Staging uses noindex headers and a disallowing robots file; it is not protected by Cloudflare Access.
 
 See [ops/AUTO-DEPLOY.md](ops/AUTO-DEPLOY.md) for account setup, environment variables, protected branches and recovery.
@@ -232,7 +232,7 @@ The deployment helper takes three arguments:
 sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/ARCHIVE.tar.gz COMMIT_SHA
 ```
 
-Use `scripts/deploy-vps.sh` or the workflow to upload the archive and checksum together.
+Use `scripts/deploy-vps.sh` or the workflow to send the archive and checksum together.
 The helper switches the release symlink, restarts PM2, checks the exact revision and environment
 through the origin health endpoint, and rolls back automatically if startup fails.
 It retains five releases. Keep app ports 3000 and 3001 bound to localhost behind Nginx.

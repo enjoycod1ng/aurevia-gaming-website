@@ -1,20 +1,25 @@
 name: Deploy staging
 
+# Staging deploys only from dev; manual dispatch redeploys dev. The staging
+# environment's dev-only deployment branch policy enforces this server-side.
 on:
   push:
-    branches: [dev, "staging/**"]
+    branches: [dev]
   workflow_dispatch:
 
 permissions:
   contents: read
 
+# Never cancel a running deployment: an interrupted VPS helper can stop after
+# switching releases but before its health check and rollback.
 concurrency:
   group: deploy-staging
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
     name: Deploy staging
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
@@ -68,6 +73,7 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_DEPLOY_PROTOCOL: ${{ vars.VPS_DEPLOY_PROTOCOL }}
         run: bash scripts/deploy-vps.sh staging "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
 
   promote:
@@ -89,6 +95,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           repository="$GITHUB_REPOSITORY"
+          body="Staging deployed \`$GITHUB_SHA\` successfully ([workflow run]($GITHUB_SERVER_URL/$repository/actions/runs/$GITHUB_RUN_ID)).
+
+          Review and approve this PR, then merge it with **Create a merge commit**. Do not squash or rebase: production deploys only a master merge commit whose dev parent passed staging. Auto-merge is disabled for this repository."
           pull_number="$(gh pr list \
             --repo "$repository" \
             --base master \
@@ -103,8 +112,10 @@ jobs:
               --base master \
               --head dev \
               --title "chore: promote dev to production" \
-              --body "Automated production promotion after the staging deployment for \`$GITHUB_SHA\` passed.")"
+              --body "$body")"
             pull_number="${pull_url##*/}"
+          else
+            gh pr edit "$pull_number" --repo "$repository" --body "$body" >/dev/null
           fi
 
           details="$(gh pr view "$pull_number" \
@@ -132,4 +143,4 @@ jobs:
       - name: Write promotion summary
         run: |
           echo "Production promotion PR: #${{ steps.promotion.outputs.pull_number }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Approve and merge the promotion PR manually to trigger production deployment." >> "$GITHUB_STEP_SUMMARY"
+          echo "Review, approve and merge the promotion PR with a merge commit to deploy production." >> "$GITHUB_STEP_SUMMARY"
