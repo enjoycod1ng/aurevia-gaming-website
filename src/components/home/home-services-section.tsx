@@ -14,10 +14,10 @@ export function HomeServicesSection({
     <section className="section-space scroll-reveal" data-scroll-reveal>
       <div className="container">
         <div className="mb-12 max-w-262.5 md:mb-16">
-          <p className="mb-8 inline-flex min-h-10 items-center rounded-full border border-line-strong bg-surface-strong px-6 text-xs font-extrabold text-gold-bright uppercase">
+          <p className="mb-8 inline-flex min-h-10 items-center rounded-full border border-line-strong bg-surface-strong px-6 text-sm font-extrabold text-gold-bright uppercase">
             {content.heading.label}
           </p>
-          <h2 className="text-4xl leading-[1.08] uppercase md:text-5xl">{content.heading.title}</h2>
+          <h2 className=" heading-2">{content.heading.title}</h2>
           <p className="mt-6 max-w-245 text-base leading-[1.65] text-muted">{content.heading.description}</p>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -27,7 +27,7 @@ export function HomeServicesSection({
               data-scroll-reveal
               key={service.number}
             >
-              <span className="text-xs font-extrabold text-gold-bright">
+              <span className="text-sm font-extrabold text-gold-bright">
                 {service.number}
               </span>
               <span className="my-6 grid size-12 place-items-center rounded-2xl bg-linear-to-br from-gold-bright to-[#9a6e10] text-white [&_svg]:size-6">

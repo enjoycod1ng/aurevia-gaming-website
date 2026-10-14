@@ -1,20 +1,18 @@
-# Figma-to-code asset map
+# Website visual assets
 
-The Figma MCP connector returned a Starter-plan call-limit error for file `rf8gLNcaPYbUaPoQBOiqGn`, so the exact layer tree and original uploaded images could not be downloaded during this build.
+Game previews use real Play’n GO artwork and gameplay captures from the prepared integration. The admin analytics screenshot is a branded design preview with explicitly labeled sample data.
 
-The implementation is therefore structured so final visual assets can be swapped without component rewrites.
+| Placement | Active asset |
+| --- | --- |
+| Header and footer monogram | `src/components/brand-logo.tsx` |
+| Favicon and manifest icon | `public/logo.svg` |
+| Social sharing preview | `public/opengraph-image.png` |
+| Home and games hero; slot service | `public/media/games/wildframes-gameplay.webp` |
+| Home and games catalog cards | `public/media/games/{game-id}.webp` |
+| Web/mobile service | `public/media/games/moonprincess-gameplay.webp` |
+| Casino website service | `public/media/games/catalog-preview.webp` |
+| Home, platform and admin service previews | `public/media/platforms/admin-analytics-preview.webp` |
 
-| Website placement | Current file | Intended replacement |
-|---|---|---|
-| Home hero | `public/media/hero/hero-platform.webp` | Main Figma casino/admin product composition |
-| Slot development | `public/media/services/slot-development.webp` | Approved game screenshot |
-| Web/mobile service | `public/media/services/web-mobile-casino.webp` | Approved responsive device composition |
-| Casino website service | `public/media/services/casino-website.webp` | Approved casino lobby/website screenshot |
-| Admin platform service | `public/media/services/admin-platform.webp` | Approved admin panel screenshot |
-| Demo: Neon Forge | `public/media/demos/neon-forge.webp` | First approved slot demo screenshot |
-| Demo: Royal Vault | `public/media/demos/royal-vault.webp` | Second approved slot demo screenshot |
-| Demo: Velocity Bet | `public/media/demos/velocity-bet.webp` | Betting/sportsbook demo screenshot |
-| Demo: Control Center | `public/media/demos/control-center.webp` | Operator dashboard demo screenshot |
-| Platform feature | `public/media/platforms/operator-dashboard.webp` | Main casino platform/admin screenshot |
+`src/content/prepared-games.ts` is the shared nine-game catalog. It matches the current selected integration manifest, including original Honey Rush (`honeyrush`, game 375), not Honey Rush Black and Yellow.
 
-After Figma MCP access is restored, export each original image, replace these files, and compare the browser render against each source frame at desktop and mobile widths. Typography, exact spacing, icons and visual treatments may then be adjusted to match the Figma file precisely.
+Artwork provenance and screenshot reproduction notes are in `assets/README.md`. No fictional game fallback remains. Keep image dimensions and descriptive alt text in sync when replacing an asset.

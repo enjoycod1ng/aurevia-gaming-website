@@ -1,0 +1,1007 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Aurevia Gaming Play’n GO Wallet Callbacks",
+    "version": "1.0.1",
+    "description": "Implement these four endpoints on your wallet server. Signed callbacks use exact raw request bytes; financial mutations and immutable responses must commit atomically. This sandbox uses simulated funds only."
+  },
+  "servers": [
+    {
+      "url": "https://wallet.client.example/playngo",
+      "description": "Replace with your approved callback base URL."
+    }
+  ],
+  "x-release-status": "sandbox",
+  "security": [
+    {
+      "WalletHmac": []
+    }
+  ],
+  "paths": {
+    "/balance": {
+      "post": {
+        "operationId": "walletBalance",
+        "summary": "Balance on client wallet",
+        "description": "Read authoritative balance without mutation.",
+        "parameters": [
+          {
+            "name": "x-pp-timestamp",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{1,12}$"
+            },
+            "description": "Unix seconds. Maximum clock skew 300 seconds."
+          },
+          {
+            "name": "x-pp-request-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "description": "Must equal body request_id; changes per delivery attempt."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BalanceRequest"
+              },
+              "example": {
+                "operator_id": "client-a",
+                "player_id": "player-123",
+                "session_id": "ses_example_01",
+                "game_symbol": "wildframes",
+                "currency": "EUR",
+                "request_id": "req_balance_example_01",
+                "transaction_id": "txn_balance_example_01",
+                "transaction_type": "balance",
+                "action_type": "balance",
+                "amount": "0.00"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success or explicit business rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/WalletSuccess"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WalletError"
+                    }
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "balance": "98.00",
+                  "currency": "EUR",
+                  "transaction_id": "txn_balance_example_01"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid signature or stale timestamp",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ownership violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Transaction ID conflicts with original logical request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary failure; operation outcome may be unknown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debit": {
+      "post": {
+        "operationId": "walletDebit",
+        "summary": "Debit on client wallet",
+        "description": "Atomic positive wager deduction. Stable transaction ID; no duplicate charge.",
+        "parameters": [
+          {
+            "name": "x-pp-timestamp",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{1,12}$"
+            },
+            "description": "Unix seconds. Maximum clock skew 300 seconds."
+          },
+          {
+            "name": "x-pp-request-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "description": "Must equal body request_id; changes per delivery attempt."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebitRequest"
+              },
+              "example": {
+                "operator_id": "client-a",
+                "player_id": "player-123",
+                "session_id": "ses_example_01",
+                "game_symbol": "wildframes",
+                "currency": "EUR",
+                "request_id": "req_debit_example_01",
+                "transaction_id": "txn_debit_example_01",
+                "transaction_type": "debit",
+                "action_type": "spin",
+                "amount": "2.00",
+                "round_id": "rnd_example_01",
+                "round_closed": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success or explicit business rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/WalletSuccess"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WalletError"
+                    }
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "balance": "98.00",
+                  "currency": "EUR",
+                  "transaction_id": "txn_debit_example_01"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid signature or stale timestamp",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ownership violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Transaction ID conflicts with original logical request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary failure; operation outcome may be unknown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/credit": {
+      "post": {
+        "operationId": "walletCredit",
+        "summary": "Credit on client wallet",
+        "description": "Idempotent payout. Zero amount is permitted for round closure. Pending credits survive session expiration.",
+        "parameters": [
+          {
+            "name": "x-pp-timestamp",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{1,12}$"
+            },
+            "description": "Unix seconds. Maximum clock skew 300 seconds."
+          },
+          {
+            "name": "x-pp-request-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "description": "Must equal body request_id; changes per delivery attempt."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditRequest"
+              },
+              "example": {
+                "operator_id": "client-a",
+                "player_id": "player-123",
+                "session_id": "ses_example_01",
+                "game_symbol": "wildframes",
+                "currency": "EUR",
+                "request_id": "req_credit_example_01",
+                "transaction_id": "txn_credit_example_01",
+                "transaction_type": "credit",
+                "action_type": "collect",
+                "amount": "5.00",
+                "round_id": "rnd_example_01",
+                "round_closed": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success or explicit business rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/WalletSuccess"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WalletError"
+                    }
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "balance": "98.00",
+                  "currency": "EUR",
+                  "transaction_id": "txn_credit_example_01"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid signature or stale timestamp",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ownership violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Transaction ID conflicts with original logical request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary failure; operation outcome may be unknown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rollback": {
+      "post": {
+        "operationId": "walletRollback",
+        "summary": "Rollback on client wallet",
+        "description": "Idempotently refund/cancel original debit. If missing, persist cancellation marker to prevent a late debit. Deduplicate by original reference as well as rollback ID.",
+        "parameters": [
+          {
+            "name": "x-pp-timestamp",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{1,12}$"
+            },
+            "description": "Unix seconds. Maximum clock skew 300 seconds."
+          },
+          {
+            "name": "x-pp-request-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "description": "Must equal body request_id; changes per delivery attempt."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RollbackRequest"
+              },
+              "example": {
+                "operator_id": "client-a",
+                "player_id": "player-123",
+                "session_id": "ses_example_01",
+                "game_symbol": "wildframes",
+                "currency": "EUR",
+                "request_id": "req_rollback_example_01",
+                "transaction_id": "txn_rollback_example_01",
+                "transaction_type": "rollback",
+                "action_type": "rollback",
+                "amount": "2.00",
+                "round_id": "rnd_example_01",
+                "round_closed": true,
+                "original_transaction_id": "txn_debit_example_01"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success or explicit business rejection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/WalletSuccess"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WalletError"
+                    }
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "balance": "98.00",
+                  "currency": "EUR",
+                  "transaction_id": "txn_rollback_example_01"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid signature or stale timestamp",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ownership violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Transaction ID conflicts with original logical request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary failure; operation outcome may be unknown",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "WalletHmac": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-pp-signature",
+        "description": "Not a static key. Lowercase hex HMAC-SHA256(secret, ASCII(timestamp) + dot + exact raw body bytes). Check timestamp and request ID headers, endpoint transaction_type, and ownership. Fresh signature per retry; stable logical transaction ID."
+      }
+    },
+    "schemas": {
+      "WalletSuccess": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "balance": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,13})\\.[0-9]{2}$",
+            "examples": [
+              "2.00"
+            ],
+            "description": "Exact decimal string, two fractional digits. Use integer minor units or a decimal type."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "examples": [
+              "EUR"
+            ],
+            "description": "Enabled two-fractional-digit currency only."
+          },
+          "transaction_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "success",
+          "balance",
+          "currency",
+          "transaction_id"
+        ],
+        "additionalProperties": false
+      },
+      "WalletError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": false
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "insufficient_funds",
+              "unknown_player",
+              "currency_mismatch",
+              "player_blocked",
+              "transaction_cancelled",
+              "invalid_signature",
+              "stale_timestamp",
+              "forbidden",
+              "invalid_request",
+              "idempotency_conflict",
+              "temporarily_unavailable"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "transaction_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "success",
+          "error",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "BalanceRequest": {
+        "type": "object",
+        "properties": {
+          "operator_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "player_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "session_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "game_symbol": {
+            "type": "string",
+            "enum": [
+              "demon",
+              "honeyrush",
+              "hugosadventure",
+              "legacyofegypt",
+              "moonprincess",
+              "secretofdead",
+              "trollhunters2",
+              "wheelofmictlan",
+              "wildframes"
+            ],
+            "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "examples": [
+              "EUR"
+            ],
+            "description": "Enabled two-fractional-digit currency only."
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_type": {
+            "type": "string",
+            "const": "balance"
+          },
+          "action_type": {
+            "type": "string",
+            "const": "balance"
+          },
+          "amount": {
+            "type": "string",
+            "const": "0.00"
+          }
+        },
+        "required": [
+          "operator_id",
+          "player_id",
+          "session_id",
+          "game_symbol",
+          "currency",
+          "request_id",
+          "transaction_id",
+          "transaction_type",
+          "action_type",
+          "amount"
+        ],
+        "additionalProperties": false
+      },
+      "DebitRequest": {
+        "type": "object",
+        "properties": {
+          "operator_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "player_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "session_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "game_symbol": {
+            "type": "string",
+            "enum": [
+              "demon",
+              "honeyrush",
+              "hugosadventure",
+              "legacyofegypt",
+              "moonprincess",
+              "secretofdead",
+              "trollhunters2",
+              "wheelofmictlan",
+              "wildframes"
+            ],
+            "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "examples": [
+              "EUR"
+            ],
+            "description": "Enabled two-fractional-digit currency only."
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_type": {
+            "type": "string",
+            "const": "debit"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "balance",
+              "spin",
+              "feature",
+              "gamble",
+              "collect",
+              "rollback"
+            ]
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,13})\\.[0-9]{2}$",
+            "examples": [
+              "2.00"
+            ],
+            "description": "Exact decimal string, two fractional digits. Use integer minor units or a decimal type.",
+            "not": {
+              "const": "0.00"
+            }
+          },
+          "round_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "round_closed": {
+            "type": "boolean",
+            "const": false
+          }
+        },
+        "required": [
+          "operator_id",
+          "player_id",
+          "session_id",
+          "game_symbol",
+          "currency",
+          "request_id",
+          "transaction_id",
+          "transaction_type",
+          "action_type",
+          "amount",
+          "round_id",
+          "round_closed"
+        ],
+        "additionalProperties": false
+      },
+      "CreditRequest": {
+        "type": "object",
+        "properties": {
+          "operator_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "player_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "session_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "game_symbol": {
+            "type": "string",
+            "enum": [
+              "demon",
+              "honeyrush",
+              "hugosadventure",
+              "legacyofegypt",
+              "moonprincess",
+              "secretofdead",
+              "trollhunters2",
+              "wheelofmictlan",
+              "wildframes"
+            ],
+            "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "examples": [
+              "EUR"
+            ],
+            "description": "Enabled two-fractional-digit currency only."
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_type": {
+            "type": "string",
+            "const": "credit"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "balance",
+              "spin",
+              "feature",
+              "gamble",
+              "collect",
+              "rollback"
+            ]
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,13})\\.[0-9]{2}$",
+            "examples": [
+              "2.00"
+            ],
+            "description": "Exact decimal string, two fractional digits. Use integer minor units or a decimal type."
+          },
+          "round_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "round_closed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "operator_id",
+          "player_id",
+          "session_id",
+          "game_symbol",
+          "currency",
+          "request_id",
+          "transaction_id",
+          "transaction_type",
+          "action_type",
+          "amount",
+          "round_id",
+          "round_closed"
+        ],
+        "additionalProperties": false
+      },
+      "RollbackRequest": {
+        "type": "object",
+        "properties": {
+          "operator_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "player_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "session_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "game_symbol": {
+            "type": "string",
+            "enum": [
+              "demon",
+              "honeyrush",
+              "hugosadventure",
+              "legacyofegypt",
+              "moonprincess",
+              "secretofdead",
+              "trollhunters2",
+              "wheelofmictlan",
+              "wildframes"
+            ],
+            "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "examples": [
+              "EUR"
+            ],
+            "description": "Enabled two-fractional-digit currency only."
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "transaction_type": {
+            "type": "string",
+            "const": "rollback"
+          },
+          "action_type": {
+            "type": "string",
+            "const": "rollback"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,13})\\.[0-9]{2}$",
+            "examples": [
+              "2.00"
+            ],
+            "description": "Exact decimal string, two fractional digits. Use integer minor units or a decimal type.",
+            "not": {
+              "const": "0.00"
+            }
+          },
+          "round_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "round_closed": {
+            "type": "boolean",
+            "const": true
+          },
+          "original_transaction_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "operator_id",
+          "player_id",
+          "session_id",
+          "game_symbol",
+          "currency",
+          "request_id",
+          "transaction_id",
+          "transaction_type",
+          "action_type",
+          "amount",
+          "round_id",
+          "round_closed",
+          "original_transaction_id"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

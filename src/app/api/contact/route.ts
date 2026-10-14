@@ -1,3 +1,4 @@
+import { isLocale, localizedPath } from "@/lib/i18n";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -124,7 +125,13 @@ function contactResponse(
     );
   }
 
-  const url = new URL("/contact", request.url);
+  let locale = "en";
+  try {
+    const referrer = new URL(request.headers.get("referer") ?? "");
+    const segment = referrer.pathname.split("/")[1];
+    if (referrer.origin === new URL(request.url).origin && isLocale(segment)) locale = segment;
+  } catch { /* Missing or invalid referrer uses English. */ }
+  const url = new URL(localizedPath("/contact", isLocale(locale) ? locale : "en"), request.url);
   url.searchParams.set("status", status);
   url.hash = "quote-form";
   const response = NextResponse.redirect(url, 303);

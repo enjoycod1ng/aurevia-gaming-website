@@ -1,0 +1,1370 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Aurevia Gaming Play’n GO Provider API",
+    "version": "1.0.1",
+    "description": "Sandbox callback-wallet integration. Simulated funds only. Game availability is assigned per operator; query the games endpoint for your enabled catalog. See the integration guide for onboarding and tested limits."
+  },
+  "servers": [
+    {
+      "url": "https://aureviagaming.com/playngo-sandbox",
+      "description": "Sandbox; simulated funds only"
+    }
+  ],
+  "x-release-status": "sandbox",
+  "security": [
+    {
+      "OperatorKey": []
+    },
+    {
+      "OperatorBearer": []
+    }
+  ],
+  "paths": {
+    "/api/provider/v1/games": {
+      "get": {
+        "operationId": "listPlaynGoGames",
+        "summary": "List games assigned to the operator",
+        "parameters": [
+          {
+            "name": "provider_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "playngo"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogResponse"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "operator_id": "client-a",
+                    "provider_id": "playngo",
+                    "total": 1,
+                    "items": [
+                      {
+                        "symbol": "wildframes",
+                        "slug": "wildframes",
+                        "title": "Wild Frames",
+                        "provider_id": "playngo",
+                        "launch_status": "stable"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid operator key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Inactive operator or disallowed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before retry.",
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/provider/v1/games/{symbol}": {
+      "get": {
+        "operationId": "getPlaynGoGame",
+        "summary": "Retrieve an assigned game",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "demon",
+                "honeyrush",
+                "hugosadventure",
+                "legacyofegypt",
+                "moonprincess",
+                "secretofdead",
+                "trollhunters2",
+                "wheelofmictlan",
+                "wildframes"
+              ],
+              "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResponse"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "symbol": "wildframes",
+                    "slug": "wildframes",
+                    "title": "Wild Frames",
+                    "provider_id": "playngo",
+                    "launch_status": "stable"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid operator key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Inactive operator or disallowed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before retry.",
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/provider/v1/launch-url": {
+      "post": {
+        "operationId": "createPlaynGoLaunch",
+        "summary": "Create a launch bound to an authenticated player",
+        "description": "Idempotent under the same operator/environment and exact request. Identical retries retain the original response and expiry. Launch tickets are single use and expire after 60 seconds. Request a new launch with a new key after consumption/expiry. Sessions expire after 30 minutes idle or four hours absolute; settlement continues. An unused ticket reserves session capacity until expiry. Close sessions when leaving or switching games. HTTP 503 capacity_reached or maintenance includes Retry-After: 5; retry with the same launch key and request.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "description": "Unique logical launch request ID. Exact retry uses the same key/body."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LaunchRequest"
+              },
+              "example": {
+                "symbol": "wildframes",
+                "external_player_id": "player-123",
+                "currency": "EUR",
+                "lang": "en",
+                "device": "desktop",
+                "return_url": "https://client.example/lobby"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LaunchResponse"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "symbol": "wildframes",
+                    "operator_id": "client-a",
+                    "currency": "EUR",
+                    "lang": "en",
+                    "session_id": "ses_example_01",
+                    "launch_url": "https://aureviagaming.com/playngo-sandbox/runtime/wildframes/casino/ContainerLauncher?ticket=EXAMPLE_ONLY",
+                    "expires_at": "2026-09-11T16:01:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid operator key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Inactive operator or disallowed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before retry.",
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Session capacity is occupied, new wagering is paused, or a dependency is unavailable",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Seconds before retry"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency key reused with a different request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/provider/v1/transactions": {
+      "get": {
+        "operationId": "listTransactions",
+        "summary": "listTransactions",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid operator key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Inactive operator or disallowed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before retry.",
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/provider/v1/transactions/{transaction_id}": {
+      "get": {
+        "operationId": "getTransaction",
+        "summary": "getTransaction",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid operator key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Inactive operator or disallowed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before retry.",
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/provider/v1/sessions/{session_id}": {
+      "get": {
+        "operationId": "getSession",
+        "summary": "getSession",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid operator key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Inactive operator or disallowed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before retry.",
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/provider/v1/sessions/{session_id}/close": {
+      "post": {
+        "operationId": "closeSession",
+        "summary": "closeSession",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid operator key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Inactive operator or disallowed resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before retry.",
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OperatorKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-provider-api-key"
+      },
+      "OperatorBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Use operator key as bearer value."
+      }
+    },
+    "schemas": {
+      "Game": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "enum": [
+              "demon",
+              "honeyrush",
+              "hugosadventure",
+              "legacyofegypt",
+              "moonprincess",
+              "secretofdead",
+              "trollhunters2",
+              "wheelofmictlan",
+              "wildframes"
+            ],
+            "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string"
+          },
+          "provider_id": {
+            "const": "playngo",
+            "type": "string"
+          },
+          "launch_status": {
+            "type": "string",
+            "enum": [
+              "stable"
+            ]
+          },
+          "currencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "features": {
+            "type": "object",
+            "properties": {
+              "gamble": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "gamble"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "symbol",
+          "slug",
+          "title",
+          "provider_id",
+          "launch_status"
+        ],
+        "additionalProperties": true
+      },
+      "CatalogResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "const": true,
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "operator_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "provider_id": {
+                "const": "playngo",
+                "type": "string"
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Game"
+                }
+              }
+            },
+            "required": [
+              "operator_id",
+              "provider_id",
+              "total",
+              "items"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ],
+        "additionalProperties": true
+      },
+      "GameResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "const": true,
+            "type": "boolean"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Game"
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ],
+        "additionalProperties": true
+      },
+      "LaunchRequest": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "enum": [
+              "demon",
+              "honeyrush",
+              "hugosadventure",
+              "legacyofegypt",
+              "moonprincess",
+              "secretofdead",
+              "trollhunters2",
+              "wheelofmictlan",
+              "wildframes"
+            ],
+            "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+          },
+          "external_player_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Opaque, case-sensitive player ID. Preserve the exact Unicode characters, including whitespace. The provider does not trim or normalize this field. Derive it from the authenticated player on your server."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "examples": [
+              "EUR"
+            ],
+            "description": "Enabled two-fractional-digit currency only."
+          },
+          "lang": {
+            "type": "string",
+            "enum": [
+              "en"
+            ],
+            "default": "en"
+          },
+          "device": {
+            "type": "string",
+            "enum": [
+              "desktop",
+              "mobile"
+            ],
+            "default": "desktop"
+          },
+          "return_url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "description": "Must use an approved client origin."
+          }
+        },
+        "required": [
+          "symbol",
+          "external_player_id",
+          "currency",
+          "return_url"
+        ],
+        "additionalProperties": false
+      },
+      "LaunchResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "const": true,
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "symbol": {
+                "type": "string",
+                "enum": [
+                  "demon",
+                  "honeyrush",
+                  "hugosadventure",
+                  "legacyofegypt",
+                  "moonprincess",
+                  "secretofdead",
+                  "trollhunters2",
+                  "wheelofmictlan",
+                  "wildframes"
+                ],
+                "description": "Initial candidate symbols. Actual assigned/enabled catalog is authoritative."
+              },
+              "operator_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$",
+                "examples": [
+                  "EUR"
+                ],
+                "description": "Enabled two-fractional-digit currency only."
+              },
+              "lang": {
+                "type": "string"
+              },
+              "session_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "launch_url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://",
+                "description": "Single-use opaque launch ticket. Valid 60 seconds from issuance."
+              },
+              "expires_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "symbol",
+              "operator_id",
+              "currency",
+              "lang",
+              "session_id",
+              "launch_url",
+              "expires_at"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ],
+        "additionalProperties": true
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "const": false,
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "success",
+          "error",
+          "message",
+          "request_id"
+        ],
+        "additionalProperties": true
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "transaction_id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "round_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "balance",
+              "debit",
+              "credit",
+              "rollback"
+            ]
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,13})\\.[0-9]{2}$"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "player_id": {
+            "type": "string"
+          },
+          "game_symbol": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sending",
+              "unknown",
+              "success",
+              "rejected",
+              "cancelled"
+            ]
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "transaction_id",
+          "session_id",
+          "round_id",
+          "operation",
+          "amount",
+          "currency",
+          "player_id",
+          "game_symbol",
+          "status",
+          "attempts",
+          "error",
+          "created_at",
+          "updated_at"
+        ],
+        "additionalProperties": true
+      },
+      "TransactionResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/Transaction"
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ],
+        "additionalProperties": true
+      },
+      "TransactionListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Transaction"
+                }
+              },
+              "next_cursor": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "next_cursor"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ],
+        "additionalProperties": true
+      },
+      "SessionResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "session_id": {
+                "type": "string"
+              },
+              "symbol": {
+                "type": "string"
+              },
+              "player_id": {
+                "type": "string"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "closed"
+                ]
+              },
+              "redeemed": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "session_id",
+              "symbol",
+              "player_id",
+              "currency",
+              "status",
+              "redeemed"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ],
+        "additionalProperties": true
+      },
+      "CloseResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "session_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "closed"
+                ]
+              },
+              "settlement_continues": {
+                "type": "boolean",
+                "const": true
+              }
+            },
+            "required": [
+              "session_id",
+              "status",
+              "settlement_continues"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success",
+          "data"
+        ],
+        "additionalProperties": true
+      }
+    }
+  }
+}

@@ -11,7 +11,7 @@ const contentSecurityPolicy = [
   "font-src 'self' data:",
   "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://www.googletagmanager.com",
   "media-src 'self'",
-  "frame-src https://challenges.cloudflare.com",
+  "frame-src 'self' https://challenges.cloudflare.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -44,11 +44,11 @@ const stagingHeaders = isStaging
   : [];
 
 const staticDocumentPaths = [
-  "/",
-  "/services",
-  "/games",
-  "/casino-platforms",
-  "/privacy",
+  "/:locale(en|es|pt)",
+  "/:locale(en|es|pt)/services",
+  "/:locale(en|es|pt)/games",
+  "/:locale(en|es|pt)/casino-platforms",
+  "/:locale(en|es|pt)/privacy",
 ];
 
 const staticDocumentHeaders = staticDocumentPaths.map((source) => ({
@@ -89,7 +89,15 @@ const nextConfig: NextConfig = {
       },
       ...staticDocumentHeaders,
       {
-        source: "/contact",
+        source: "/:locale(en|es|pt)/admin",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }, { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }],
+      },
+      {
+        source: "/:locale(en|es|pt)/demo/:path*",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }, { key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
+        source: "/:locale(en|es|pt)/contact",
         headers: [
           {
             key: "Cache-Control",

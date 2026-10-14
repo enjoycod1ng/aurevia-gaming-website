@@ -4,39 +4,78 @@ import { useEffect } from "react";
 
 export function ScrollRevealInit() {
   useEffect(() => {
-    const observerOptions = {
-      threshold: 0.12,
-      rootMargin: "0px 0px -12% 0px",
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches || !("IntersectionObserver" in window)) return;
+
+    const seen = new WeakSet<Element>();
+    const pending = new Set<Element>();
+    const selector = "[data-scroll-reveal]";
+    const pendingClass = "scroll-reveal-pending";
+
+    const reveal = (element: Element) => {
+      element.classList.remove(pendingClass);
+      pending.delete(element);
     };
 
-    const observedElements = new Set<Element>();
-
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach((entry) => {
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
         if (entry.isIntersecting) {
-          entry.target.classList.add("is-revealed");
-          obs.unobserve(entry.target);
+          reveal(entry.target);
+          observer.unobserve(entry.target);
         }
-      });
-    }, observerOptions);
+      }
+    }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
 
-    const observeTargets = () => {
-      document.querySelectorAll<HTMLElement>("[data-scroll-reveal]").forEach((element) => {
-        if (!observedElements.has(element) && !element.classList.contains("is-revealed")) {
-          observedElements.add(element);
-          observer.observe(element);
-        }
-      });
+    const observe = (element: Element) => {
+      if (seen.has(element) || reducedMotion.matches) return;
+      seen.add(element);
+
+      // Keep the first screen and restored scroll positions visible immediately.
+      // Content also stays visible when JavaScript or observers are unavailable.
+      if (element.getBoundingClientRect().top < window.innerHeight) return;
+      element.classList.add(pendingClass);
+      pending.add(element);
+      observer.observe(element);
     };
 
-    observeTargets();
+    const visit = (root: Element, callback: (element: Element) => void) => {
+      if (root.matches(selector)) callback(root);
+      root.querySelectorAll(selector).forEach(callback);
+    };
 
-    const mutationObserver = new MutationObserver(() => observeTargets());
+    visit(document.body, observe);
+
+    const mutationObserver = new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.removedNodes) {
+          if (node instanceof Element && !node.isConnected) {
+            visit(node, (element) => {
+              observer.unobserve(element);
+              reveal(element);
+              seen.delete(element);
+            });
+          }
+        }
+        for (const node of record.addedNodes) {
+          if (node instanceof Element && node.isConnected) visit(node, observe);
+        }
+      }
+    });
     mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    const revealAll = () => {
+      if (reducedMotion.matches) {
+        pending.forEach(reveal);
+        observer.disconnect();
+      }
+    };
+    reducedMotion.addEventListener("change", revealAll);
 
     return () => {
       observer.disconnect();
       mutationObserver.disconnect();
+      reducedMotion.removeEventListener("change", revealAll);
+      pending.forEach(reveal);
     };
   }, []);
 

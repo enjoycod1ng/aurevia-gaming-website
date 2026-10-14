@@ -6,8 +6,8 @@ type ServicesPrinciplesContent = SiteContent["servicesPage"]["principles"];
 
 const toneClasses = {
   gold: "bg-gold-bright",
-  blue: "bg-[#2bb7f6]",
-  violet: "bg-[#ad5cff]",
+  blue: "bg-accent-blue",
+  violet: "bg-accent-violet",
   green: "bg-success",
 } as const;
 
