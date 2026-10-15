@@ -128,7 +128,7 @@ const nextConfig: NextConfig = {
         },
       ],
       // Runs after public files, so real assets are never shadowed. Any other path
-      // outside a locale (/about, /fr, /apple-touch-icon.png) would otherwise reach
+      // outside a locale (/about, /fr, /missing-icon.png) would otherwise reach
       // [locale] with an invalid locale and throw in the root layout. "_" folders are
       // private in the App Router, so the destination never matches a route (not even
       // /demo/<game>) and gets the routed English 404 from app/global-not-found.tsx.

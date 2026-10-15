@@ -41,7 +41,7 @@ test("paths outside a locale are rewritten to an unmatched English path after pu
   const { match, destination } = rewriter(rule);
   assert.equal(destination("/about"), "/en/_unmatched/about");
   assert.equal(destination("/fr/services"), "/en/_unmatched/fr/services");
-  assert.equal(destination("/apple-touch-icon.png"), "/en/_unmatched/apple-touch-icon.png");
+  assert.equal(destination("/missing-icon.png"), "/en/_unmatched/missing-icon.png");
   assert.equal(destination("/demo/wildframes"), "/en/_unmatched/demo/wildframes", "never a real demo page at an unprefixed URL");
   assert.equal(destination("/english"), "/en/_unmatched/english");
   for (const pathname of ["/en", "/es/services", "/pt/demo/wildframes", "/en/not-a-page", "/api/contact", "/api/portal/demo/sessions", "/_next/static/chunks/missing.js"]) {

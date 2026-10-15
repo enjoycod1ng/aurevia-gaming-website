@@ -27,7 +27,7 @@ assert.equal(new URL(legacy.headers.get("location"), base).search, "?ref=test");
 // A 404 must be the branded page in the server HTML, not Next's empty error shell or
 // its unbranded default, and in the URL's language (English outside a locale).
 const notFoundTitles = { en: "Page not found", es: "Página no encontrada", pt: "Página não encontrada" };
-for(const [route, locale] of [["/fr", "en"], ["/about", "en"], ["/apple-touch-icon.png", "en"], ["/fr/contact", "en"], ["/en/not-a-page", "en"], ["/es/not-a-page", "es"], ["/pt/a/b", "pt"], ["/en/demo/nope", "en"], ["/es/demo/nope", "es"]]) {
+for(const [route, locale] of [["/fr", "en"], ["/about", "en"], ["/missing-icon.png", "en"], ["/fr/contact", "en"], ["/en/not-a-page", "en"], ["/es/not-a-page", "es"], ["/pt/a/b", "pt"], ["/en/demo/nope", "en"], ["/es/demo/nope", "es"]]) {
   const response = await get(route), html = await response.text();
   assert.equal(response.status, 404, route);
   assert.match(html, new RegExp(`<html[^>]+lang="${locale}"`), `${route}: localized 404 document`);

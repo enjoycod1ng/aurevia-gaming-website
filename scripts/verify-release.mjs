@@ -64,7 +64,10 @@ try {
   }
   assert.ok(healthy, "Standalone health check timed out");
 
-  const assets = new Set(["/logo.svg", "/opengraph-image.png"]);
+  const assets = new Set([
+    "/logo.svg", "/opengraph-image.png", "/favicon.ico", "/apple-touch-icon.png",
+    "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png",
+  ]);
   let canonical;
   for (const route of [
     "/", "/services", "/games", "/casino-platforms", "/contact", "/privacy",

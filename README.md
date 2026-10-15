@@ -135,6 +135,9 @@ assets and manifest together. Keep earlier hashed files while deployed releases 
 still reference them. The release archive includes public media and publishes it
 through the existing VPS → Cloudflare CDN flow; a separate R2 bucket is not required.
 
+The favicon, Apple touch icon and web app icons in `public/` are rendered from
+`public/logo.svg`; run `npm run icons:generate` after changing the logo.
+
 Keep true UI icons as small vector/CSS assets when appropriate. Use WebP for screenshot-like material—game scenes, admin panels, product interfaces and large decorative raster artwork—not for tiny icons that need infinite scaling.
 
 ## Game catalog and analytics preview
@@ -143,7 +146,7 @@ The home showcase and Games page share the nine titles in `src/content/prepared-
 
 The catalog is limited to the nine games selected by the integration release manifest. In particular, original Honey Rush (game 375) must not be replaced with Black and Yellow artwork. Aurevia is identified as the integration provider, and Play’n GO as the game provider.
 
-`src/content/platform-preview.ts` defines the shared admin analytics screenshot. It is a **design preview with sample data**, not a live financial dashboard. It separates client wallet snapshots, period bets/payouts, client GGR, Aurevia revenue share and client results after share. Every placement carries a sample-data caption; the home and platform previews open the full-size image in a new tab.
+`src/content/platform-preview.ts` defines the shared admin analytics screenshot. It is a **design preview with sample data**, not a live financial dashboard. It separates client wallet snapshots, period bets/payouts, client GGR, Aurevia revenue share and client results after share. Every placement carries a sample-data caption; the home and platform previews open the full-size screenshot in a dialog.
 
 The editable HTML source, asset origins and screenshot reproduction instructions are documented in [assets/README.md](assets/README.md). The old generated game symbols, invented game titles, code-only dashboard fixtures and four service mockup images have been removed.
 
@@ -251,6 +254,9 @@ seconds the new release takes to start. It checks the exact revision and environ
 endpoint, rolls back automatically if startup fails and deletes the failed release. A dropped
 SSH connection does not interrupt it; each run is logged in `/var/log/aurevia-deploy/`. The
 workflow then checks the same revision through the public URL (Cloudflare and Nginx).
+Cloudflare's bot protection challenges GitHub's runners, so three consecutive challenges
+(marked by the `cf-mitigated` header) only warn: open the URL in the warning in a browser.
+Any other error, or the app answering with a different deployment, fails the deploy.
 It keeps the five newest releases and never prunes the live or previous one. Keep app ports
 3000 and 3001 bound to localhost behind Nginx.
 

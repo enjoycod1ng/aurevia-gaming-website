@@ -259,6 +259,7 @@ export function AdminWorkspace({
                   <Clients
                     catalog={catalog}
                     copy={copy}
+                    locale={locale}
                     user={user}
                     refresh={refresh}
                   />

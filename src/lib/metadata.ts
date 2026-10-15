@@ -11,7 +11,12 @@ export const siteMetadata: Metadata = {
   applicationName: siteContent.brand.name,
   authors: [{ name: siteContent.brand.name }], creator: siteContent.brand.name, publisher: siteContent.brand.name,
   formatDetection: { email: false, address: false, telephone: false },
-  icons: { icon: { url: "/logo.svg", type: "image/svg+xml" } },
+  // public/logo.svg is the source; scripts/generate-icons.mjs renders the rasters.
+  // Browsers that read SVG icons prefer it to the 32px favicon.ico entry.
+  icons: {
+    icon: [{ url: "/favicon.ico", sizes: "32x32" }, { url: "/logo.svg", type: "image/svg+xml" }],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+  },
   manifest: "/manifest.webmanifest",
 };
 export const siteViewport: Viewport = {

@@ -9,6 +9,7 @@ import {
   Field,
   Notice,
   errorText,
+  oneTimeValueDialog,
   useAction,
   type User,
 } from "./common";
@@ -30,8 +31,11 @@ export function Team({
     [error, setError] = useState("");
   const [selected, setSelected] = useState<User | null>(null),
     [link, setLink] = useState("");
+  // A new form for every opening: a <select> ignores later defaultValue changes,
+  // so reusing the form would show (and save) the member's previous access.
+  const [formKey, setFormKey] = useState(0),
+    [resetConfirm, setResetConfirm] = useState("");
   const dialog = useRef<HTMLDialogElement>(null);
-  const form = useRef<HTMLFormElement>(null);
   const action = useAction(copy, refresh);
   useEffect(() => {
     let active = true;
@@ -52,7 +56,9 @@ export function Team({
   function open(target: User | null) {
     setSelected(target);
     setLink("");
-    form.current?.reset();
+    setFormKey((key) => key + 1);
+    setResetConfirm("");
+    action.clear();
     dialog.current?.showModal();
   }
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -74,7 +80,7 @@ export function Team({
     if (!selected) return;
     const result = await action.run<{ token: string }>(
       `admin/staff/${selected.id}/reset`,
-      { confirm: selected.username },
+      { confirm: resetConfirm },
     );
     if (result)
       setLink(
@@ -127,7 +133,7 @@ export function Team({
         ref={dialog}
         className="portal-dialog"
         aria-label={selected ? copy.changeAccess : copy.invite}
-        onClose={() => setLink("")}
+        {...oneTimeValueDialog(link)}
       >
         <h2 className="text-2xl">
           {selected ? copy.changeAccess : copy.invite}
@@ -138,15 +144,17 @@ export function Team({
             <CopyValue value={link} copy={copy} />
             <button
               className="button button-primary"
-              onClick={() => dialog.current?.close()}
+              onClick={() => {
+                setLink("");
+                dialog.current?.close();
+              }}
             >
               {copy.close}
             </button>
           </div>
         ) : (
           <form
-            ref={form}
-            key={selected?.id ?? "invite"}
+            key={formKey}
             className="mt-5 space-y-5"
             onSubmit={submit}
           >
@@ -214,10 +222,24 @@ export function Team({
                 <p className="mb-4 text-sm text-muted">
                   {copy.resetAccessHint}
                 </p>
+                <Field label={copy.confirmUsername}>
+                  <input
+                    className="portal-input"
+                    value={resetConfirm}
+                    onChange={(event) => setResetConfirm(event.target.value)}
+                    // Enter here must not submit the access form around it.
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") event.preventDefault();
+                    }}
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                </Field>
                 <button
                   type="button"
-                  className="button button-secondary"
-                  disabled={action.busy}
+                  className="button button-secondary mt-4"
+                  disabled={action.busy || resetConfirm !== selected.username}
                   onClick={resetAccess}
                 >
                   {copy.resetAccess}
