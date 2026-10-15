@@ -12,7 +12,7 @@ export function CookiePreferencesButton({ label }: { label: string }) {
   return (
     <button
       type="button"
-      onClick={openCookiePreferences}
+      onClick={(event) => openCookiePreferences(event.currentTarget)}
     >
       {label}
     </button>

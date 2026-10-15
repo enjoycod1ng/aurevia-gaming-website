@@ -18,7 +18,7 @@ export function ContactScopeSection({ content }: { content: ContactScopesContent
         <SectionHeading {...content.heading} />
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:mt-16 xl:grid-cols-4">
           {content.items.map((item) => (
-            <article className="scroll-reveal flex min-h-82.5 flex-col items-start rounded-[18px] border border-line bg-surface p-6 transition hover:-translate-y-1 hover:border-line-strong md:min-h-92.5 md:p-8" data-scroll-reveal key={item.title}>
+            <article className="scroll-reveal flex min-h-82.5 flex-col items-start rounded-[18px] border border-line bg-surface p-6 transition duration-780 ease-reveal hover:-translate-y-1 hover:border-line-strong md:min-h-92.5 md:p-8" data-scroll-reveal key={item.title}>
               <span className={`grid size-12 place-items-center rounded-full text-white [&_svg]:size-6 ${toneClasses[item.tone].split(" ")[0]}`}><ServiceIcon name={item.icon} /></span>
               <h3 className="mt-6 text-2xl uppercase">{item.title}</h3>
               <p className="mt-4 text-sm leading-7 text-muted">{item.description}</p>

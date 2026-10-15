@@ -2,7 +2,7 @@
 
 import { GoogleAnalytics, sendGAEvent } from "@next/third-parties/google";
 import Link from "next/link";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import type { UiContent } from "@/content/ui-content";
 import { localizedPath, type Locale } from "@/lib/i18n";
@@ -98,8 +98,28 @@ export function trackAnalyticsEvent(
   sendGAEvent("event", eventName, parameters);
 }
 
-export function openCookiePreferences() {
-  window.dispatchEvent(new Event(preferencesEventName));
+export function openCookiePreferences(opener?: HTMLElement) {
+  window.dispatchEvent(
+    new CustomEvent<HTMLElement | undefined>(preferencesEventName, {
+      detail: opener,
+    }),
+  );
+}
+
+function focusMainContent() {
+  const main = document.getElementById("main-content");
+  if (!main) {
+    return;
+  }
+
+  // Focusable only for this move, so later clicks in the page do not focus it.
+  if (!main.hasAttribute("tabindex")) {
+    main.tabIndex = -1;
+    main.addEventListener("blur", () => main.removeAttribute("tabindex"), {
+      once: true,
+    });
+  }
+  main.focus({ preventScroll: true });
 }
 
 export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale }) {
@@ -125,15 +145,29 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
   );
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+  const noticeRef = useRef<HTMLElement>(null);
+  const preferencesRef = useRef<HTMLElement>(null);
+  // The control that opened the preferences panel gets focus back when it closes.
+  const openerRef = useRef<HTMLElement | null>(null);
+  // Set when the notice or panel closes while it holds focus.
+  const restoreFocusRef = useRef(false);
+  const showNotice = Boolean(gaId) && hydrated && !consent;
 
   useEffect(() => {
     if (!gaId) {
       return;
     }
 
-    const openPreferences = () => {
-      const current = readStoredConsent();
-      setAnalyticsEnabled(current === "granted");
+    const openPreferences = (event: Event) => {
+      // Already open: move focus back to it and keep any unsaved choice.
+      if (preferencesRef.current) {
+        preferencesRef.current.focus();
+        return;
+      }
+
+      const opener = event instanceof CustomEvent ? event.detail : undefined;
+      openerRef.current = opener instanceof HTMLElement ? opener : null;
+      setAnalyticsEnabled(readStoredConsent() === "granted");
       setPreferencesOpen(true);
     };
 
@@ -142,6 +176,38 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
       window.removeEventListener(preferencesEventName, openPreferences);
     };
   }, [gaId]);
+
+  // The notice appears after hydration. Focus it so it is announced, unless the
+  // visitor is already using another control.
+  useEffect(() => {
+    const active = document.activeElement;
+    if (showNotice && (!active || active === document.body)) {
+      noticeRef.current?.focus({ preventScroll: true });
+    }
+  }, [showNotice]);
+
+  useEffect(() => {
+    if (preferencesOpen) {
+      restoreFocusRef.current = false;
+      preferencesRef.current?.focus();
+    }
+  }, [preferencesOpen]);
+
+  useEffect(() => {
+    if (preferencesOpen || !restoreFocusRef.current) {
+      return;
+    }
+
+    // Back to the opener. A first choice removes the notice and its button with
+    // it, so focus then continues from the main content.
+    restoreFocusRef.current = false;
+    const opener = openerRef.current;
+    openerRef.current = null;
+    opener?.focus();
+    if (!opener || document.activeElement !== opener) {
+      focusMainContent();
+    }
+  }, [preferencesOpen, showNotice]);
 
   useEffect(() => {
     if (!gaId) {
@@ -196,7 +262,23 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
     return null;
   }
 
+  const consentUiHasFocus = () => {
+    const active = document.activeElement;
+    return Boolean(
+      active &&
+        (noticeRef.current?.contains(active) ||
+          preferencesRef.current?.contains(active)),
+    );
+  };
+
+  const closePreferences = () => {
+    restoreFocusRef.current = consentUiHasFocus();
+    setPreferencesOpen(false);
+  };
+
   const persistConsent = (value: AnalyticsConsentValue) => {
+    restoreFocusRef.current = consentUiHasFocus();
+
     try {
       window.localStorage.setItem(consentStorageKey, value);
     } catch {
@@ -217,12 +299,15 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
     <>
       {consent === "granted" ? <GoogleAnalytics gaId={gaId} nonce={nonce} /> : null}
 
-      {hydrated && !consent && !preferencesOpen ? (
+      {showNotice ? (
         <section
-          className="fixed right-6 bottom-6 left-6 z-1000 mx-auto w-[min(760px,calc(100%-48px))] rounded-[18px] border border-line-strong bg-surface p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:p-5"
+          ref={noticeRef}
+          className="fixed right-6 bottom-6 left-6 z-1000 mx-auto w-[min(760px,calc(100%-48px))] rounded-[18px] border border-line-strong bg-surface p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:p-5 focus:outline-none"
           role="dialog"
           aria-labelledby="cookie-notice-title"
           aria-describedby="cookie-notice-description"
+          tabIndex={-1}
+          hidden={preferencesOpen}
         >
           <div>
             <h2 className="text-base " id="cookie-notice-title">{ui.cookieTitle}</h2>
@@ -237,7 +322,8 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
             </button>
             <button
               type="button"
-              onClick={() => {
+              onClick={(event) => {
+                openerRef.current = event.currentTarget;
                 setAnalyticsEnabled(false);
                 setPreferencesOpen(true);
               }}
@@ -257,20 +343,29 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
 
       {preferencesOpen ? (
         <section
-          className="fixed bottom-6 left-1/2 z-1000 w-[min(580px,calc(100%-48px))] -translate-x-1/2 rounded-[18px] border border-line-strong bg-surface p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:translate-x-0 max-sm:p-5"
+          ref={preferencesRef}
+          className="fixed bottom-6 left-1/2 z-1000 w-[min(580px,calc(100%-48px))] -translate-x-1/2 rounded-[18px] border border-line-strong bg-surface p-6 text-ink shadow-[0_24px_80px_rgb(0_0_0/0.55)] max-sm:right-3 max-sm:bottom-3 max-sm:left-3 max-sm:w-[calc(100%-24px)] max-sm:translate-x-0 max-sm:p-5 focus:outline-none"
           role="dialog"
           aria-labelledby="cookie-preferences-title"
+          aria-describedby="cookie-preferences-description"
+          tabIndex={-1}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.preventDefault();
+              closePreferences();
+            }
+          }}
         >
           <div className="flex items-center justify-between gap-6">
             <div>
               <h2 className="text-base " id="cookie-preferences-title">{ui.cookiePreferences}</h2>
-              <p className="mt-2 text-sm leading-5 text-muted">{ui.preferencesDescription}</p>
+              <p className="mt-2 text-sm leading-5 text-muted" id="cookie-preferences-description">{ui.preferencesDescription}</p>
             </div>
             {consent ? (
               <button
                 className="size-11 shrink-0 cursor-pointer rounded-full border border-line bg-transparent text-2xl text-muted"
                 type="button"
-                onClick={() => setPreferencesOpen(false)}
+                onClick={closePreferences}
                 aria-label={ui.closePreferences}
               >
                 ×

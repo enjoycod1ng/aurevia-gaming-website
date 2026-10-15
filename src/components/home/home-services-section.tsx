@@ -23,7 +23,7 @@ export function HomeServicesSection({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {content.items.map((service, index) => (
             <article
-              className={`scroll-reveal flex min-h-110 flex-col rounded-3xl border bg-surface p-6 transition hover:-translate-y-1 hover:border-gold md:min-h-125 md:p-8 ${index === 0 ? "border-gold/70" : "border-line-strong"}`}
+              className={`scroll-reveal flex min-h-110 flex-col rounded-3xl border bg-surface p-6 transition duration-780 ease-reveal hover:-translate-y-1 hover:border-gold md:min-h-125 md:p-8 ${index === 0 ? "border-gold/70" : "border-line-strong"}`}
               data-scroll-reveal
               key={service.number}
             >
