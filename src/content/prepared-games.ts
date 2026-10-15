@@ -29,7 +29,7 @@ export const preparedGames: readonly GameCatalogItem[] = titles.map((game) => ({
   primaryAction: { label: "Open Demo", href: `/demo/${game.id}` },
   secondaryAction: {
     label: "Discuss Integration",
-    href: `/contact?project=${encodeURIComponent(`${game.title} API integration`)}`,
+    href: `/contact?${new URLSearchParams({ service: "Slot / betting game", project: `${game.title} API integration` })}`,
   },
 }));
 

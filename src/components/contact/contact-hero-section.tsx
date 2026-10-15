@@ -6,6 +6,7 @@ interface ContactHeroSectionProps {
   contact: SiteContent["contact"];
   content: SiteContent["contactPage"];
   requestedProject: string;
+  requestedService: string;
   status?: ContactStatusMessage;
 }
 
@@ -13,6 +14,7 @@ export function ContactHeroSection({
   contact,
   content,
   requestedProject,
+  requestedService,
   status,
 }: ContactHeroSectionProps) {
   return (
@@ -60,6 +62,7 @@ export function ContactHeroSection({
         <ContactForm
           content={content.form}
           requestedProject={requestedProject}
+          requestedService={requestedService}
           status={status}
         />
       </div>

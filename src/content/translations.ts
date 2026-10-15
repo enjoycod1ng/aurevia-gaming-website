@@ -274,6 +274,7 @@ export const translations: Record<string, readonly [string, string]> = {
   "Full name": ["Nombre completo", "Nome completo"],
   "Email or Telegram": ["Correo electrónico o Telegram", "E-mail ou Telegram"],
   "you@company.com or @handle": ["tu@empresa.com o @usuario", "voce@empresa.com ou @usuario"],
+  "Enter an email address or a Telegram username such as @handle (5–32 letters, numbers or underscores).": ["Introduce un correo electrónico o un usuario de Telegram como @usuario (de 5 a 32 letras, números o guiones bajos).", "Informe um e-mail ou um usuário do Telegram como @usuario (de 5 a 32 letras, números ou sublinhados)."],
   "Company / brand": ["Empresa / marca", "Empresa / marca"],
   "Company or product name": ["Nombre de empresa o producto", "Nome da empresa ou produto"],
   "Target market": ["Mercado objetivo", "Mercado-alvo"],

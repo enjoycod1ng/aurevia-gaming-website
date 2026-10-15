@@ -17,6 +17,7 @@ interface ContactPageProps {
   searchParams: Promise<{
     status?: string | string[];
     project?: string | string[];
+    service?: string | string[];
   }>;
 }
 
@@ -34,8 +35,10 @@ export default async function ContactPage({ searchParams, params: routeParams }:
   const { contact, contactPage } = siteContent;
   const statusParam = Array.isArray(params.status) ? params.status[0] : params.status;
   const projectParam = Array.isArray(params.project) ? params.project[0] : params.project;
+  const serviceParam = Array.isArray(params.service) ? params.service[0] : params.service;
   const status = getStatusMessage(statusParam, contactPage.form.statusMessages);
   const requestedProject = projectParam?.slice(0, 120) ?? "";
+  const requestedService = serviceParam?.slice(0, 120) ?? "";
 
   return (
     <main id="main-content" className="bg-canvas">
@@ -44,6 +47,7 @@ export default async function ContactPage({ searchParams, params: routeParams }:
         contact={contact}
         content={contactPage}
         requestedProject={requestedProject}
+        requestedService={requestedService}
         status={status}
       />
       <ContactScopeSection content={contactPage.scopes} />
