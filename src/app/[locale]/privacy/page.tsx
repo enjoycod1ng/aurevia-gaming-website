@@ -3,6 +3,7 @@ import { createPageMetadata } from "@/lib/metadata";
 import { localizedPath } from "@/lib/i18n";
 import Link from "next/link";
 
+export const dynamicParams = false;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const locale = requireLocale((await params).locale);
   return createPageMetadata({ title: translate("Privacy Policy", locale), description: translate("How Aurevia Gaming handles project inquiries, security verification, analytics consent, and website data.", locale), path: "/privacy", keywords: [] }, locale);

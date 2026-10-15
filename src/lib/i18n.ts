@@ -2,6 +2,9 @@ export const locales = ["en", "es", "pt"] as const;
 export type Locale = (typeof locales)[number];
 export const localeNames: Record<Locale, string> = { en: "English", es: "Español", pt: "Português" };
 export const languageCookie = "aurevia-language";
+// Set by src/proxy.ts from the URL so app/global-not-found.tsx, which has no route
+// params, can render the 404 in the requested language.
+export const localeHeader = "x-aurevia-locale";
 
 export function isLocale(value: string | undefined | null): value is Locale {
   return locales.some((locale) => locale === value);
