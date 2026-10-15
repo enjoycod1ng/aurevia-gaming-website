@@ -441,7 +441,7 @@ export const siteContent = {
       titleLines: ["Real games.", "Ready to explore."],
       description: "Nine game demos, ready to open. Explore the catalog with simulated credits and discuss how to connect your own client wallet and website.",
       primaryAction: { label: "Browse All Games", href: "#game-library" },
-      secondaryAction: { label: "Discuss Integration", href: "/contact?project=Game%20API%20integration" },
+      secondaryAction: { label: "Discuss Integration", href: "/contact?service=Slot%20%2F%20betting%20game&project=Game%20API%20integration" },
       featured: gameShowcase,
     },
     catalog: {
@@ -457,7 +457,7 @@ export const siteContent = {
     cta: {
       title: "Connect the games to your platform.",
       description: "Talk through your game catalog, wallet callbacks, client requirements and reporting needs.",
-      primaryAction: { label: "Discuss Integration", href: "/contact?project=Game%20API%20integration" },
+      primaryAction: { label: "Discuss Integration", href: "/contact?service=Slot%20%2F%20betting%20game&project=Game%20API%20integration" },
     },
   },
   platformPage: {
@@ -472,7 +472,7 @@ export const siteContent = {
         "An analytics platform designed for game API businesses: understand each client’s balances, betting performance and contribution to your revenue. Preview the reporting experience below.",
       primaryAction: {
         label: "Request a Platform Quote",
-        href: "/contact?project=Admin%20panel%20%2F%20operator%20platform",
+        href: "/contact?service=Admin%20panel&project=Admin%20panel%20%2F%20operator%20platform",
       },
       secondaryAction: {
         label: "Explore Admin Features",
@@ -617,6 +617,8 @@ export const siteContent = {
         contact: {
           label: "Email or Telegram",
           placeholder: "you@company.com or @handle",
+          error:
+            "Enter an email address or a Telegram username such as @handle (5–32 letters, numbers or underscores).",
         },
         company: {
           label: "Company / brand",
