@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { preparedGames } from "@/content/prepared-games";
+import { demoGameIds } from "@/content/demo-games";
 import { contentSecurityPolicy, createNonce } from "@/lib/content-security-policy";
 import { isLocale, languageCookie, localeHeader, localizedPath, preferredLocale } from "@/lib/i18n";
 
@@ -16,14 +16,11 @@ export function proxy(request: NextRequest) {
     // Always overwrite: the 404 language comes from the URL, never the client.
     const headers = new Headers(request.headers);
     headers.set(localeHeader, segment);
-    const game = url.pathname.match(demoPage)?.[1];
-    if (game && !preparedGames.some(({ id }) => id === game)) {
-      // The demo page renders per request, where notFound() sends an empty error
-      // shell. A path that matches no route gets the branded server-rendered 404.
-      url.pathname = `/${segment}/_unmatched${url.pathname.slice(segment.length + 1)}`;
-      return NextResponse.rewrite(url, { request: { headers } });
-    }
-    if (!noncePages.test(url.pathname)) return NextResponse.next({ request: { headers } });
+    // A next.config.ts rewrite sends unknown games to the routed 404, which keeps
+    // the site policy like every other 404.
+    const game = url.pathname.match(demoPage)?.[1]?.toLowerCase();
+    const unknownGame = game !== undefined && !demoGameIds.some((id) => id === game);
+    if (unknownGame || !noncePages.test(url.pathname)) return NextResponse.next({ request: { headers } });
     const policy = contentSecurityPolicy(createNonce());
     // Next.js reads the nonce from the request's policy and adds it to its scripts.
     headers.set("Content-Security-Policy", policy);
