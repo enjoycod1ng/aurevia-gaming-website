@@ -50,6 +50,13 @@ function subscribeToHydration() {
   return () => undefined;
 }
 
+// Admin and demo pages have a nonce-based CSP (src/proxy.ts). The GA bootstrap is an
+// inline script, and not every browser lets 'strict-dynamic' cover inline scripts, so
+// it gets the nonce Next.js put on its own scripts. Prerendered pages have none.
+function readDocumentNonce() {
+  return document.querySelector<HTMLScriptElement>("script[nonce]")?.nonce || undefined;
+}
+
 function setGaDisabled(gaId: string, disabled: boolean) {
   const gaWindow = window as typeof window & Record<string, unknown>;
   gaWindow[`ga-disable-${gaId}`] = disabled;
@@ -130,6 +137,11 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
     subscribeToHydration,
     () => true,
     () => false,
+  );
+  const nonce = useSyncExternalStore(
+    subscribeToHydration,
+    readDocumentNonce,
+    () => undefined,
   );
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
@@ -285,7 +297,7 @@ export function AnalyticsConsent({ ui, locale }: { ui: UiContent; locale: Locale
 
   return (
     <>
-      {consent === "granted" ? <GoogleAnalytics gaId={gaId} /> : null}
+      {consent === "granted" ? <GoogleAnalytics gaId={gaId} nonce={nonce} /> : null}
 
       {showNotice ? (
         <section

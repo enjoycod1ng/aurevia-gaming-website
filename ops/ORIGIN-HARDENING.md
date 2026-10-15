@@ -6,11 +6,6 @@ where a step applies to both.
 
 Keep a second SSH session open while changing Nginx or the firewall.
 
-`scripts/deploy-vps.sh` uses the gated protocol unless a GitHub environment
-sets `VPS_DEPLOY_PROTOCOL=legacy`. Until an environment's key is pinned to the
-gate (step 3), set that variable on it, or its deployments fail with exit 127
-and change nothing.
-
 ## 1. Accept web traffic only from Cloudflare
 
 Both `aureviagaming.com` and `staging.aureviagaming.com` are proxied by
@@ -99,9 +94,12 @@ mode, and the new release directory ends in a random six-character suffix.
 
 ## 3. Per-environment deploy keys
 
-Follow *Per-environment deploy keys* in [AUTO-DEPLOY.md](AUTO-DEPLOY.md), then
-delete `VPS_DEPLOY_PROTOCOL` from both GitHub environments (or set it to
-`gated`). Until then, the staging key can still deploy production on the VPS.
+Done: each GitHub environment deploys with its own key, pinned to
+`/usr/local/sbin/aurevia-ssh-gate`, and the shared key with a shell is gone.
+`scripts/deploy-vps.sh` supports only this protocol; a key without the forced
+command fails with exit 127 and changes nothing. To set up or replace a key,
+follow *Per-environment deploy keys* or *Key rotation* in
+[AUTO-DEPLOY.md](AUTO-DEPLOY.md).
 
 ## 4. Separate runtime and CI accounts per environment
 
@@ -135,10 +133,11 @@ While Play'n GO runtime code runs on `aureviagaming.com`, its scripts can call
    `/api/portal/` and `/playngo-sandbox/portal/`.
 3. Have the backend issue `launch_url` values on that origin, and allow its
    runtime API calls from it.
-4. Set the GitHub environment variable
-   `NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN=https://play.aureviagaming.com` (staging
-   first). Then redeploy. The player accepts launches only from that origin,
-   and the CSP allows framing it.
+4. Set `NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: https://play.aureviagaming.com` in
+   the build settings at the top of `.github/workflows/deploy-staging.yml` and
+   `deploy-production.yml`. Staging builds with it once the change reaches
+   `dev`, production after the promotion. The player accepts launches only from
+   that origin, and the CSP allows framing it.
 
 The admin cookies use the `__Host-` prefix, so the browser never sends them to
 `play.aureviagaming.com`.

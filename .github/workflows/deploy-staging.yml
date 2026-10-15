@@ -16,25 +16,32 @@ concurrency:
   group: deploy-staging
   cancel-in-progress: false
 
+# Public build settings. The build job has no environment, so it cannot read the
+# staging environment's variables; these values are compiled into the site and
+# visible to every visitor. Change them here, never in the environment.
+env:
+  APP_ENV: staging
+  SITE_URL: https://staging.aureviagaming.com
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAEPEEG3a3I-GS9qC
+  NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ""
+  NEXT_PUBLIC_GA_ID: ""
+
 jobs:
-  deploy:
-    name: Deploy staging
+  # Dependency install scripts run only in this job, which has no environment
+  # and no secrets, so they can never reach the deploy key or the deploy job.
+  build:
+    name: Build staging
     if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment:
-      name: staging
-      url: https://staging.aureviagaming.com
-    env:
-      APP_ENV: staging
-      SITE_URL: ${{ vars.SITE_URL }}
-      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
-      NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ${{ vars.NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN }}
-      NEXT_PUBLIC_GA_ID: ""
+    outputs:
+      sha256: ${{ steps.package.outputs.sha256 }}
 
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -61,10 +68,84 @@ jobs:
         id: package
         shell: bash
         run: |
-          archive="$RUNNER_TEMP/aurevia-gaming-$GITHUB_SHA.tar.gz"
+          archive="$RUNNER_TEMP/release/aurevia-gaming-$GITHUB_SHA.tar.gz"
           npm run release:package -- "$archive"
           npm run release:verify -- "$archive"
-          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(awk 'NR == 1 { print $1 }' "$archive.sha256")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: |
+            ${{ runner.temp }}/release/aurevia-gaming-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/release/aurevia-gaming-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 7
+          # The archive is already gzip-compressed.
+          compression-level: 0
+
+  # Holds the staging secrets. It checks out only the scripts it runs and never
+  # installs or runs npm packages.
+  deploy:
+    # The master ruleset requires a successful check with this name.
+    name: Deploy staging
+    if: github.ref == 'refs/heads/dev'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: staging
+      url: https://staging.aureviagaming.com
+
+    steps:
+      - name: Check out deployment scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            scripts/deploy-vps.sh
+            scripts/verify-public-health.sh
+
+      - name: Check the environment's build variables
+        # A staging variable that disagrees with the build settings above would
+        # otherwise be ignored silently, for example a rotated Turnstile key.
+        shell: bash
+        env:
+          CONFIGURED_SITE_URL: ${{ vars.SITE_URL }}
+          CONFIGURED_NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          CONFIGURED_NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ${{ vars.NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN }}
+          CONFIGURED_NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
+        run: |
+          status=0
+          for name in SITE_URL NEXT_PUBLIC_TURNSTILE_SITE_KEY NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN NEXT_PUBLIC_GA_ID; do
+            configured="CONFIGURED_$name"
+            if [[ -n "${!configured}" && "${!configured}" != "${!name}" ]]; then
+              echo "::error::The staging environment variable $name differs from the build setting in .github/workflows/deploy-staging.yml, which the build uses. Change the setting there, then delete the variable." >&2
+              status=1
+            fi
+          done
+          exit "$status"
+
+      - name: Download release
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: ${{ runner.temp }}/release
+
+      - name: Verify release checksum
+        shell: bash
+        env:
+          RELEASE_SHA256: ${{ needs.build.outputs.sha256 }}
+        run: |
+          cd "$RUNNER_TEMP/release"
+          checksum="aurevia-gaming-$GITHUB_SHA.tar.gz.sha256"
+          if [[ "$(awk 'NR == 1 { print $1 }' "$checksum")" != "$RELEASE_SHA256" ]]; then
+            echo "::error::The downloaded checksum differs from the one the build job recorded." >&2
+            exit 1
+          fi
+          sha256sum --check --strict "$checksum"
 
       - name: Deploy and verify on staging VPS
         shell: bash
@@ -74,8 +155,7 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
-          VPS_DEPLOY_PROTOCOL: ${{ vars.VPS_DEPLOY_PROTOCOL }}
-        run: bash scripts/deploy-vps.sh staging "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
+        run: bash scripts/deploy-vps.sh staging "$RUNNER_TEMP/release/aurevia-gaming-$GITHUB_SHA.tar.gz" "$GITHUB_SHA"
 
       - name: Verify staging through Cloudflare
         shell: bash
