@@ -112,6 +112,14 @@ jobs:
             --jq '.[0].number // empty')"
 
           if [[ -z "$pull_number" ]]; then
+            # Re-running a deployment after its promotion: master already has
+            # every dev commit, and GitHub refuses a pull request without any.
+            if [[ "$(gh api "repos/$repository/compare/master...dev" --jq '.ahead_by')" == "0" ]]; then
+              echo "master already contains dev; there is nothing to promote."
+              echo "pull_number=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
             pull_url="$(gh pr create \
               --repo "$repository" \
               --base master \
@@ -146,6 +154,13 @@ jobs:
           echo "pull_number=$pull_number" >> "$GITHUB_OUTPUT"
 
       - name: Write promotion summary
+        env:
+          PULL_NUMBER: ${{ steps.promotion.outputs.pull_number }}
         run: |
-          echo "Production promotion PR: #${{ steps.promotion.outputs.pull_number }}" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -z "$PULL_NUMBER" ]]; then
+            echo "master already contains dev; there is nothing to promote." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "Production promotion PR: #$PULL_NUMBER" >> "$GITHUB_STEP_SUMMARY"
           echo "Review, approve and merge the promotion PR with a merge commit to deploy production." >> "$GITHUB_STEP_SUMMARY"

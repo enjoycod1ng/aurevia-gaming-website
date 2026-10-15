@@ -339,7 +339,7 @@ Re-run the latest staging deployment. The helper starts the site under
 `aurevia-staging` and saves it for the boot service. Check:
 
 ```bash
-sudo -u aurevia-staging -H pm2 ls                  # aurevia-gaming-staging, online, cluster mode
+sudo -u aurevia-staging -H pm2 ls                  # aurevia-gaming-staging, online, fork mode
 ps -o user= -p "$(sudo -u aurevia-staging -H pm2 pid aurevia-gaming-staging)"   # aurevia-staging
 curl -s http://127.0.0.1:3001/api/health
 ```
