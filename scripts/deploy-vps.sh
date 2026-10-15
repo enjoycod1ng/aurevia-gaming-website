@@ -6,9 +6,10 @@ ARCHIVE="${2:-}"
 REVISION="${3:-}"
 VPS_PORT="${VPS_PORT:-22}"
 VPS_INBOX="/home/deploy/aurevia-incoming"
-# legacy: upload with scp, then run the sudo helper over a shell session.
-# gated: the environment's key is pinned to ops/aurevia-ssh-gate.sh on the VPS.
-VPS_DEPLOY_PROTOCOL="${VPS_DEPLOY_PROTOCOL:-legacy}"
+# gated (default): the environment's key is pinned to ops/aurevia-ssh-gate.sh on the VPS.
+# legacy: upload with scp, then run the sudo helper over a shell session. That
+# key can deploy either environment, so it is used only when requested by name.
+VPS_DEPLOY_PROTOCOL="${VPS_DEPLOY_PROTOCOL:-gated}"
 
 required_variables=(VPS_HOST VPS_USER VPS_SSH_KEY VPS_KNOWN_HOSTS)
 
@@ -60,6 +61,7 @@ SSH_OPTIONS=(
   -o StrictHostKeyChecking=yes
   -o UserKnownHostsFile="$SSH_DIR/known_hosts"
   -o ConnectTimeout=15
+  -o ServerAliveInterval=15
 )
 
 retry_connection() {
@@ -90,11 +92,17 @@ fi
 if [[ "$VPS_DEPLOY_PROTOCOL" == "gated" ]]; then
   # One connection carries the archive; the VPS decides which site it deploys.
   # Only connection failures (exit 255) are retried: the gate rejects a partial
-  # upload by checksum and the helper serializes and health-checks deployments.
+  # upload by checksum, and the helper finishes or rolls back a deployment even
+  # if the connection drops, then serializes the retry behind it.
   for attempt in 1 2 3 4 5; do
     status=0
     ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" \
       "$DEPLOY_ENVIRONMENT $REVISION $ARCHIVE_HASH" < "$ARCHIVE" || status=$?
+
+    if (( status == 127 )); then
+      echo "The VPS ran the request as a shell command, so this key is not pinned to aurevia-ssh-gate." >&2
+      echo "Pin it as described in ops/AUTO-DEPLOY.md, or set VPS_DEPLOY_PROTOCOL=legacy for this environment until then." >&2
+    fi
 
     if (( status != 255 )); then
       exit "$status"
@@ -107,6 +115,7 @@ if [[ "$VPS_DEPLOY_PROTOCOL" == "gated" ]]; then
   exit 255
 fi
 
+echo "Using the legacy protocol: this key has a shell on the VPS and can deploy either environment." >&2
 printf '%s  %s\n' "$ARCHIVE_HASH" "$REMOTE_NAME" > "$SSH_DIR/release.sha256"
 
 retry_connection ssh "${SSH_OPTIONS[@]}" -p "$VPS_PORT" "$REMOTE_TARGET" "install -d -m 0700 '$VPS_INBOX'"

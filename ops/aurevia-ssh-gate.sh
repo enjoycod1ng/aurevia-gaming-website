@@ -5,7 +5,8 @@ set -Eeuo pipefail
 #
 #   sudo install -o root -g root -m 0755 ops/aurevia-ssh-gate.sh /usr/local/sbin/aurevia-ssh-gate
 #
-# and pin each environment's key in /home/deploy/.ssh/authorized_keys:
+# and pin each environment's key in the deploy account's authorized_keys, or in
+# that environment's own CI account (ops/AUTO-DEPLOY.md):
 #
 #   restrict,command="/usr/local/sbin/aurevia-ssh-gate staging" ssh-ed25519 AAAA... github-actions-staging
 #   restrict,command="/usr/local/sbin/aurevia-ssh-gate production" ssh-ed25519 AAAA... github-actions-production
@@ -20,7 +21,9 @@ set -Eeuo pipefail
 # stored in the wrong GitHub environment.
 
 PINNED_ENVIRONMENT="${1:-}"
-INBOX_ROOT="/home/deploy/aurevia-incoming"
+# sshd sets HOME from the account's passwd entry; the root helper derives the
+# same inbox from that entry and refuses archives anywhere else.
+INBOX_ROOT="${HOME:?}/aurevia-incoming"
 MAX_ARCHIVE_BYTES=$((512 * 1024 * 1024))
 
 if [[ "$PINNED_ENVIRONMENT" != "staging" && "$PINNED_ENVIRONMENT" != "production" ]]; then
