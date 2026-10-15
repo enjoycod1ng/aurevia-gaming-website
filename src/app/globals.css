@@ -14,6 +14,7 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
+  --color-line-control: var(--line-control);
   --color-gold: var(--gold);
   --color-gold-bright: var(--gold-bright);
   --color-gold-soft: var(--gold-soft);
@@ -26,6 +27,7 @@
   --radius-card: 1.25rem;
   --radius-panel: 1.75rem;
   --breakpoint-xs: 27rem;
+  --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :root {
@@ -39,6 +41,8 @@
   --muted: light-dark(#525e6e, #a6abb6);
   --line: light-dark(#d8dbe0, #252d38);
   --line-strong: light-dark(#aeb6c2, #343e4c);
+  /* Form control boundaries: at least 3:1 against canvas, canvas-soft and surface (WCAG 1.4.11). */
+  --line-control: light-dark(#7d8694, #646e7e);
   --gold: light-dark(#805f13, #b8891f);
   --gold-bright: light-dark(#795912, #d4af37);
   --gold-soft: light-dark(#f3dfa0, #efd77e);
@@ -49,6 +53,9 @@
   --accent-violet: light-dark(#7c3dc1, #b36cff);
   --panel-shadow: 0 20px 60px light-dark(rgb(25 32 45 / 0.09), rgb(0 0 0 / 0.34));
 }
+/* light-dark() needs no hand-written fallback: the build (Lightning CSS with
+   Next's browser targets) compiles it to --lightningcss-light/dark toggles for
+   Safari < 17.5 and Chrome < 123, and these [data-theme] rules set them too. */
 [data-theme="light"] { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
 
@@ -60,7 +67,7 @@ progress::-webkit-progress-bar { background: var(--line); }
 progress::-webkit-progress-value { border-radius: 999px; background: var(--gold-bright); }
 progress::-moz-progress-bar { border-radius: 999px; background: var(--gold-bright); }
 .portal-field { display: grid; gap: .5rem; font-size: .875rem; color: var(--ink-soft); }
-.portal-input { width: 100%; min-height: 44px; padding: .65rem .8rem; border: 1px solid var(--line-strong); border-radius: .625rem; background: var(--canvas); color: var(--ink); font-size: 1rem; }
+.portal-input { width: 100%; min-height: 44px; padding: .65rem .8rem; border: 1px solid var(--line-control); border-radius: .625rem; background: var(--canvas); color: var(--ink); font-size: 1rem; }
 .portal-input:focus { border-color: var(--gold-bright); }
 .portal-card { min-width: 0; border: 1px solid var(--line); border-radius: 1rem; background: var(--surface); padding: 1.25rem; }
 .portal-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: .875rem; background: var(--surface); }
@@ -170,12 +177,20 @@ button:disabled { cursor: not-allowed; opacity: .55; }
     outline: 3px solid var(--color-gold-bright);
     outline-offset: 4px;
   }
+
+  /* <main> takes focus from script only, e.g. when the cookie notice closes. */
+  main[tabindex="-1"]:focus {
+    outline: none;
+  }
 }
 
-.scroll-reveal {
-  transition:
-    opacity 780ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
+/* Layered so transition utilities on the same element (hover cards) still apply. */
+@layer components {
+  .scroll-reveal {
+    transition:
+      opacity 780ms --theme(--ease-reveal),
+      transform 780ms --theme(--ease-reveal);
+  }
 }
 
 .scroll-reveal-pending {
@@ -194,6 +209,13 @@ button:disabled { cursor: not-allowed; opacity: .55; }
     animation-iteration-count: 1 !important;
   }
 
+  .scroll-reveal-pending {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media print {
   .scroll-reveal-pending {
     opacity: 1 !important;
     transform: none !important;
@@ -231,7 +253,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .nav-link:hover, .nav-link[aria-current="page"] { color: var(--color-gold-bright); }
   .preference-control { display: inline-flex; align-items: center; gap: .375rem; border: 1px solid var(--color-line-strong); border-radius: .75rem; padding-inline: .625rem; background: var(--color-surface); color: var(--color-ink); }
   .preference-control select { min-height: 2.75rem; max-width: 8rem; cursor: pointer; font-size: .875rem; background: var(--color-surface); color: var(--color-ink); }
-  .form-field { width: 100%; min-height: 3rem; border: 1px solid var(--color-line-strong); border-radius: .75rem; padding: .75rem; font-size: 1rem; background: var(--color-canvas-soft); color: var(--color-ink); }
+  .form-field { width: 100%; min-height: 3rem; border: 1px solid var(--color-line-control); border-radius: .75rem; padding: .75rem; font-size: 1rem; background: var(--color-canvas-soft); color: var(--color-ink); }
   .form-field:focus-visible { border-color: var(--color-gold-bright); }
   .field-row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
   .field-row label, .field-label { display: grid; gap: .5rem; }

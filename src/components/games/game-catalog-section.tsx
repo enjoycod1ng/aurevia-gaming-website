@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { CheckIcon } from "@/components/check-icon";
 import { GameCard } from "@/components/games/game-card";
 import type { GameFilter, SiteContent } from "@/types/content";
 
@@ -19,7 +20,7 @@ export function GameCatalogSection({ content }: { content: CatalogContent }) {
           <span className="text-sm font-extrabold text-muted uppercase">{content.filterLabel}</span>
           <div className="flex flex-nowrap gap-2.5 overflow-x-auto pb-1 sm:flex-wrap">
             {content.filters.map((filter) => (
-              <button className={`min-h-11 shrink-0 cursor-pointer rounded-[10px] border px-5 text-sm font-semibold transition ${activeFilter === filter.value ? "border-gold bg-action text-action-ink" : "border-line bg-surface-strong text-muted hover:border-line-strong hover:text-ink"}`} type="button" aria-pressed={activeFilter === filter.value} key={filter.value} onClick={() => setActiveFilter(filter.value)}>{filter.label}</button>
+              <button className={`inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-[10px] border px-5 text-sm font-semibold transition ${activeFilter === filter.value ? "border-gold bg-action text-action-ink" : "border-line bg-surface-strong text-muted hover:border-line-strong hover:text-ink"}`} type="button" aria-pressed={activeFilter === filter.value} key={filter.value} onClick={() => setActiveFilter(filter.value)}>{activeFilter === filter.value ? <CheckIcon className="size-4 shrink-0" /> : null}{filter.label}</button>
             ))}
           </div>
         </div>
