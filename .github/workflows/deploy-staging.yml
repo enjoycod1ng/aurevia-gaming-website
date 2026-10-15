@@ -25,6 +25,8 @@ env:
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAEPEEG3a3I-GS9qC
   NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ""
   NEXT_PUBLIC_GA_ID: ""
+  # Cloudflare Web Analytics site token (Web Analytics > Manage site > JS snippet).
+  NEXT_PUBLIC_CF_BEACON_TOKEN: ""
 
 jobs:
   # Dependency install scripts run only in this job, which has no environment
@@ -117,9 +119,10 @@ jobs:
           CONFIGURED_NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
           CONFIGURED_NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ${{ vars.NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN }}
           CONFIGURED_NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
+          CONFIGURED_NEXT_PUBLIC_CF_BEACON_TOKEN: ${{ vars.NEXT_PUBLIC_CF_BEACON_TOKEN }}
         run: |
           status=0
-          for name in SITE_URL NEXT_PUBLIC_TURNSTILE_SITE_KEY NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN NEXT_PUBLIC_GA_ID; do
+          for name in SITE_URL NEXT_PUBLIC_TURNSTILE_SITE_KEY NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN NEXT_PUBLIC_GA_ID NEXT_PUBLIC_CF_BEACON_TOKEN; do
             configured="CONFIGURED_$name"
             if [[ -n "${!configured}" && "${!configured}" != "${!name}" ]]; then
               echo "::error::The staging environment variable $name differs from the build setting in .github/workflows/deploy-staging.yml, which the build uses. Change the setting there, then delete the variable." >&2

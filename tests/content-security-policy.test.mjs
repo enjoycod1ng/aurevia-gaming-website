@@ -88,14 +88,14 @@ test("marketing routes keep the next.config.ts policy", async (t) => {
     assert.equal(response.headers.get("x-middleware-request-content-security-policy"), null, pathname);
   }
   // The policy every route had before admin and demo pages got a nonce, plus GA4's
-  // *.analytics.google.com collection endpoint.
+  // *.analytics.google.com collection endpoint and Cloudflare Web Analytics.
   assert.equal(contentSecurityPolicy(), [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com",
+    "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://static.cloudflareinsights.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com",
     "font-src 'self' data:",
-    "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+    "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://cloudflareinsights.com",
     "media-src 'self'",
     "frame-src 'self' https://challenges.cloudflare.com",
     "object-src 'none'",

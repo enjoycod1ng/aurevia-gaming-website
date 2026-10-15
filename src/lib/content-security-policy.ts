@@ -5,6 +5,8 @@ import { themeInitScript } from "./theme";
 
 const turnstileOrigin = "https://challenges.cloudflare.com";
 const tagManagerOrigin = "https://www.googletagmanager.com";
+// Cloudflare Web Analytics loads its beacon from here and reports to cloudflareinsights.com.
+const cloudflareInsightsOrigin = "https://static.cloudflareinsights.com";
 // SiteDocument writes this inline script itself, so Next.js never adds the nonce to it.
 const themeScriptHash = `'sha256-${createHash("sha256").update(themeInitScript).digest("base64")}'`;
 
@@ -22,8 +24,8 @@ export function createNonce(): string {
 export function contentSecurityPolicy(nonce?: string): string {
   const production = process.env.NODE_ENV === "production";
   const scriptSources = nonce
-    ? ["'self'", `'nonce-${nonce}'`, themeScriptHash, "'strict-dynamic'", turnstileOrigin, tagManagerOrigin]
-    : ["'self'", "'unsafe-inline'", turnstileOrigin, tagManagerOrigin];
+    ? ["'self'", `'nonce-${nonce}'`, themeScriptHash, "'strict-dynamic'", turnstileOrigin, tagManagerOrigin, cloudflareInsightsOrigin]
+    : ["'self'", "'unsafe-inline'", turnstileOrigin, tagManagerOrigin, cloudflareInsightsOrigin];
   if (!production) scriptSources.push("'unsafe-eval'");
   // A separate demo runtime origin (src/lib/demo-runtime.ts) must be frameable.
   const demoRuntimeOrigin = separateDemoRuntimeOrigin();
@@ -34,7 +36,7 @@ export function contentSecurityPolicy(nonce?: string): string {
     "img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com",
     "font-src 'self' data:",
     // GA4 also sends hits to *.analytics.google.com when Google signals are on.
-    `connect-src 'self' ${turnstileOrigin} https://*.google-analytics.com https://*.analytics.google.com ${tagManagerOrigin}`,
+    `connect-src 'self' ${turnstileOrigin} https://*.google-analytics.com https://*.analytics.google.com ${tagManagerOrigin} https://cloudflareinsights.com`,
     "media-src 'self'",
     `frame-src 'self' ${turnstileOrigin}${demoRuntimeOrigin ? ` ${demoRuntimeOrigin}` : ""}`,
     "object-src 'none'",

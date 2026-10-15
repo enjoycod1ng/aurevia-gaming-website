@@ -2,7 +2,7 @@
 
 A production-oriented, configuration-driven marketing website for `aureviagaming.com`.
 
-The project uses the Next.js App Router, React Server Components, TypeScript, versioned WebP media, responsive image optimization, localized metadata, a Turnstile-protected contact form, consent-gated GA4, and standalone VPS deployment behind Cloudflare. Production currently uses Nginx and PM2; the Caddy and systemd files under `ops/` document the planned standalone migration.
+The project uses the Next.js App Router, React Server Components, TypeScript, versioned WebP media, responsive image optimization, localized metadata, a Turnstile-protected contact form, cookie-free Cloudflare Web Analytics, optional consent-gated GA4, and standalone VPS deployment behind Cloudflare. Production currently uses Nginx and PM2; the Caddy and systemd files under `ops/` document the planned standalone migration.
 
 ## Stack
 
@@ -14,7 +14,11 @@ The project uses the Next.js App Router, React Server Components, TypeScript, ve
 - Node.js 24 LTS on the VPS
 - Nginx and PM2 on the live VPS; Caddy and a standalone systemd unit are available for a future migration
 - Cloudflare Free for DNS, CDN, WAF, DDoS protection, rate limiting and Turnstile
-- Google Analytics 4 behind an explicit analytics-consent control
+- Cloudflare Web Analytics for cookie-free page views (no consent banner). Create the site
+  in Cloudflare under Web Analytics with the JS snippet option (automatic injection cannot
+  work: HTML responses send `no-transform`) and put its token in `NEXT_PUBLIC_CF_BEACON_TOKEN`
+  at the top of `.github/workflows/deploy-production.yml`
+- Optional Google Analytics 4 behind an explicit analytics-consent control (`NEXT_PUBLIC_GA_ID`)
 
 ## Project structure
 
