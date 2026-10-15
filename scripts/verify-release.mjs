@@ -91,6 +91,33 @@ try {
       if (url.startsWith("/_next/") || url.startsWith("/media/") || url.startsWith("/developer-downloads/")) assets.add(url);
     }
   }
+  // src/proxy.ts replaces the next.config.ts policy on admin and demo pages with a
+  // nonce-based one. A prerendered page would carry no nonce and fail in the browser.
+  const scriptSources = (response) => (response.headers.get("content-security-policy") ?? "")
+    .split(";").map((directive) => directive.trim()).find((directive) => directive.startsWith("script-src ")) ?? "";
+  const nonces = new Set();
+  for (const route of ["/en/admin", "/es/demo/wildframes", "/en/admin", "/es/demo/wildframes"]) {
+    const response = await get(route);
+    assert.equal(response.status, 200, route);
+    // fetch joins repeated headers with ", ", and a policy has no commas.
+    assert.doesNotMatch(response.headers.get("content-security-policy") ?? "", /,/, `${route}: one Content-Security-Policy header`);
+    const sources = scriptSources(response);
+    assert.doesNotMatch(sources, /'unsafe-inline'/, route);
+    const nonce = sources.match(/'nonce-([^']+)'/)?.[1];
+    assert.ok(nonce, `${route}: nonce`);
+    nonces.add(nonce);
+    const scripts = [...(await response.text()).matchAll(/<script\b[^>]*>/g)].map(([tag]) => tag);
+    assert.deepEqual(
+      scripts.filter((tag) => !tag.includes(` nonce="${nonce}"`) && !tag.includes('type="application/ld+json"')),
+      ["<script>"],
+      `${route}: every script but the hashed theme script carries the nonce`,
+    );
+  }
+  assert.equal(nonces.size, 4, "Each response has its own nonce");
+  const home = await get("/en");
+  assert.match(scriptSources(home), /'unsafe-inline'/, "Prerendered pages keep the site policy");
+  assert.doesNotMatch(scriptSources(home), /'nonce-/);
+  await home.arrayBuffer();
   for (const asset of assets) {
     const response = await get(asset);
     assert.equal(response.status, 200, `Missing release asset: ${asset}`);
@@ -118,7 +145,7 @@ try {
     body: "",
   });
   assert.equal(invalid.status, 400, "Invalid contact submissions must be rejected");
-  console.log(`Release verified: routes, query edge cases, ${assets.size} assets, metadata, contact validation and Sharp.`);
+  console.log(`Release verified: routes, query edge cases, ${assets.size} assets, metadata, admin and demo CSP nonces, contact validation and Sharp.`);
 } catch (error) {
   console.error(log);
   throw error;
