@@ -136,6 +136,17 @@ try {
     await response.text();
   }
   assert.equal((await get("/does-not-exist")).status, 404);
+  // Nginx sends these headers on every request. With them, a src/proxy.ts rewrite
+  // once turned unknown games into a 500 (an external fetch to the app's own port).
+  const behindNginx = { host: new URL(canonical).host, "x-forwarded-proto": "https" };
+  for (const route of ["/en/demo/nope", "/es/demo/wildframesx"]) {
+    const response = await get(route, { headers: behindNginx });
+    assert.equal(response.status, 404, `${route} behind Nginx`);
+    assert.match(await response.text(), /<h1[^>]*>(?:Page not found|Página no encontrada)<\/h1>/, `${route}: branded 404`);
+  }
+  const respelled = await get("/es/demo/WildFrames", { headers: behindNginx, redirect: "manual" });
+  assert.equal(respelled.status, 308, "Other spellings of a game redirect");
+  assert.equal(new URL(respelled.headers.get("location"), base).pathname, "/es/demo/wildframes");
   const invalid = await get("/api/contact", {
     method: "POST",
     headers: {
@@ -145,7 +156,7 @@ try {
     body: "",
   });
   assert.equal(invalid.status, 400, "Invalid contact submissions must be rejected");
-  console.log(`Release verified: routes, query edge cases, ${assets.size} assets, metadata, admin and demo CSP nonces, contact validation and Sharp.`);
+  console.log(`Release verified: routes, query edge cases, ${assets.size} assets, metadata, admin and demo CSP nonces, unknown-game 404s behind Nginx, contact validation and Sharp.`);
 } catch (error) {
   console.error(log);
   throw error;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { DemoPlayer } from "@/components/demo-player";
 import { getDemoCopy } from "@/content/demo-copy";
 import { requireLocale } from "@/content/localized-content";
@@ -7,9 +7,15 @@ import { preparedGames } from "@/content/prepared-games";
 
 // Rendered per request so Next.js can add src/proxy.ts's CSP nonce to its scripts;
 // prerendered HTML would carry no nonce and be blocked. dynamicParams = false only
-// applies to prerendered routes, so src/proxy.ts sends unknown games to the routed
-// 404 (app/global-not-found.tsx) before this page renders.
+// applies to prerendered routes, so a next.config.ts rewrite sends unknown games to
+// the routed 404 (app/global-not-found.tsx) before this page renders.
 export const dynamic = "force-dynamic";
+
+// That rewrite matches regardless of case, so other spellings of a game reach this
+// page and are sent to its canonical address.
+function findGame(id: string) {
+  return preparedGames.find((game) => game.id === id.toLowerCase());
+}
 
 export async function generateMetadata({
   params,
@@ -18,7 +24,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const values = await params;
   const locale = requireLocale(values.locale);
-  const game = preparedGames.find((game) => game.id === values.game);
+  const game = findGame(values.game);
   if (!game) notFound();
   return {
     title: `${game.title} · ${getDemoCopy(locale).title}`,
@@ -33,8 +39,9 @@ export default async function DemoPage({
 }) {
   const values = await params;
   const locale = requireLocale(values.locale);
-  const game = preparedGames.find((game) => game.id === values.game);
+  const game = findGame(values.game);
   if (!game) notFound();
+  if (game.id !== values.game) permanentRedirect(`/${locale}/demo/${game.id}`);
   return (
     <DemoPlayer
       game={game.id}

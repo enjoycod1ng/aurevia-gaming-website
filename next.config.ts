@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { demoGameIds } from "./src/content/demo-games";
 import { contentSecurityPolicy } from "./src/lib/content-security-policy";
 
 const isStaging = process.env.APP_ENV === "staging";
@@ -114,6 +115,18 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return {
+      // Unknown games get the routed 404 (app/global-not-found.tsx) before the
+      // per-request demo page renders, where notFound() would send an empty error
+      // shell. This must not be a src/proxy.ts rewrite: behind Nginx the request
+      // carries X-Forwarded-Proto, Next.js then treats an absolute proxy rewrite
+      // as external and fetches it over HTTPS from its own HTTP port (a 500).
+      // Matching ignores case; the demo page redirects other spellings of a game.
+      beforeFiles: [
+        {
+          source: `/:locale(en|es|pt)/demo/:game((?!(?:${demoGameIds.join("|")})$)[^/]+)`,
+          destination: "/:locale/_unmatched/demo/:game",
+        },
+      ],
       // Runs after public files, so real assets are never shadowed. Any other path
       // outside a locale (/about, /fr, /apple-touch-icon.png) would otherwise reach
       // [locale] with an invalid locale and throw in the root layout. "_" folders are
