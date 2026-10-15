@@ -199,7 +199,7 @@ test("release retention never prunes the live or previous release", { skip }, (t
   assert.deepEqual(prunable(path.join(releases, names[1]), path.join(releases, names[2])), [names[3], names[0]]);
 });
 
-test("CI deploys through the pinned gate unless legacy is requested by name", { skip }, (t) => {
+test("CI deploys only through the pinned gate", { skip }, (t) => {
   const bin = sandbox(t), work = sandbox(t);
   const log = path.join(work, "ssh.log");
   stub(bin, "ssh", 'printf "ssh %s\n" "$*" >> "$SSH_LOG"; cat > /dev/null; exit "${SSH_STATUS:-0}"');
@@ -214,28 +214,93 @@ test("CI deploys through the pinned gate unless legacy is requested by name", { 
       env: {
         ...process.env, PATH: `${bin}:${process.env.PATH}`, RUNNER_TEMP: work, SSH_LOG: log,
         VPS_HOST: "origin.example", VPS_USER: "deploy", VPS_SSH_KEY: "key", VPS_KNOWN_HOSTS: "origin.example ssh-ed25519 AAAA",
-        VPS_DEPLOY_PROTOCOL: "", SSH_STATUS: "0", ...environment,
+        SSH_STATUS: "0", ...environment,
       },
     });
     return { ...result, calls: existsSync(log) ? readFileSync(log, "utf8") : "" };
   };
+  const gatedCall = new RegExp(`^ssh .*-o ServerAliveInterval=15 .*deploy@origin\\.example staging ${revision} ${checksum}\\n$`);
 
   const gated = deploy({});
   assert.equal(gated.status, 0, gated.stderr);
-  assert.match(gated.calls, new RegExp(`^ssh .*-o ServerAliveInterval=15 .*deploy@origin\.example staging ${revision} ${checksum}\n$`));
+  assert.match(gated.calls, gatedCall);
+
+  // A leftover variable from before the cutover cannot bring back scp and a shell.
+  const leftover = deploy({ VPS_DEPLOY_PROTOCOL: "legacy" });
+  assert.equal(leftover.status, 0, leftover.stderr);
+  assert.match(leftover.calls, gatedCall);
 
   const unpinned = deploy({ SSH_STATUS: "127" });
   assert.equal(unpinned.status, 127);
   assert.match(unpinned.stderr, /not pinned to aurevia-ssh-gate/);
+  assert.doesNotMatch(unpinned.stderr, /legacy/);
   assert.doesNotMatch(unpinned.calls, /scp|sudo/);
+});
 
-  const legacy = deploy({ VPS_DEPLOY_PROTOCOL: "legacy" });
-  assert.equal(legacy.status, 0, legacy.stderr);
-  assert.match(legacy.stderr, /legacy protocol/);
-  assert.match(legacy.calls, /^scp /m);
-  assert.match(legacy.calls, /sudo -n \/usr\/local\/sbin\/aurevia-deploy 'staging' '\/home\/deploy\/aurevia-incoming\/staging-\S+\.tar\.gz'/);
+// The jobs of a workflow, without comment lines. Each job starts with a key
+// indented by two spaces under `jobs:`.
+function workflowJobs(name) {
+  const text = readFileSync(path.join(root, ".github/workflows", name), "utf8").replaceAll("\r\n", "\n")
+    .split("\n").filter((line) => !line.trimStart().startsWith("#")).join("\n");
+  const jobs = text.split(/^jobs:\n/m)[1] ?? "";
+  return Object.fromEntries(jobs.split(/^(?=  [a-z][a-z-]*:\n)/m)
+    .map((job) => [job.match(/^  ([a-z][a-z-]*):\n/)?.[1], job]).filter(([key]) => key));
+}
 
-  assert.match(deploy({ VPS_DEPLOY_PROTOCOL: "shell" }).stderr, /must be legacy or gated/);
+test("deploy workflows install npm packages only in a job without secrets", () => {
+  for (const name of ["deploy-staging.yml", "deploy-production.yml"]) {
+    const jobs = workflowJobs(name);
+    const { build, deploy } = jobs;
+    assert.ok(build && deploy, `${name} has build and deploy jobs`);
+
+    assert.match(build, /run: npm ci$/m, name);
+    assert.doesNotMatch(build, /^ {4}environment:/m, name);
+    assert.match(deploy, /^ {4}environment:/m, name);
+    assert.match(deploy, /^ {4}needs: build$/m, name);
+    assert.match(deploy, /secrets\.VPS_SSH_KEY/, name);
+    assert.doesNotMatch(deploy, /\bnpm\b|setup-node/, name);
+    assert.match(deploy, /sha256sum --check --strict/, name);
+    for (const [job, body] of Object.entries(jobs)) {
+      if (job !== "deploy") assert.doesNotMatch(body, /secrets\./, `${name}: ${job}`);
+    }
+  }
+
+  // The master ruleset requires this check, and only a staged commit may be promoted.
+  const staging = workflowJobs("deploy-staging.yml");
+  assert.match(staging.deploy, /^ {4}name: Deploy staging$/m);
+  assert.match(staging.promote, /^ {4}needs: deploy$/m);
+  assert.match(staging.promote, /context='policy\/dev-to-master'/);
+
+  // Production checks the promotion before any dependency code runs and again
+  // in the job that holds the deploy key, before it deploys.
+  const production = workflowJobs("deploy-production.yml");
+  const before = (job, first, second) => {
+    const a = job.indexOf(first), b = job.indexOf(second);
+    return a >= 0 && b >= 0 && a < b;
+  };
+  assert.ok(before(production.build, "bash scripts/verify-promotion.sh", "npm ci"));
+  assert.ok(before(production.deploy, "bash scripts/verify-promotion.sh", "bash scripts/deploy-vps.sh"));
+});
+
+test("workflows pin every action to a full commit SHA", () => {
+  for (const name of ["ci.yml", "deploy-staging.yml", "deploy-production.yml"]) {
+    const workflow = readFileSync(path.join(root, ".github/workflows", name), "utf8");
+    const actions = [...workflow.matchAll(/^ *(?:- )?uses: (\S+)/gm)].map(([, action]) => action);
+    assert.ok(actions.length > 0, name);
+    for (const action of actions) assert.match(action, /^[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/, `${name}: ${action}`);
+  }
+});
+
+// The deploy workflows never run on pull requests, so the required Verify check
+// is the only place their mistakes can be caught before merge.
+test("the required CI check lints the workflows with checksum-pinned tools", () => {
+  const { verify } = workflowJobs("ci.yml");
+  assert.ok(verify, "ci.yml has a verify job");
+  assert.match(verify, /^ {4}name: Verify$/m);
+  assert.match(verify, /^ {10}ACTIONLINT_SHA256: [0-9a-f]{64}$/m);
+  assert.match(verify, /^ {10}SHELLCHECK_SHA256: [0-9a-f]{64}$/m);
+  assert.match(verify, /sha256sum --check --strict/);
+  assert.match(verify, /"\$tools\/actionlint" .*-shellcheck "\$tools\/shellcheck"/);
 });
 
 test("a Cloudflare range update that Nginx rejects restores the previous include", { skip }, (t) => {

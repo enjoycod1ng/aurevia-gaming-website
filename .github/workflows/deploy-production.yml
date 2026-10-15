@@ -1,6 +1,6 @@
 name: Deploy production
 
-# Production deploys only from master. The job guard and promotion check below
+# Production deploys only from master. The job guards and promotion checks below
 # are defense in depth; the enforcing controls are the production environment's
 # master-only deployment branch policy, its required reviewer and the master
 # ruleset (ops/configure-github-protection.sh, ops/AUTO-DEPLOY.md).
@@ -16,24 +16,29 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+# Public build settings. The build job has no environment, so it cannot read the
+# production environment's variables; these values are compiled into the site
+# and visible to every visitor. Change them here, never in the environment.
+env:
+  APP_ENV: production
+  SITE_URL: https://aureviagaming.com
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAEN-0f6YA6yu4S0o
+  NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ""
+  NEXT_PUBLIC_GA_ID: ""
+
 jobs:
-  deploy:
-    name: Deploy production
+  # Dependency install scripts run only in this job, which has no environment
+  # and no secrets, so they can never reach the deploy key or the deploy job.
+  build:
+    name: Build production
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
       statuses: read
-    environment:
-      name: production
-      url: https://aureviagaming.com
-    env:
-      APP_ENV: production
-      SITE_URL: ${{ vars.SITE_URL }}
-      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
-      NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ${{ vars.NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN }}
-      NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
+    outputs:
+      sha256: ${{ steps.package.outputs.sha256 }}
 
     steps:
       - name: Check out repository
@@ -41,7 +46,10 @@ jobs:
         with:
           # The promotion check compares the merge commit with its dev parent.
           fetch-depth: 2
+          persist-credentials: false
 
+      # Before any dependency code runs, and so that a commit that was not
+      # promoted never asks the reviewer to approve a deployment.
       - name: Verify the commit passed staging from dev
         shell: bash
         env:
@@ -73,10 +81,97 @@ jobs:
         id: package
         shell: bash
         run: |
-          archive="$RUNNER_TEMP/aurevia-gaming-$GITHUB_SHA.tar.gz"
+          archive="$RUNNER_TEMP/release/aurevia-gaming-$GITHUB_SHA.tar.gz"
           npm run release:package -- "$archive"
           npm run release:verify -- "$archive"
-          echo "archive=$archive" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(awk 'NR == 1 { print $1 }' "$archive.sha256")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: |
+            ${{ runner.temp }}/release/aurevia-gaming-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/release/aurevia-gaming-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          # A deployment can wait up to 30 days for the reviewer's approval.
+          retention-days: 30
+          # The archive is already gzip-compressed.
+          compression-level: 0
+
+  # Holds the production secrets and waits for the reviewer's approval. It
+  # checks out only the scripts it runs and never installs or runs npm packages.
+  deploy:
+    name: Deploy production
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      statuses: read
+    environment:
+      name: production
+      url: https://aureviagaming.com
+
+    steps:
+      - name: Check out deployment scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The promotion check compares the merge commit with its dev parent.
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            scripts/deploy-vps.sh
+            scripts/verify-promotion.sh
+            scripts/verify-public-health.sh
+
+      # Repeated here so the job that holds the deploy key checks for itself.
+      - name: Verify the commit passed staging from dev
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/verify-promotion.sh "$GITHUB_SHA"
+
+      - name: Check the environment's build variables
+        # A production variable that disagrees with the build settings above
+        # would otherwise be ignored silently, for example a rotated Turnstile key.
+        shell: bash
+        env:
+          CONFIGURED_SITE_URL: ${{ vars.SITE_URL }}
+          CONFIGURED_NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          CONFIGURED_NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ${{ vars.NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN }}
+          CONFIGURED_NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
+        run: |
+          status=0
+          for name in SITE_URL NEXT_PUBLIC_TURNSTILE_SITE_KEY NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN NEXT_PUBLIC_GA_ID; do
+            configured="CONFIGURED_$name"
+            if [[ -n "${!configured}" && "${!configured}" != "${!name}" ]]; then
+              echo "::error::The production environment variable $name differs from the build setting in .github/workflows/deploy-production.yml, which the build uses. Change the setting there, then delete the variable." >&2
+              status=1
+            fi
+          done
+          exit "$status"
+
+      - name: Download release
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: ${{ runner.temp }}/release
+
+      - name: Verify release checksum
+        shell: bash
+        env:
+          RELEASE_SHA256: ${{ needs.build.outputs.sha256 }}
+        run: |
+          cd "$RUNNER_TEMP/release"
+          checksum="aurevia-gaming-$GITHUB_SHA.tar.gz.sha256"
+          if [[ "$(awk 'NR == 1 { print $1 }' "$checksum")" != "$RELEASE_SHA256" ]]; then
+            echo "::error::The downloaded checksum differs from the one the build job recorded." >&2
+            exit 1
+          fi
+          sha256sum --check --strict "$checksum"
 
       - name: Deploy and verify on production VPS
         shell: bash
@@ -86,8 +181,7 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
-          VPS_DEPLOY_PROTOCOL: ${{ vars.VPS_DEPLOY_PROTOCOL }}
-        run: bash scripts/deploy-vps.sh production "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
+        run: bash scripts/deploy-vps.sh production "$RUNNER_TEMP/release/aurevia-gaming-$GITHUB_SHA.tar.gz" "$GITHUB_SHA"
 
       - name: Verify production through Cloudflare
         shell: bash
