@@ -27,7 +27,15 @@ cp -a "$PROJECT_ROOT/public" "$STAGE_DIR/public"
 # The image optimizer writes cache files here at runtime.
 mkdir -p "$STAGE_DIR/.next/cache/images"
 
-tar -C "$STAGE_DIR" -czf "$ARCHIVE" .
+# The VPS helper accepts only regular files and directories. Fail here, with the
+# offending paths, instead of at deployment; hard links are stored as copies.
+if [[ -n "$(find "$STAGE_DIR" ! -type f ! -type d -print -quit)" ]]; then
+  echo "The release contains links or special files, which the VPS refuses:" >&2
+  find "$STAGE_DIR" ! -type f ! -type d >&2
+  exit 1
+fi
+
+tar -C "$STAGE_DIR" --hard-dereference -czf "$ARCHIVE" .
 (
   cd "$(dirname "$ARCHIVE")"
   sha256sum "$(basename "$ARCHIVE")" > "$(basename "$ARCHIVE").sha256"

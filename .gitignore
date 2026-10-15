@@ -9,10 +9,10 @@
 /release/
 /*.tar.gz
 
-# local environment files
-.env
-.env.local
-.env.*.local
+# local environment files (Next.js copies .env.production into the standalone
+# release, so none of them may be committed)
+.env*
+!.env.example
 
 # logs
 npm-debug.log*

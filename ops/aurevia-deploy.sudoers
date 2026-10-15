@@ -1,3 +1,9 @@
 # Validate with visudo before installation:
 #   visudo -cf ops/aurevia-deploy.sudoers
-deploy ALL=(root) NOPASSWD: /usr/local/sbin/aurevia-deploy *
+#
+# One rule per environment pins the environment argument and the archive to
+# that environment's name in the inbox; the helper re-checks both. Both rules
+# belong to the shared deploy account until each environment has its own CI
+# account (ops/AUTO-DEPLOY.md, "Separate the environments on the VPS").
+deploy ALL=(root) NOPASSWD: /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/staging-*.tar.gz *
+deploy ALL=(root) NOPASSWD: /usr/local/sbin/aurevia-deploy production /home/deploy/aurevia-incoming/production-*.tar.gz *

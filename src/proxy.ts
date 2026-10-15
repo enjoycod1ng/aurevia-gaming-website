@@ -1,8 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { languageCookie, localizedPath, preferredLocale } from "@/lib/i18n";
+import { isLocale, languageCookie, localeHeader, localizedPath, preferredLocale } from "@/lib/i18n";
 
 export function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
+  const segment = url.pathname.split("/")[1];
+  if (isLocale(segment)) {
+    // Always overwrite: the 404 language comes from the URL, never the client.
+    const headers = new Headers(request.headers);
+    headers.set(localeHeader, segment);
+    return NextResponse.next({ request: { headers } });
+  }
   if (url.pathname === "/" || url.pathname === "/admin") {
     url.pathname = localizedPath(url.pathname, preferredLocale(
       request.cookies.get(languageCookie)?.value,
@@ -21,4 +28,4 @@ export function proxy(request: NextRequest) {
   return NextResponse.redirect(url, 308);
 }
 
-export const config = { matcher: ["/", "/admin", "/services", "/games", "/casino-platforms", "/contact", "/privacy", "/docs"] };
+export const config = { matcher: ["/", "/admin", "/services", "/games", "/casino-platforms", "/contact", "/privacy", "/docs", "/:locale(en|es|pt)/:path*"] };

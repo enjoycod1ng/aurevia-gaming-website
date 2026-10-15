@@ -36,6 +36,7 @@ in depth. The enforcing controls live in GitHub and on the VPS:
 | `master: reviewed promotions only` ruleset | GitHub | PR required, one code-owner approval, staging checks, merge commits only, no force push, deletion or bypass |
 | Auto-merge disabled | GitHub | A promotion merges only when a person merges it |
 | One SSH key per environment, pinned to `aurevia-ssh-gate` | VPS | The staging key can never deploy production |
+| One runtime account and one CI account per environment | VPS | A compromised staging site or CI account cannot touch production ([setup](#separate-the-environments-on-the-vps)) |
 
 Apply the GitHub settings with an admin GitHub CLI session and re-run it after
 any settings change; it is idempotent:
@@ -51,9 +52,13 @@ is that push, and the setting would block their approval. If master also has a
 classic branch protection rule, review it and delete it once the ruleset is
 active; GitHub combines both.
 
-Merge pull requests into `dev` with a merge commit as well, so `dev` keeps
-`master` in its history. After a squash merge, the promotion PR reports that
-`dev` is out of date; use **Update branch**, let staging redeploy, then merge.
+Feature pull requests into `dev` may be squashed. Promotions must not be: with
+a merge commit, the next promotion's merge base is the previously promoted
+`dev` commit and it merges cleanly. A squashed promotion leaves `master` with a
+commit `dev` lacks, the production workflow refuses to deploy it, and the next
+promotion conflicts. To recover, merge `master` into `dev` without changing any
+files (`git merge -s ours origin/master` on a branch from `dev`), merge that
+pull request into `dev` with **Create a merge commit**, and promote again.
 
 Do not deploy production from any other branch, and never use a manual
 production dispatch to publish unmerged work. If production needs an urgent
@@ -67,8 +72,8 @@ root-owned deployment helper.
 
 ```bash
 sudo install -o root -g root -m 0755 ops/deploy-release.sh /usr/local/sbin/aurevia-deploy
+sudo visudo -cf ops/aurevia-deploy.sudoers
 sudo install -o root -g root -m 0440 ops/aurevia-deploy.sudoers /etc/sudoers.d/aurevia-deploy
-sudo visudo -cf /etc/sudoers.d/aurevia-deploy
 
 sudo install -d -o deploy -g deploy -m 0700 /home/deploy/aurevia-incoming
 sudo install -d -o deploy -g deploy -m 0750 /var/www/aurevia-gaming/releases
@@ -118,7 +123,8 @@ environment, never as repository secrets, which every branch can read:
 
 - `VPS_HOST`: the DNS-hidden origin address.
 - `VPS_PORT`: SSH port, normally `22`.
-- `VPS_USER`: `deploy`.
+- `VPS_USER`: `deploy`, or the environment's own CI account once it exists
+  (`aurevia-ci-staging` / `aurevia-ci-production`).
 - `VPS_SSH_KEY`: that environment's own Actions private key.
 - `VPS_KNOWN_HOSTS`: pinned `ssh-keyscan` output verified against the existing
   administrator connection.
@@ -132,7 +138,7 @@ Configure the public build variables:
 | production | `SITE_URL` | `https://aureviagaming.com` |
 | production | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Production Turnstile site key |
 | production | `NEXT_PUBLIC_GA_ID` | Production GA4 measurement ID |
-| both | `VPS_DEPLOY_PROTOCOL` | `gated` once that environment's key is pinned to the gate; unset means `legacy` |
+| both | `VPS_DEPLOY_PROTOCOL` | Unset (or `gated`) once that environment's key is pinned to the gate. Set `legacy` only until then: an unset value means `gated`, and an unpinned key then fails with a hint instead of deploying |
 
 Runtime-only Turnstile, webhook, Telegram and bearer secrets remain in the VPS
 environment files and are never stored in the repository.
@@ -160,8 +166,8 @@ on staging.
 
 The workflow builds the standalone artifact once and smoke-tests the extracted
 archive, including native image optimization, before it sends it to the VPS.
-With `VPS_DEPLOY_PROTOCOL=gated`, `scripts/deploy-vps.sh` streams the archive
-over one SSH connection:
+By default `scripts/deploy-vps.sh` uses the gated protocol and streams the
+archive over one SSH connection:
 
 ```bash
 ssh deploy@HOST "staging COMMIT_SHA ARCHIVE_SHA256" < ARCHIVE.tar.gz
@@ -169,36 +175,64 @@ ssh deploy@HOST "staging COMMIT_SHA ARCHIVE_SHA256" < ARCHIVE.tar.gz
 
 The key's forced command, `/usr/local/sbin/aurevia-ssh-gate`, checks that the
 requested environment matches the one pinned in `authorized_keys`, stores the
-archive and checksum in the inbox and runs the helper for the pinned
-environment only. The legacy protocol uploads the archive and checksum with
-`scp` and calls the helper directly:
+archive and checksum in the account's inbox and runs the helper for the pinned
+environment only. Only with `VPS_DEPLOY_PROTOCOL=legacy` does the script upload
+the archive and checksum with `scp` and call the helper over a shell session:
 
 ```bash
-sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/ARCHIVE.tar.gz COMMIT_SHA
+sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/staging-NAME.tar.gz COMMIT_SHA
 ```
 
-Both workflows queue deployments instead of cancelling a running one. The helper validates all inputs, serializes deployments with `flock`, switches
-the `current` symlink atomically, verifies the environment and exact revision
-through `/api/health`, retains five releases, and automatically restores the
-previous symlink if startup or health validation fails. The staging workflow
-uses this check as its deployment health gate; it does not require Cloudflare
-Access credentials.
+The sudo rule only accepts an archive named for the environment it deploys.
 
-For manual recovery, inspect the current and retained releases before changing
-anything:
+Both workflows queue deployments instead of cancelling a running one. The
+helper:
+
+- validates all inputs and refuses archives that contain anything but regular
+  files and directories (no symlinks, hard links or devices), absolute paths or
+  `..`. `scripts/package-release.sh` enforces the same rule when it builds;
+- checks that the unpacked release fits on disk with 256 MiB to spare;
+- serializes deployments with `flock` on a lock in the root-only
+  `/run/aurevia-deploy`;
+- unpacks, as the runtime account, into a new randomly named release directory
+  and writes `.revision` and `.environment` as that account, never as root;
+- switches the `current` symlink atomically and verifies the environment and
+  exact revision through `/api/health`;
+- restores the previous release if startup or health validation fails, then
+  deletes the failed release (it is kept only if the rollback fails too);
+- keeps the five newest releases, and never deletes the live release or the one
+  a rollback would use;
+- keeps going if the SSH connection drops. Every run is logged to
+  `/var/log/aurevia-deploy/` (kept for 30 days), and the client sees the same
+  output while it is connected. A retried upload waits for the running
+  deployment and then deploys the same revision again.
+
+The staging workflow uses this check as its deployment health gate; it does not
+require Cloudflare Access credentials.
+
+For manual recovery, inspect the current and retained releases and the latest
+deployment log before changing anything:
 
 ```bash
 readlink -f /var/www/aurevia-gaming/current
 ls -1dt /var/www/aurevia-gaming/releases/*
+sudo ls -1t /var/log/aurevia-deploy | head
 pm2 status
 pm2 logs aurevia-gaming --lines 100
 ```
+
+Run `pm2` as the environment's runtime account (`deploy` until the accounts
+below exist, then `sudo -u aurevia-production -H pm2 ...`).
 
 ## Per-environment deploy keys
 
 Until this cutover, staging and production share one key with a shell on the
 VPS, so anything that can use the staging secrets can also deploy production.
-Do the cutover from the root or administrator console, staging first.
+`scripts/deploy-vps.sh` now defaults to the gated protocol, so set
+`VPS_DEPLOY_PROTOCOL=legacy` in each GitHub environment that still uses the
+shared key; without it the deploy fails (exit 127, with a hint) and nothing on
+the VPS changes. Do the cutover from the root or administrator console, staging
+first.
 
 1. Install the gate from a reviewed checkout of `master`:
 
@@ -220,11 +254,12 @@ Do the cutover from the root or administrator console, staging first.
    ```
 
 4. Replace `VPS_SSH_KEY` in the `staging` environment with the new private key,
-   set the `staging` environment variable `VPS_DEPLOY_PROTOCOL=gated`, and
-   delete the private key file from the trusted machine.
+   delete the `staging` environment variable `VPS_DEPLOY_PROTOCOL` (or set it
+   to `gated`), and delete the private key file from the trusted machine.
 5. Re-run the latest staging deployment and confirm it reports the exact
-   revision. A failed run changes nothing on the VPS; unset the variable to
-   return to the legacy protocol while you investigate.
+   revision. A failed run changes nothing on the VPS; set
+   `VPS_DEPLOY_PROTOCOL=legacy` and restore the old key to return to the legacy
+   protocol while you investigate.
 6. Repeat steps 2-5 for `production` with `-C github-actions-production` and
    `command="/usr/local/sbin/aurevia-ssh-gate production"`. The production
    re-run waits for the reviewer's approval.
@@ -236,6 +271,134 @@ Do the cutover from the root or administrator console, staging first.
    ```
 
 After the cutover, `legacy` support in `scripts/deploy-vps.sh` can be removed.
+
+## Separate the environments on the VPS
+
+The pinned keys stop the staging key from deploying production, but both sites
+still run as `deploy`, which also owns both release trees, the inbox,
+`~/.ssh/authorized_keys` and the sudo rules for both environments. Code running
+in the staging site could therefore rewrite production's files, add an SSH key
+or deploy production. The fix is two accounts per environment:
+
+| | Staging | Production |
+| --- | --- | --- |
+| Runtime account: runs the site with its own PM2, owns its releases | `aurevia-staging` | `aurevia-production` |
+| CI account: holds the pinned key, the inbox and the sudo rule | `aurevia-ci-staging` | `aurevia-ci-production` |
+
+`/usr/local/sbin/aurevia-deploy` picks up each account as soon as root creates
+it and uses `deploy` for anything that does not exist yet, so every step below
+is a VPS change only. First install the current helper and sudo rules
+([One-time VPS bootstrap](#one-time-vps-bootstrap)) and finish
+[Per-environment deploy keys](#per-environment-deploy-keys), which installs the
+current gate. Do staging before production. Use an administrator account other than `deploy`; once both
+environments are moved, `deploy` needs no sudo access at all.
+
+### Runtime accounts
+
+The new accounts cannot use the `nvm` install in `/home/deploy`. Install Node.js
+24 and PM2 system-wide (for example Node.js from NodeSource, then
+`sudo npm install -g pm2`) and check that a login shell finds both:
+
+```bash
+sudo bash -lc 'command -v node pm2'   # both must be in /usr/bin or /usr/local/bin
+```
+
+Moving an environment stops its site until the next deployment finishes, so do
+production in a quiet period. Hold the environment's deployment lock while you
+work so that no deployment starts halfway through (one that arrives meanwhile
+waits up to five minutes, then fails without changing anything):
+
+```bash
+sudo install -d -o root -g root -m 0700 /run/aurevia-deploy
+sudo flock /run/aurevia-deploy/staging.lock bash   # a root shell that holds the lock
+```
+
+In that shell:
+
+```bash
+useradd --system --user-group --create-home --home-dir /var/lib/aurevia-staging \
+  --shell /usr/sbin/nologin aurevia-staging
+
+# Stop the site in deploy's PM2. The helper refuses to start it under the new
+# account while another process holds port 3001.
+sudo -u deploy -H bash -lc '[ -s ~/.nvm/nvm.sh ] && . ~/.nvm/nvm.sh; pm2 delete aurevia-gaming-staging && pm2 save'
+
+# Releases belong to the runtime account; the app root and current link to root.
+chown root:root /var/www/aurevia-gaming-staging
+chmod 0755 /var/www/aurevia-gaming-staging
+chown -R aurevia-staging:aurevia-staging /var/www/aurevia-gaming-staging/releases
+chown root:aurevia-staging /etc/aurevia-gaming/staging.env
+chmod 0640 /etc/aurevia-gaming/staging.env
+
+# Start the account's PM2 at boot, as pm2-deploy does for deploy.
+pm2 startup systemd -u aurevia-staging --hp /var/lib/aurevia-staging
+exit
+```
+
+Re-run the latest staging deployment. The helper starts the site under
+`aurevia-staging` and saves it for the boot service. Check:
+
+```bash
+sudo -u aurevia-staging -H pm2 ls                  # aurevia-gaming-staging, online, cluster mode
+ps -o user= -p "$(sudo -u aurevia-staging -H pm2 pid aurevia-gaming-staging)"   # aurevia-staging
+curl -s http://127.0.0.1:3001/api/health
+```
+
+Repeat with `production`, `aurevia-production`, `aurevia-gaming`, port 3000 and
+`/var/www/aurevia-gaming`; the production re-run waits for the reviewer. When
+`deploy`'s PM2 runs nothing, stop it and its boot service:
+
+```bash
+sudo -u deploy -H bash -lc '[ -s ~/.nvm/nvm.sh ] && . ~/.nvm/nvm.sh; pm2 kill'
+sudo systemctl disable --now pm2-deploy
+```
+
+Keep `/home/deploy` at mode `0750` or stricter so the runtime accounts cannot
+read it.
+
+### CI accounts and per-environment sudo rules
+
+Each CI account receives only its environment's uploads and may run only that
+environment's deployment. Its sudo rule pins the environment argument and the
+archive location, so it works as a per-environment wrapper around the helper
+without another root-owned script; the helper also refuses archives outside the
+calling environment's own inbox. As soon as `aurevia-ci-staging` exists, the
+helper stops accepting staging archives from `deploy`, so finish these steps
+in one sitting.
+
+```bash
+# sshd runs the forced command through the login shell, so it must be a real
+# shell; the account has no password and its key gets no shell. Root owns the
+# home directory and the keys, so the account can write only its inbox.
+sudo useradd --user-group --no-create-home --home-dir /home/aurevia-ci-staging \
+  --shell /bin/bash aurevia-ci-staging
+sudo install -d -o root -g root -m 0755 /home/aurevia-ci-staging /home/aurevia-ci-staging/.ssh
+sudo install -d -o aurevia-ci-staging -g aurevia-ci-staging -m 0700 /home/aurevia-ci-staging/aurevia-incoming
+```
+
+If `sshd_config` restricts logins with `AllowUsers` or `AllowGroups`, add the
+CI accounts there.
+
+Move the staging key's `restrict,command="/usr/local/sbin/aurevia-ssh-gate staging" ...`
+line from `/home/deploy/.ssh/authorized_keys` into
+`/home/aurevia-ci-staging/.ssh/authorized_keys` (owner `root`, mode `0644`).
+Then install the sudo rule:
+
+```bash
+echo 'aurevia-ci-staging ALL=(root) NOPASSWD: /usr/local/sbin/aurevia-deploy staging /home/aurevia-ci-staging/aurevia-incoming/staging-*.tar.gz *' \
+  > aurevia-ci-staging.sudoers
+sudo visudo -cf aurevia-ci-staging.sudoers
+sudo install -o root -g root -m 0440 aurevia-ci-staging.sudoers /etc/sudoers.d/aurevia-ci-staging
+```
+
+Set the `staging` environment secret `VPS_USER=aurevia-ci-staging`, re-run the
+latest staging deployment and confirm the revision. Then remove the `staging`
+line from `/etc/sudoers.d/aurevia-deploy` with
+`sudo visudo -f /etc/sudoers.d/aurevia-deploy`.
+
+Repeat for production. Afterwards `deploy` holds no deploy key and needs no
+sudo rule: delete `/etc/sudoers.d/aurevia-deploy`. The legacy protocol only
+works with `deploy`, so it is gone for good at that point.
 
 ## Key rotation
 

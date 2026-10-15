@@ -252,6 +252,10 @@ the controller contact details and the exact inquiry-retention policy.
 
 ## 8. Protect the VPS origin
 
+> Updated October 14, 2026: the Nginx include, proxy headers and firewall steps
+> are in [ORIGIN-HARDENING.md](ORIGIN-HARDENING.md). The app now trusts only the
+> `X-Real-IP` header that Nginx sets.
+
 The live Nginx origin currently accepts HTTP/HTTPS publicly, while Cloudflare
 is the advertised path. The checked-in Caddyfile is a future migration reference
 that restores client IPs only from Cloudflare's currently published proxy

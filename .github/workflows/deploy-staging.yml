@@ -29,6 +29,7 @@ jobs:
       APP_ENV: staging
       SITE_URL: ${{ vars.SITE_URL }}
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+      NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ${{ vars.NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN }}
       NEXT_PUBLIC_GA_ID: ""
 
     steps:
@@ -75,6 +76,10 @@ jobs:
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
           VPS_DEPLOY_PROTOCOL: ${{ vars.VPS_DEPLOY_PROTOCOL }}
         run: bash scripts/deploy-vps.sh staging "${{ steps.package.outputs.archive }}" "$GITHUB_SHA"
+
+      - name: Verify staging through Cloudflare
+        shell: bash
+        run: bash scripts/verify-public-health.sh https://staging.aureviagaming.com staging "$GITHUB_SHA"
 
   promote:
     name: Prepare production promotion

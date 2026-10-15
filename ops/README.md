@@ -8,11 +8,19 @@ the enabled `pm2-deploy` systemd service. Staging uses port 3001. Both run the p
 
 - `aurevia-gaming.service`: systemd unit for the standalone Next.js server.
 - `Caddyfile`: domain redirect, TLS reverse proxy, compression and cache headers.
-- `deploy-release.sh`: hardened PM2 release deployment, exact-revision health
-  check, automatic rollback and retention. Install it root-owned as
+- `deploy-release.sh`: hardened PM2 release deployment (zero-downtime cluster reload), exact-revision health
+  check, automatic rollback and retention. It refuses links and unsafe paths in the archive, survives
+  dropped SSH connections and logs to `/var/log/aurevia-deploy/`. Install it root-owned as
   `/usr/local/sbin/aurevia-deploy`; workflows must never overwrite it.
-- `nginx-staging.conf`: isolated staging reverse proxy on port 3001.
-- `aurevia-deploy.sudoers`: restricted sudo entry for the `deploy` account.
+- `nginx-staging.conf`: isolated staging reverse proxy on port 3001; accepts
+  only Cloudflare traffic.
+- `nginx-cloudflare.conf` / `update-cloudflare-ips.sh`: Cloudflare real-IP and
+  origin allow-list include, and the script that regenerates it.
+- `nginx-proxy-headers.conf`: proxy headers that overwrite client-supplied
+  address headers. Use it in every Next.js location block.
+- `ORIGIN-HARDENING.md`: VPS and backend steps for the October 2026 fixes.
+- `aurevia-deploy.sudoers`: sudo rules for the shared `deploy` account, each pinned to one
+  environment's archives. Per-environment CI accounts get one rule each (`AUTO-DEPLOY.md`).
 - `aurevia-ssh-gate.sh`: forced command that pins each GitHub Actions deploy key
   to one environment. Install it root-owned as `/usr/local/sbin/aurevia-ssh-gate`.
 - `configure-github-protection.sh`: applies the environment branch policies,

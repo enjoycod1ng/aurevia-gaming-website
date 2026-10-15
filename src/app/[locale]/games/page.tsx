@@ -6,6 +6,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 import { HomeCtaSection } from "@/components/home/home-cta-section";
 
+export const dynamicParams = false;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const locale = requireLocale((await params).locale);
   return createPageMetadata(getSiteContent(locale).seo.games, locale);

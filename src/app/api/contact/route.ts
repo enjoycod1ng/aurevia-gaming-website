@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { siteContent } from "@/content/site-content";
+import { getClientIp } from "@/lib/client-ip";
+import { CONTACT_MAX_LENGTH, isValidContact } from "@/lib/contact-validation";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export const runtime = "nodejs";
@@ -15,20 +17,18 @@ interface RateLimitEntry {
 const rateLimitStore = new Map<string, RateLimitEntry>();
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
+// Nginx always sets X-Real-IP, so a request without one means the proxy is
+// misconfigured (or this is local development). Those requests share a bucket;
+// the per-IP limit would let five posts lock every visitor out.
+const UNVERIFIED_CLIENT_KEY = "unverified-client";
+const UNVERIFIED_CLIENT_MAX_REQUESTS = 30;
 const MAX_REQUEST_BYTES = 32 * 1024;
+const TELEGRAM_MAX_MESSAGE_LENGTH = 4096;
 const TURNSTILE_ACTION = "request_quote";
 
 const quoteRequestSchema = z.object({
   name: z.string().trim().min(2).max(100),
-  contact: z
-    .string()
-    .trim()
-    .max(160)
-    .refine((value) => {
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      const isTelegramHandle = /^@[A-Za-z0-9_]{5,32}$/.test(value);
-      return isEmail || isTelegramHandle;
-    }),
+  contact: z.string().trim().max(CONTACT_MAX_LENGTH).refine(isValidContact),
   company: z.string().trim().max(140),
   targetMarket: z.string().trim().max(160),
   service: z
@@ -54,16 +54,10 @@ type ContactStatus =
   | "error"
   | "rate-limited";
 
-function getClientIp(request: Request): string {
-  return (
-    request.headers.get("cf-connecting-ip") ??
-    request.headers.get("x-real-ip") ??
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown"
-  );
-}
-
-function getRateLimitRetryAfter(clientIp: string): number | null {
+function getRateLimitRetryAfter(
+  clientIp: string,
+  maxRequests = RATE_LIMIT_MAX_REQUESTS,
+): number | null {
   const now = Date.now();
 
   for (const [key, entry] of rateLimitStore) {
@@ -92,9 +86,60 @@ function getRateLimitRetryAfter(clientIp: string): number | null {
   current.count += 1;
   rateLimitStore.set(clientIp, current);
 
-  return current.count > RATE_LIMIT_MAX_REQUESTS
+  return current.count > maxRequests
     ? Math.max(1, Math.ceil((current.resetAt - now) / 1000))
     : null;
+}
+
+function checkRateLimit(request: Request): number | null {
+  const clientIp = getClientIp(request.headers);
+
+  if (clientIp) {
+    return getRateLimitRetryAfter(clientIp);
+  }
+
+  const shared = rateLimitStore.get(UNVERIFIED_CLIENT_KEY);
+
+  // Warn once per window rather than on every request.
+  if (!shared || shared.resetAt <= Date.now()) {
+    console.warn(
+      "Contact request has no valid X-Real-IP; using the shared rate limit. Check the Nginx real-IP configuration.",
+    );
+  }
+
+  return getRateLimitRetryAfter(
+    UNVERIFIED_CLIENT_KEY,
+    UNVERIFIED_CLIENT_MAX_REQUESTS,
+  );
+}
+
+// Returns null once the body exceeds the limit. Content-Length alone cannot be
+// trusted: chunked requests have none, and request.formData() would read them
+// without bound.
+async function readBodyWithLimit(
+  request: Request,
+  limit: number,
+): Promise<Blob | null> {
+  if (!request.body) {
+    return new Blob();
+  }
+
+  const reader = request.body.getReader();
+  const chunks: BlobPart[] = [];
+  let size = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > limit) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+
+  return new Blob(chunks);
 }
 
 function readField(formData: FormData, field: string): string {
@@ -156,8 +201,24 @@ function allowedRequestOrigins(): Set<string> {
   return origins;
 }
 
+// Cuts at a code point boundary so an emoji is never split into a lone
+// surrogate, which Telegram rejects. Staying within the UTF-16 length also
+// keeps the text within the limit however Telegram counts characters.
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  let truncated = "";
+  for (const character of text) {
+    if (truncated.length + character.length > maxLength) break;
+    truncated += character;
+  }
+  return truncated;
+}
+
 function formatMessage(payload: QuoteRequest): string {
-  return [
+  const text = [
     "New Aurevia Gaming project request",
     "",
     `Name: ${payload.name}`,
@@ -171,9 +232,9 @@ function formatMessage(payload: QuoteRequest): string {
     "",
     "Brief:",
     payload.message,
-  ]
-    .join("\n")
-    .slice(0, 4096);
+  ].join("\n");
+
+  return truncateText(text, TELEGRAM_MAX_MESSAGE_LENGTH);
 }
 
 async function deliverToTelegram(payload: QuoteRequest): Promise<boolean> {
@@ -200,6 +261,10 @@ async function deliverToTelegram(payload: QuoteRequest): Promise<boolean> {
       cache: "no-store",
     },
   );
+
+  if (!response.ok) {
+    console.error("Telegram delivery returned HTTP", response.status);
+  }
 
   return response.ok;
 }
@@ -247,8 +312,31 @@ async function deliverToWebhook(payload: QuoteRequest): Promise<boolean> {
   return response.ok;
 }
 
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : error;
+}
+
+// Telegram is tried first; the webhook is the fallback whether Telegram
+// answers with an error or the request itself fails (timeout, DNS).
+async function deliverQuoteRequest(payload: QuoteRequest): Promise<boolean> {
+  try {
+    if (await deliverToTelegram(payload)) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Telegram delivery failed", errorMessage(error));
+  }
+
+  try {
+    return await deliverToWebhook(payload);
+  } catch (error) {
+    console.error("Webhook delivery failed", errorMessage(error));
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
-  const retryAfter = getRateLimitRetryAfter(getClientIp(request));
+  const retryAfter = checkRateLimit(request);
 
   if (retryAfter) {
     return contactResponse(request, "rate-limited", 429, {
@@ -271,10 +359,24 @@ export async function POST(request: Request) {
     return contactResponse(request, "invalid", 413);
   }
 
+  let body: Blob | null;
+
+  try {
+    body = await readBodyWithLimit(request, MAX_REQUEST_BYTES);
+  } catch {
+    return contactResponse(request, "invalid", 400);
+  }
+
+  if (!body) {
+    return contactResponse(request, "invalid", 413);
+  }
+
   let formData: FormData;
 
   try {
-    formData = await request.formData();
+    formData = await new Response(body, {
+      headers: { "Content-Type": request.headers.get("content-type") ?? "" },
+    }).formData();
   } catch {
     return contactResponse(request, "invalid", 400);
   }
@@ -306,7 +408,7 @@ export async function POST(request: Request) {
   const verification = await verifyTurnstileToken({
     token: turnstileToken,
     expectedAction: TURNSTILE_ACTION,
-    remoteIp: getClientIp(request),
+    remoteIp: getClientIp(request.headers) ?? undefined,
   });
 
   if (!verification.ok) {
@@ -340,22 +442,9 @@ export async function POST(request: Request) {
     return contactResponse(request, "unavailable", 503);
   }
 
-  try {
-    const telegramDelivered = await deliverToTelegram(parsed.data);
-    const webhookDelivered = telegramDelivered
-      ? false
-      : await deliverToWebhook(parsed.data);
+  const delivered = await deliverQuoteRequest(parsed.data);
 
-    return contactResponse(
-      request,
-      telegramDelivered || webhookDelivered ? "success" : "error",
-      telegramDelivered || webhookDelivered ? 200 : 502,
-    );
-  } catch (error) {
-    console.error(
-      "Contact delivery failed",
-      error instanceof Error ? error.message : error,
-    );
-    return contactResponse(request, "error", 502);
-  }
+  return delivered
+    ? contactResponse(request, "success", 200)
+    : contactResponse(request, "error", 502);
 }
