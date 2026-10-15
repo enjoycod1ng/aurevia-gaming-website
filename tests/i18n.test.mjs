@@ -61,11 +61,17 @@ test("all language versions have self canonicals and reciprocal alternates", () 
     assert.equal(metadata.alternates.canonical, `/${locale}/games`);
     for(const alternate of locales) assert.equal(metadata.alternates.languages[alternate], `/${alternate}/games`);
     assert.equal(metadata.alternates.languages["x-default"], "/en/games");
+    // Each language shares its own link-preview image, with a translated description.
+    const [image] = metadata.openGraph.images;
+    assert.equal(image.url, `/og/aurevia-gaming-${locale}.jpg`);
+    assert.ok(readFileSync(new URL(`../public${image.url}`, import.meta.url)).length > 0, image.url);
+    assert.equal(image.alt, translate("Aurevia Gaming casino game and platform development", locale));
+    assert.deepEqual(metadata.twitter.images, [image.url]);
   }
 });
 
 test("interactive components do not leave untranslated text outside the dictionaries", () => {
-  const properNames = new Set(["Google Analytics", "Website", "Telegram", "WhatsApp", "Play’n GO", "Aurevia Gaming", "AUREVIA GAMING", "EUR", "· 10,000 EUR"]);
+  const properNames = new Set(["Google Analytics", "Website", "Telegram", "WhatsApp", "Play’n GO", "Aurevia Gaming", "AUREVIA GAMING", "EUR"]);
   const root = new URL("../src/components/", import.meta.url);
   for (const file of readdirSync(root, { recursive: true }).filter(file => file.endsWith(".tsx"))) {
     const source = ts.createSourceFile(file, readFileSync(new URL(file.replaceAll("\\", "/"), root), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);

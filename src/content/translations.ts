@@ -368,6 +368,7 @@ export const translations: Record<string, readonly [string, string]> = {
   "Open the full-size admin analytics design preview (sample data, new tab)": ["Abrir vista previa del panel a tamaño completo (datos de ejemplo, nueva pestaña)", "Abrir prévia do painel em tamanho completo (dados ilustrativos, nova aba)"],
   "Sending…": ["Enviando…", "Enviando…"],
   "Human verification is temporarily unavailable.": ["La verificación humana no está disponible temporalmente.", "A verificação humana está temporariamente indisponível."],
+  "Aurevia Gaming casino game and platform development": ["Desarrollo de juegos y plataformas de casino de Aurevia Gaming", "Desenvolvimento de jogos e plataformas de cassino da Aurevia Gaming"],
   "Protected by Cloudflare Turnstile.": ["Protegido por Cloudflare Turnstile.", "Protegido pelo Cloudflare Turnstile."],
   "Preview client access, game activity and service health in both themes. The authenticated workspace adds settled reports, transaction history and audited management controls. This preview uses illustrative data.": ["Consulta el acceso de clientes, la actividad de juegos y el estado del servicio en ambos temas. El área autenticada añade informes liquidados, historial de transacciones y controles de gestión auditados. Esta vista previa usa datos ilustrativos.", "Veja o acesso de clientes, a atividade dos jogos e o estado do serviço nos dois temas. A área autenticada oferece relatórios liquidados, histórico de transações e controles de gestão auditados. Esta prévia usa dados ilustrativos."],
 };

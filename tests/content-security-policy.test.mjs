@@ -87,14 +87,15 @@ test("marketing routes keep the next.config.ts policy", async (t) => {
     assert.equal(response.headers.get("content-security-policy"), null, `${pathname}: no proxy policy`);
     assert.equal(response.headers.get("x-middleware-request-content-security-policy"), null, pathname);
   }
-  // Byte for byte the policy every route had before admin and demo pages got a nonce.
+  // The policy every route had before admin and demo pages got a nonce, plus GA4's
+  // *.analytics.google.com collection endpoint.
   assert.equal(contentSecurityPolicy(), [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com",
     "font-src 'self' data:",
-    "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://www.googletagmanager.com",
+    "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
     "media-src 'self'",
     "frame-src 'self' https://challenges.cloudflare.com",
     "object-src 'none'",

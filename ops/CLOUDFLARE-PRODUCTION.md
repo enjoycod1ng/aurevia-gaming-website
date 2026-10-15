@@ -116,8 +116,9 @@ Set the following:
   Zstandard when supported and falls back to Brotli or Gzip; there is no legacy
   Brotli toggle to enable.
 - Keep Rocket Loader off for this Next.js application.
-- Do not enable HSTS preload. The origin currently sends one year of HSTS with
-  subdomains; verify every subdomain before changing that policy.
+- Do not enable HSTS preload. The application sends one year of HSTS for its own
+  host only (`next.config.ts`). Add `includeSubDomains` there only after
+  verifying that every subdomain serves HTTPS.
 
 Under **DNS -> Settings**, enable DNSSEC. If the registrar is not Cloudflare,
 copy the DS values Cloudflare generates into the registrar and wait for the
@@ -178,7 +179,9 @@ The **Cloudflare managed ruleset** is always active on this Free zone. Keep
 **Browser Integrity Check** and **Bot Fight Mode** enabled, and monitor Security
 Events because Free Bot Fight Mode cannot be bypassed for individual paths.
 
-The application sends `Cache-Control: no-transform` on HTML document responses.
+The application sends `Cache-Control: no-transform` on its prerendered HTML pages
+(with `max-age=0, must-revalidate`, because deploys do not purge Cloudflare) and
+on the contact page.
 Cloudflare documents that this prevents JavaScript Detections from injecting
 `/cdn-cgi/challenge-platform/` scripts into those responses. This avoids
 deprecated browser API warnings from Cloudflare's injected script in Lighthouse,

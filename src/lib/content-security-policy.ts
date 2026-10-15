@@ -33,7 +33,8 @@ export function contentSecurityPolicy(nonce?: string): string {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com",
     "font-src 'self' data:",
-    `connect-src 'self' ${turnstileOrigin} https://*.google-analytics.com ${tagManagerOrigin}`,
+    // GA4 also sends hits to *.analytics.google.com when Google signals are on.
+    `connect-src 'self' ${turnstileOrigin} https://*.google-analytics.com https://*.analytics.google.com ${tagManagerOrigin}`,
     "media-src 'self'",
     `frame-src 'self' ${turnstileOrigin}${demoRuntimeOrigin ? ` ${demoRuntimeOrigin}` : ""}`,
     "object-src 'none'",

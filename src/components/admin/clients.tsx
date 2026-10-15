@@ -1,11 +1,13 @@
 "use client";
 import { useRef, useState } from "react";
 import type { AdminCopy } from "@/content/admin-copy";
+import type { Locale } from "@/lib/i18n";
 import {
   Badge,
   CopyValue,
   Field,
   Notice,
+  oneTimeValueDialog,
   useAction,
   type Catalog,
   type Client,
@@ -20,11 +22,13 @@ type Change = {
 export function Clients({
   catalog,
   copy,
+  locale,
   user,
   refresh,
 }: {
   catalog: Catalog;
   copy: AdminCopy;
+  locale: Locale;
   user: User;
   refresh: () => void;
 }) {
@@ -39,6 +43,7 @@ export function Clients({
     setChange(value);
     setSelectedGames(value.client.games);
     setSecret("");
+    action.clear();
     form.current?.reset();
     dialog.current?.showModal();
   }
@@ -96,7 +101,12 @@ export function Clients({
             </div>
             {client.demo && (
               <p className="mt-3 text-sm font-medium text-gold-bright">
-                {copy.demo} · 10,000 EUR
+                {copy.demo} ·{" "}
+                {new Intl.NumberFormat(locale, {
+                  style: "currency",
+                  currency: "EUR",
+                  maximumFractionDigits: 0,
+                }).format(10_000)}
               </p>
             )}
             <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
@@ -190,7 +200,7 @@ export function Clients({
         ref={dialog}
         className="portal-dialog"
         aria-labelledby="client-change-title"
-        onClose={() => setSecret("")}
+        {...oneTimeValueDialog(secret)}
       >
         <h2 id="client-change-title" className="text-2xl">
           {secret ? copy.credentials : copy.confirmTitle}
@@ -201,7 +211,10 @@ export function Clients({
             <CopyValue value={secret} copy={copy} />
             <button
               className="button button-primary"
-              onClick={() => dialog.current?.close()}
+              onClick={() => {
+                setSecret("");
+                dialog.current?.close();
+              }}
             >
               {copy.close}
             </button>

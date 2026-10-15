@@ -5,8 +5,8 @@ Game previews use real Play’n GO artwork and gameplay captures from the prepar
 | Placement | Active asset |
 | --- | --- |
 | Header and footer monogram | `src/components/brand-logo.tsx` |
-| Favicon and manifest icon | `public/logo.svg` |
-| Social sharing preview | `public/opengraph-image.png` |
+| Favicon and manifest icons | `public/logo.svg`, rendered to `public/favicon.ico`, `public/apple-touch-icon.png` and `public/icon-*.png` |
+| Social sharing preview | `public/og/aurevia-gaming-{en,es,pt}.jpg`, from `assets/source/opengraph-image.html` |
 | Home and games hero; slot service | `public/media/games/wildframes-gameplay.webp` |
 | Home and games catalog cards | `public/media/games/{game-id}.webp` |
 | Web/mobile service | `public/media/games/moonprincess-gameplay.webp` |

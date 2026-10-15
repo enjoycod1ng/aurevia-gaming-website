@@ -16,6 +16,9 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
   },
+  // Browsers honor this only over HTTPS. No includeSubDomains until every
+  // subdomain is confirmed to serve HTTPS (ops/CLOUDFLARE-PRODUCTION.md).
+  { key: "Strict-Transport-Security", value: "max-age=31536000" },
 ];
 
 const stagingHeaders = isStaging
@@ -33,14 +36,17 @@ const staticDocumentPaths = [
   "/:locale(en|es|pt)/games",
   "/:locale(en|es|pt)/casino-platforms",
   "/:locale(en|es|pt)/privacy",
+  "/:locale(en|es|pt)/docs",
 ];
 
 const staticDocumentHeaders = staticDocumentPaths.map((source) => ({
   source,
   headers: [
     {
+      // Revalidated on every request, so no cache can keep serving a page whose
+      // scripts a later release removed. Cloudflare is not purged on deploy.
       key: "Cache-Control",
-      value: "s-maxage=31536000, no-transform",
+      value: "public, max-age=0, must-revalidate, no-transform",
     },
   ],
 }));
@@ -52,6 +58,9 @@ const nextConfig: NextConfig = {
   compress: true,
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   productionBrowserSourceMaps: false,
+  // Set in GitHub Actions. A tab opened before a deploy then reloads on its next
+  // navigation instead of requesting scripts the new release no longer has.
+  deploymentId: process.env.GITHUB_SHA?.slice(0, 12),
   // notFound() thrown during a render only reaches the client; routed 404s render
   // app/global-not-found.tsx on the server (the root layout is [locale]).
   experimental: { globalNotFound: true },
@@ -128,7 +137,7 @@ const nextConfig: NextConfig = {
         },
       ],
       // Runs after public files, so real assets are never shadowed. Any other path
-      // outside a locale (/about, /fr, /apple-touch-icon.png) would otherwise reach
+      // outside a locale (/about, /fr, /missing-icon.png) would otherwise reach
       // [locale] with an invalid locale and throw in the root layout. "_" folders are
       // private in the App Router, so the destination never matches a route (not even
       // /demo/<game>) and gets the routed English 404 from app/global-not-found.tsx.

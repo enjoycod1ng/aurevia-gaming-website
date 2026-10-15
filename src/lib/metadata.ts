@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 
+import { translate } from "@/content/localized-content";
 import { siteContent } from "@/content/site-content";
 import { locales, localizedPath, type Locale } from "@/lib/i18n";
 import type { SeoEntry } from "@/types/content";
@@ -11,7 +12,12 @@ export const siteMetadata: Metadata = {
   applicationName: siteContent.brand.name,
   authors: [{ name: siteContent.brand.name }], creator: siteContent.brand.name, publisher: siteContent.brand.name,
   formatDetection: { email: false, address: false, telephone: false },
-  icons: { icon: { url: "/logo.svg", type: "image/svg+xml" } },
+  // public/logo.svg is the source; scripts/generate-icons.mjs renders the rasters.
+  // Browsers that read SVG icons prefer it to the 32px favicon.ico entry.
+  icons: {
+    icon: [{ url: "/favicon.ico", sizes: "32x32" }, { url: "/logo.svg", type: "image/svg+xml" }],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+  },
   manifest: "/manifest.webmanifest",
 };
 export const siteViewport: Viewport = {
@@ -19,12 +25,14 @@ export const siteViewport: Viewport = {
   themeColor: [{ media: "(prefers-color-scheme: light)", color: "#faf9f6" }, { media: "(prefers-color-scheme: dark)", color: "#07090c" }],
 };
 
-const openGraphImage = {
-  url: "/opengraph-image.png",
+// Rendered from assets/source/opengraph-image.html (assets/README.md). Use a new
+// file name when the design changes: chat apps cache previews by image URL.
+const openGraphImage = (locale: Locale) => ({
+  url: `/og/aurevia-gaming-${locale}.jpg`,
   width: 1200,
   height: 630,
-  alt: "Aurevia Gaming casino game and platform development"
-};
+  alt: translate("Aurevia Gaming casino game and platform development", locale)
+});
 
 export function createPageMetadata(entry: SeoEntry, locale: Locale = "en"): Metadata {
   return {
@@ -45,13 +53,13 @@ export function createPageMetadata(entry: SeoEntry, locale: Locale = "en"): Meta
       siteName: siteContent.brand.name,
       title: entry.title,
       description: entry.description,
-      images: [openGraphImage]
+      images: [openGraphImage(locale)]
     },
     twitter: {
       card: "summary_large_image",
       title: entry.title,
       description: entry.description,
-      images: [openGraphImage.url]
+      images: [openGraphImage(locale).url]
     }
   };
 }

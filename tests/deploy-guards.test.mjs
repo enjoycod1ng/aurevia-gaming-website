@@ -337,3 +337,49 @@ esac`);
   assert.match(readFileSync(target, "utf8"), /^set_real_ip_from 173\.245\.48\.0\/20;$/m);
   assert.equal(readFileSync(systemctl, "utf8"), "reload nginx\n");
 });
+
+test("the public health check excuses only consecutive Cloudflare challenges", { skip }, (t) => {
+  const dir = sandbox(t);
+  const bin = path.join(dir, "bin");
+  mkdirSync(bin);
+  // Each line of $RESPONSES is "status|header|body", one per request; the last repeats.
+  stub(bin, "curl", `output= headers=
+while (($#)); do
+  case "$1" in
+    --output) output="$2"; shift ;;
+    --dump-header) headers="$2"; shift ;;
+  esac
+  shift
+done
+count=$(( $(cat "$COUNTER" 2>/dev/null || echo 0) + 1 ))
+echo "$count" >"$COUNTER"
+line="$(sed -n "\${count}p" "$RESPONSES")"
+[[ -n "$line" ]] || line="$(tail -n 1 "$RESPONSES")"
+IFS='|' read -r code header body <<<"$line"
+printf 'HTTP/2 %s\r\n%s\r\n\r\n' "$code" "$header" >"$headers"
+printf '%s' "$body" >"$output"
+printf '%s' "$code"`);
+  stub(bin, "sleep", "exit 0");
+  const health = (sha) => `{"status":"ok","service":"aurevia-gaming","environment":"staging","revision":"${sha}"}`;
+  const challenge = "403|cf-mitigated: challenge|<title>Just a moment...</title>";
+  const check = (...responses) => {
+    writeFileSync(path.join(dir, "responses"), `${responses.join("\n")}\n`);
+    rmSync(path.join(dir, "count"), { force: true });
+    return run("bash", [path.join(root, "scripts/verify-public-health.sh"), "https://staging.aureviagaming.com", "staging", revision], {
+      env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, RESPONSES: path.join(dir, "responses"), COUNTER: path.join(dir, "count") },
+    });
+  };
+
+  assert.equal(check(`200|content-type: application/json|${health(revision)}`).status, 0);
+  const challenged = check(challenge);
+  assert.equal(challenged.status, 0, challenged.stderr);
+  assert.match(challenged.stdout, /::warning::Cloudflare challenged this runner/);
+  // A WAF block rule or an Nginx deny is not a bot challenge.
+  assert.equal(check("403|server: cloudflare|Forbidden").status, 1);
+  // Any other answer between challenges restarts the count.
+  assert.equal(check(challenge, challenge, "502|server: cloudflare|Bad gateway", challenge, challenge, "502|server: cloudflare|").status, 1);
+  // The app serving another revision is never excused by later challenges.
+  const stale = check(`200|content-type: application/json|${health("c".repeat(40))}`, challenge);
+  assert.equal(stale.status, 1);
+  assert.match(stale.stderr, /The app answered with: .*"revision":"c{40}"/);
+});

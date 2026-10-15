@@ -27,6 +27,7 @@ export function AccountSecurity({ copy }: { copy: AdminCopy }) {
         className="button button-secondary"
         onClick={() => {
           setSaved(false);
+          action.clear();
           form.current?.reset();
           dialog.current?.showModal();
         }}

@@ -24,7 +24,9 @@ env:
   SITE_URL: https://aureviagaming.com
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAEN-0f6YA6yu4S0o
   NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ""
-  NEXT_PUBLIC_GA_ID: ""
+  # GA4 measurement ID. Compiled into the browser code, so it is public and
+  # must live here; the VPS environment file cannot set it.
+  NEXT_PUBLIC_GA_ID: G-XFCC0J293Q
 
 jobs:
   # Dependency install scripts run only in this job, which has no environment

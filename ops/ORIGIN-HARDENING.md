@@ -126,11 +126,31 @@ While Play'n GO runtime code runs on `aureviagaming.com`, its scripts can call
 `/api/portal/admin/*` with a signed-in admin's cookies. The iframe now has a
 `sandbox` attribute, but on the same origin that is not a security boundary.
 
-1. Add a proxied DNS record, for example `play.aureviagaming.com`.
-2. Add an Nginx server block for it that serves only
-   `/playngo-sandbox/runtime/` from the backend at `127.0.0.1:18080`, with the
-   same Cloudflare-only rule. Return 404 for every other path, especially
-   `/api/portal/` and `/playngo-sandbox/portal/`.
+1. Add a proxied (orange-cloud) DNS record for `play.aureviagaming.com`.
+2. Issue its certificate and install `ops/nginx-play-runtime.conf`. It serves only
+   `/playngo-sandbox/runtime/` from the backend at `127.0.0.1:18080`, keeps the
+   Cloudflare-only rule, returns 404 for every other path (including
+   `/api/portal/` and `/playngo-sandbox/portal/`) and lets only the production
+   and staging websites frame it:
+
+   ```bash
+   # A temporary HTTP site lets Certbot complete its challenge, as for staging.
+   sudo tee /etc/nginx/sites-available/aurevia-play >/dev/null <<'NGINX'
+   server {
+       listen 80;
+       listen [::]:80;
+       server_name play.aureviagaming.com;
+       return 404;
+   }
+   NGINX
+   sudo ln -sfn /etc/nginx/sites-available/aurevia-play /etc/nginx/sites-enabled/aurevia-play
+   sudo nginx -t && sudo systemctl reload nginx
+   sudo certbot --nginx -d play.aureviagaming.com --non-interactive --redirect --cert-name play.aureviagaming.com
+   sudo install -o root -g root -m 0644 ops/nginx-play-runtime.conf /etc/nginx/sites-available/aurevia-play
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
+   Check that `https://play.aureviagaming.com/api/portal/admin/me` returns 404.
 3. Have the backend issue `launch_url` values on that origin, and allow its
    runtime API calls from it.
 4. Set `NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: https://play.aureviagaming.com` in
