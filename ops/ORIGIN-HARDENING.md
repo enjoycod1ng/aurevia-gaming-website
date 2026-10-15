@@ -6,6 +6,11 @@ where a step applies to both.
 
 Keep a second SSH session open while changing Nginx or the firewall.
 
+`scripts/deploy-vps.sh` uses the gated protocol unless a GitHub environment
+sets `VPS_DEPLOY_PROTOCOL=legacy`. Until an environment's key is pinned to the
+gate (step 3), set that variable on it, or its deployments fail with exit 127
+and change nothing.
+
 ## 1. Accept web traffic only from Cloudflare
 
 Both `aureviagaming.com` and `staging.aureviagaming.com` are proxied by
@@ -53,6 +58,9 @@ sudo install -o root -g root -m 0755 ops/update-cloudflare-ips.sh /usr/local/sbi
 echo '17 4 * * 1 root /usr/local/sbin/aurevia-update-cloudflare-ips' | sudo tee /etc/cron.d/aurevia-cloudflare-ips
 ```
 
+If `nginx -t` rejects a refreshed include, the script puts the previous one
+back, leaves Nginx running unchanged and exits non-zero.
+
 Optionally, also restrict TCP 80/443 to the same ranges in the firewall
 (`ufw allow from <range> to any port 80,443 proto tcp` for each range, then
 `ufw deny 80,443/tcp`). The Nginx check already refuses direct hits; the
@@ -63,11 +71,24 @@ firewall also stops them before TLS.
 `ops/deploy-release.sh` now:
 - reads the uploaded archive and checksum as `deploy`, never as root, so a
   swapped symlink can't expose root-only files;
+- refuses archives with symlinks, hard links, device files, absolute paths or
+  `..`, unpacks into a randomly named directory and writes `.revision` and
+  `.environment` as the runtime account, so a planted link can't make root
+  overwrite a system file;
+- checks free disk space first, deletes a failed release after rolling back,
+  and never prunes the live or previous release;
+- keeps going if the SSH connection drops, and logs every run to
+  `/var/log/aurevia-deploy/`; its lock lives in the root-only
+  `/run/aurevia-deploy`;
 - runs the site as one PM2 cluster worker and uses `pm2 reload`, so deploys
   don't drop requests.
 
+The sudo rule now pins each environment's archive name, so install both:
+
 ```bash
 sudo install -o root -g root -m 0755 ops/deploy-release.sh /usr/local/sbin/aurevia-deploy
+sudo visudo -cf ops/aurevia-deploy.sudoers
+sudo install -o root -g root -m 0440 ops/aurevia-deploy.sudoers /etc/sudoers.d/aurevia-deploy
 ```
 
 The first deploy after this restarts each site once to move it from fork mode
@@ -77,10 +98,20 @@ shows `cluster` mode for `aurevia-gaming` and `aurevia-gaming-staging`.
 ## 3. Per-environment deploy keys
 
 Follow *Per-environment deploy keys* in [AUTO-DEPLOY.md](AUTO-DEPLOY.md), then
-set the GitHub variable `VPS_DEPLOY_PROTOCOL=gated` in both environments. Until
-then, the staging key can still deploy production on the VPS.
+delete `VPS_DEPLOY_PROTOCOL` from both GitHub environments (or set it to
+`gated`). Until then, the staging key can still deploy production on the VPS.
 
-## 4. Portal backend (playngo-sandbox, not in this repository)
+## 4. Separate runtime and CI accounts per environment
+
+Both sites still run as `deploy`, which also owns both release trees, the
+inbox, `~/.ssh` and both sudo rules, so code running in staging can reach
+production. Follow *Separate the environments on the VPS* in
+[AUTO-DEPLOY.md](AUTO-DEPLOY.md): it adds `aurevia-staging` and
+`aurevia-production` runtime accounts, then `aurevia-ci-staging` and
+`aurevia-ci-production` CI accounts, each with a sudo rule pinned to its own
+environment. The helper uses each account as soon as it exists.
+
+## 5. Portal backend (playngo-sandbox, not in this repository)
 
 - The website proxy now sends the visitor address as `X-Real-IP` and
   `X-Forwarded-For`. Configure the backend to trust those headers only from
@@ -89,7 +120,7 @@ then, the staging key can still deploy production on the VPS.
   `aurevia_demo_test` cookies. The backend should also stop accepting them
   outside local development.
 
-## 5. Serve demo runtimes from their own origin
+## 6. Serve demo runtimes from their own origin
 
 While Play'n GO runtime code runs on `aureviagaming.com`, its scripts can call
 `/api/portal/admin/*` with a signed-in admin's cookies. The iframe now has a

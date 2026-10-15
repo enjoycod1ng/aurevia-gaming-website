@@ -203,7 +203,7 @@ The active deployment uses Nginx, PM2 and the Next.js standalone server on Node.
 - Pull requests merge into `dev`. Only `dev` deploys to public staging at `staging.aureviagaming.com`.
 - A successful staging deployment opens or refreshes the `dev -> master` promotion PR. Auto-merge is disabled: the owner reviews, approves and merges it with a merge commit.
 - Only `master` deploys to production, and only a merge commit identical to a `dev` commit that passed staging. The production environment also waits for the owner to approve the deployment.
-- GitHub enforces these rules through environment branch policies and a `master` ruleset; apply them with `ops/configure-github-protection.sh`. On the VPS, each environment has its own deploy key pinned to `ops/aurevia-ssh-gate.sh`.
+- GitHub enforces these rules through environment branch policies and a `master` ruleset; apply them with `ops/configure-github-protection.sh`. On the VPS, each environment has its own deploy key pinned to `ops/aurevia-ssh-gate.sh`, and can be moved to its own runtime and CI accounts (see `ops/AUTO-DEPLOY.md`).
 - Staging uses noindex headers and a disallowing robots file; it is not protected by Cloudflare Access.
 
 See [ops/AUTO-DEPLOY.md](ops/AUTO-DEPLOY.md) for account setup, environment variables, protected branches and recovery.
@@ -236,15 +236,20 @@ The package includes `public` and `.next/static`, which Next.js does not copy in
 The deployment helper takes three arguments:
 
 ```bash
-sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/ARCHIVE.tar.gz COMMIT_SHA
+sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/staging-NAME.tar.gz COMMIT_SHA
 ```
 
-Use `scripts/deploy-vps.sh` or the workflow to send the archive and checksum together.
-The helper switches the release symlink and reloads a single PM2 cluster worker, which keeps
-the port listening while the new release starts. It checks the exact revision and environment
-through the origin health endpoint and rolls back automatically if startup fails. The workflow
-then checks the same revision through the public URL (Cloudflare and Nginx).
-It retains five releases. Keep app ports 3000 and 3001 bound to localhost behind Nginx.
+Use `scripts/deploy-vps.sh` or the workflow to send the archive and checksum together. The script
+uses the pinned SSH gate unless the GitHub environment sets `VPS_DEPLOY_PROTOCOL=legacy`.
+The helper accepts only an archive named for its environment, and only regular files and
+directories inside it. It checks free disk space, unpacks as the runtime account, switches the
+release symlink and reloads a single PM2 cluster worker, which keeps the port listening while
+the new release starts. It checks the exact revision and environment through the origin health
+endpoint, rolls back automatically if startup fails and deletes the failed release. A dropped
+SSH connection does not interrupt it; each run is logged in `/var/log/aurevia-deploy/`. The
+workflow then checks the same revision through the public URL (Cloudflare and Nginx).
+It keeps the five newest releases and never prunes the live or previous one. Keep app ports
+3000 and 3001 bound to localhost behind Nginx.
 
 Nginx accepts web traffic only from Cloudflare and passes the verified visitor address as
 `X-Real-IP`; the app ignores client-supplied `CF-Connecting-IP` and `X-Forwarded-For`.

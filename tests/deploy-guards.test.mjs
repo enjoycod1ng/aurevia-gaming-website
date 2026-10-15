@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { spawnSync } from "node:child_process";
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { gzipSync } from "node:zlib";
 
 const root = path.resolve(import.meta.dirname, "..");
 const skip = process.platform === "win32" && "deployment guards run on the Linux runners and VPS";
@@ -27,6 +28,34 @@ function git(cwd, ...args) {
   const result = run("git", ["-c", "user.name=Test", "-c", "user.email=test@example.com", ...args], { cwd });
   assert.equal(result.status, 0, result.stderr);
   return result.stdout.trim();
+}
+// A minimal ustar writer, so tests choose entry names and types that tar itself
+// would refuse to create. Type "0" is a file, "1" a hard link, "2" a symlink, "5" a directory.
+function tarball(entries) {
+  const blocks = [];
+  for (const { name, type = "0", body = "", link = "" } of entries) {
+    const header = Buffer.alloc(512);
+    const content = Buffer.from(body);
+    header.write(name, 0, 100);
+    header.write(type === "5" ? "0000755\0" : "0000644\0", 100);
+    header.write("0000000\0", 108);
+    header.write("0000000\0", 116);
+    header.write(`${content.length.toString(8).padStart(11, "0")}\0`, 124);
+    header.write("00000000000\0", 136);
+    header.write(type, 156);
+    header.write(link, 157, 100);
+    header.write("ustar\u000000", 257);
+    header.fill(" ", 148, 156);
+    const sum = header.reduce((total, byte) => total + byte, 0);
+    header.write(`${sum.toString(8).padStart(6, "0")}\0 `, 148);
+    blocks.push(header, content, Buffer.alloc((512 - (content.length % 512)) % 512));
+  }
+  blocks.push(Buffer.alloc(1024));
+  return gzipSync(Buffer.concat(blocks));
+}
+// Runs `script` after sourcing the root deploy helper, which then only defines its guards.
+function helper(script, ...args) {
+  return run("bash", ["-c", `source "$1"; shift; ${script}`, "helper", path.join(root, "ops/deploy-release.sh"), ...args]);
 }
 
 test("production deploys only a master merge commit identical to a staged dev commit", { skip }, (t) => {
@@ -63,15 +92,13 @@ test("production deploys only a master merge commit identical to a staged dev co
 });
 
 test("deploy keys can only deploy the environment pinned on the VPS", { skip }, (t) => {
-  const inbox = sandbox(t), bin = sandbox(t);
+  const home = sandbox(t), bin = sandbox(t);
+  const inbox = path.join(home, "aurevia-incoming");
   // Fake sudo prints the helper call and the archive it received.
   stub(bin, "sudo", 'echo "$*"; cat "$4"; cat "$4.sha256"');
-  const gatePath = path.join(sandbox(t), "gate.sh");
-  writeFileSync(gatePath, readFileSync(path.join(root, "ops/aurevia-ssh-gate.sh"), "utf8")
-    .replace('INBOX_ROOT="/home/deploy/aurevia-incoming"', `INBOX_ROOT="${inbox}"`));
-  const gate = (pinned, command) => run("bash", [gatePath, pinned], {
+  const gate = (pinned, command) => run("bash", [path.join(root, "ops/aurevia-ssh-gate.sh"), pinned], {
     input: "release-bytes",
-    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, SSH_ORIGINAL_COMMAND: command },
+    env: { ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}`, SSH_ORIGINAL_COMMAND: command },
   });
 
   const refused = gate("staging", `production ${revision} ${checksum}`);
@@ -86,4 +113,151 @@ test("deploy keys can only deploy the environment pinned on the VPS", { skip }, 
   assert.equal(accepted.status, 0, accepted.stderr);
   assert.match(accepted.stdout, new RegExp(`^-n /usr/local/sbin/aurevia-deploy production ${inbox}/production-\\S+-${revision}\\.tar\\.gz ${revision}\\n`));
   assert.match(accepted.stdout, new RegExp(`release-bytes${checksum}  production-\\S+-${revision}\\.tar\\.gz\\n$`));
+});
+
+test("the root deploy helper unpacks only plain files and directories at safe paths", { skip }, (t) => {
+  const dir = sandbox(t);
+  let count = 0;
+  const check = (entries) => {
+    const archive = path.join(dir, `release-${count++}.tar.gz`);
+    writeFileSync(archive, tarball(entries));
+    return helper('check_release_archive "$1"', archive);
+  };
+
+  const safe = check([{ name: "./", type: "5" }, { name: "./server.js", body: "ok" }, { name: "./.next/", type: "5" }]);
+  assert.equal(safe.status, 0, safe.stderr);
+
+  // A planted .revision -> /etc/sudoers.d/... link would have been written through by root.
+  const links = [
+    [{ name: "./.revision", type: "2", link: "/etc/sudoers.d/aurevia-deploy" }],
+    [{ name: "./.next/", type: "5" }, { name: "./.next/cache", type: "2", link: "/home/deploy/.ssh" }],
+    [{ name: "./server.js", body: "ok" }, { name: "./.environment", type: "1", link: "./server.js" }],
+    [{ name: "./fifo", type: "6" }],
+  ];
+  for (const entries of links) {
+    const result = check(entries);
+    assert.equal(result.status, 1, JSON.stringify(entries));
+    assert.match(result.stderr, /may only contain regular files and directories/);
+  }
+
+  for (const name of ["../escape", "./a/../../escape", "/etc/cron.d/aurevia", "a/.."]) {
+    const result = check([{ name, body: "x" }]);
+    assert.equal(result.status, 1, name);
+    assert.match(result.stderr, /unsafe path/, name);
+  }
+
+  assert.match(check([]).stderr, /empty/);
+});
+
+test("the root deploy helper checks free space before unpacking", { skip }, (t) => {
+  const dir = sandbox(t);
+  const archive = path.join(dir, "release.tar.gz");
+  writeFileSync(archive, tarball([{ name: "./server.js", body: "x".repeat(4096) }]));
+
+  const fits = helper('FREE_SPACE_MARGIN_KB=0; check_free_space "$1" "$2"', archive, dir);
+  assert.equal(fits.status, 0, fits.stderr);
+  const full = helper('FREE_SPACE_MARGIN_KB=$((1 << 50)); check_free_space "$1" "$2"', archive, dir);
+  assert.equal(full.status, 1);
+  assert.match(full.stderr, /Not enough free space/);
+});
+
+test("release retention never prunes the live or previous release", { skip }, (t) => {
+  const releases = sandbox(t);
+  // Oldest first: releases from before and after the switch to mktemp names.
+  const names = [
+    "20260101-000000-aaaaaaaaaaaa",
+    "20260102-000000-bbbbbbbbbbbb",
+    "20260103-000000-cccccccccccc",
+    "20260104-000000-dddddddddddd.Q1w2E3",
+    "20260105-000000-eeeeeeeeeeee.R4t5Y6",
+    "20260106-000000-ffffffffffff.U7i8O9",
+    "20260107-000000-000000000000.P0a1S2",
+  ];
+  for (const name of [...names, "lost+found", "manual-backup"]) mkdirSync(path.join(releases, name));
+  writeFileSync(path.join(releases, "20260108-000000-not-a-directory"), "");
+
+  const prunable = (...protectedReleases) => {
+    const result = helper('prunable_releases "$@"', releases, "3", ...protectedReleases);
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.split("\n").filter(Boolean);
+  };
+
+  assert.deepEqual(prunable(), [names[3], names[2], names[1], names[0]]);
+  // After repeated failures the live release and the rollback target can be the oldest.
+  assert.deepEqual(prunable(path.join(releases, names[6]), path.join(releases, names[0]), ""), [names[3], names[2], names[1]]);
+  assert.deepEqual(prunable(path.join(releases, names[1]), path.join(releases, names[2])), [names[3], names[0]]);
+});
+
+test("CI deploys through the pinned gate unless legacy is requested by name", { skip }, (t) => {
+  const bin = sandbox(t), work = sandbox(t);
+  const log = path.join(work, "ssh.log");
+  stub(bin, "ssh", 'printf "ssh %s\n" "$*" >> "$SSH_LOG"; cat > /dev/null; exit "${SSH_STATUS:-0}"');
+  stub(bin, "scp", 'printf "scp %s\n" "$*" >> "$SSH_LOG"');
+  const archive = path.join(work, "release.tar.gz");
+  writeFileSync(archive, "release-bytes");
+  writeFileSync(`${archive}.sha256`, `${checksum}  release.tar.gz\n`);
+
+  const deploy = (environment) => {
+    rmSync(log, { force: true });
+    const result = run("bash", [path.join(root, "scripts/deploy-vps.sh"), "staging", archive, revision], {
+      env: {
+        ...process.env, PATH: `${bin}:${process.env.PATH}`, RUNNER_TEMP: work, SSH_LOG: log,
+        VPS_HOST: "origin.example", VPS_USER: "deploy", VPS_SSH_KEY: "key", VPS_KNOWN_HOSTS: "origin.example ssh-ed25519 AAAA",
+        VPS_DEPLOY_PROTOCOL: "", SSH_STATUS: "0", ...environment,
+      },
+    });
+    return { ...result, calls: existsSync(log) ? readFileSync(log, "utf8") : "" };
+  };
+
+  const gated = deploy({});
+  assert.equal(gated.status, 0, gated.stderr);
+  assert.match(gated.calls, new RegExp(`^ssh .*-o ServerAliveInterval=15 .*deploy@origin\.example staging ${revision} ${checksum}\n$`));
+
+  const unpinned = deploy({ SSH_STATUS: "127" });
+  assert.equal(unpinned.status, 127);
+  assert.match(unpinned.stderr, /not pinned to aurevia-ssh-gate/);
+  assert.doesNotMatch(unpinned.calls, /scp|sudo/);
+
+  const legacy = deploy({ VPS_DEPLOY_PROTOCOL: "legacy" });
+  assert.equal(legacy.status, 0, legacy.stderr);
+  assert.match(legacy.stderr, /legacy protocol/);
+  assert.match(legacy.calls, /^scp /m);
+  assert.match(legacy.calls, /sudo -n \/usr\/local\/sbin\/aurevia-deploy 'staging' '\/home\/deploy\/aurevia-incoming\/staging-\S+\.tar\.gz'/);
+
+  assert.match(deploy({ VPS_DEPLOY_PROTOCOL: "shell" }).stderr, /must be legacy or gated/);
+});
+
+test("a Cloudflare range update that Nginx rejects restores the previous include", { skip }, (t) => {
+  const dir = sandbox(t), bin = sandbox(t);
+  const nginx = path.join(dir, "nginx");
+  const target = path.join(nginx, "conf.d/aurevia-cloudflare.conf");
+  const systemctl = path.join(dir, "systemctl.log");
+  mkdirSync(path.dirname(target), { recursive: true });
+  const script = path.join(dir, "update-cloudflare-ips.sh");
+  writeFileSync(script, readFileSync(path.join(root, "ops/update-cloudflare-ips.sh"), "utf8").replaceAll("/etc/nginx/", `${nginx}/`));
+  stub(bin, "curl", `case "$*" in
+  *ips-v4*) printf '173.245.48.0/20\n103.21.244.0/22\n103.22.200.0/22\n103.31.4.0/22\n141.101.64.0/18\n' ;;
+  *) printf '2400:cb00::/32\n2606:4700::/32\n2803:f800::/32\n' ;;
+esac`);
+  stub(bin, "nginx", 'exit "$NGINX_STATUS"');
+  stub(bin, "systemctl", `echo "$*" >> "${systemctl}"`);
+  const update = (status) => run("bash", [script], {
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, NGINX_STATUS: status },
+  });
+
+  writeFileSync(target, "# previous ranges\n");
+  const rejected = update("1");
+  assert.equal(rejected.status, 1);
+  assert.match(rejected.stderr, /Restored the previous/);
+  assert.equal(readFileSync(target, "utf8"), "# previous ranges\n");
+
+  rmSync(target);
+  assert.equal(update("1").status, 1);
+  assert.equal(existsSync(target), false);
+  assert.equal(existsSync(systemctl), false);
+
+  const accepted = update("0");
+  assert.equal(accepted.status, 0, accepted.stderr);
+  assert.match(readFileSync(target, "utf8"), /^set_real_ip_from 173\.245\.48\.0\/20;$/m);
+  assert.equal(readFileSync(systemctl, "utf8"), "reload nginx\n");
 });
