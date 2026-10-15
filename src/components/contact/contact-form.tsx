@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { trackAnalyticsEvent } from "@/components/analytics/analytics-consent";
 import { TurnstileWidget } from "@/components/security/turnstile-widget";
+import { CONTACT_MAX_LENGTH, isValidContact } from "@/lib/contact-validation";
 import type { ContactStatusMessage, SiteContent } from "@/types/content";
 
 type ContactFormContent = SiteContent["contactPage"]["form"];
@@ -11,6 +12,7 @@ type ContactFormContent = SiteContent["contactPage"]["form"];
 interface ContactFormProps {
   content: ContactFormContent;
   requestedProject: string;
+  requestedService: string;
   status?: ContactStatusMessage;
 }
 
@@ -29,27 +31,40 @@ function getStatusToneClass(tone: ContactStatusMessage["tone"]) {
 export function ContactForm({
   content,
   requestedProject,
+  requestedService,
   status,
 }: ContactFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const contactRef = useRef<HTMLInputElement>(null);
+  const statusRef = useRef<HTMLParagraphElement>(null);
+  const submittingRef = useRef(false);
+  const contactErrorId = useId();
   const [currentStatus, setCurrentStatus] =
     useState<ContactStatusMessage | undefined>(status);
+  // Bumped for every message so a repeated one is announced and focused again.
+  // It starts at 1 when the page loads with a result from a redirect.
+  const [statusVersion, setStatusVersion] = useState(status ? 1 : 0);
+  const [contactInvalid, setContactInvalid] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [resetSignal, setResetSignal] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const selectedProject = content.projectValues.includes(requestedProject)
-    ? requestedProject
-    : content.projectValues[0];
+  // Deep links name the service; older links may pass a service as the project.
+  const selectedProject =
+    [requestedService, requestedProject].find((value) =>
+      content.projectValues.includes(value),
+    ) ?? content.projectValues[0];
 
   useEffect(() => {
     const url = new URL(window.location.href);
+    const params = ["project", "service", "status"];
 
-    if (!url.searchParams.has("project") && !url.searchParams.has("status")) {
+    if (!params.some((param) => url.searchParams.has(param))) {
       return;
     }
 
-    url.searchParams.delete("project");
-    url.searchParams.delete("status");
+    for (const param of params) {
+      url.searchParams.delete(param);
+    }
     window.history.replaceState(
       window.history.state,
       "",
@@ -57,14 +72,38 @@ export function ContactForm({
     );
   }, []);
 
+  useEffect(() => {
+    if (statusVersion > 0) {
+      statusRef.current?.focus();
+    }
+  }, [statusVersion]);
+
+  const showStatus = (nextStatus: ContactStatusMessage) => {
+    setCurrentStatus(nextStatus);
+    setStatusVersion((version) => version + 1);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!turnstileToken || isSubmitting) {
-      setCurrentStatus(content.statusMessages.verification);
+    // The button stays focusable while a request is in flight (aria-disabled
+    // rather than disabled), so repeated submits are ignored here.
+    if (submittingRef.current) {
       return;
     }
 
+    if (!isValidContact(contactRef.current?.value ?? "")) {
+      setContactInvalid(true);
+      contactRef.current?.focus();
+      return;
+    }
+
+    if (!turnstileToken) {
+      showStatus(content.statusMessages.verification);
+      return;
+    }
+
+    submittingRef.current = true;
     setIsSubmitting(true);
     setCurrentStatus(undefined);
 
@@ -83,10 +122,11 @@ export function ContactForm({
       const nextStatusCode = result?.status ?? "error";
       const nextStatus = content.statusMessages[nextStatusCode];
 
-      setCurrentStatus(nextStatus ?? content.statusMessages.error);
+      showStatus(nextStatus ?? content.statusMessages.error);
 
       if (response.ok && nextStatusCode === "success") {
         formRef.current?.reset();
+        setContactInvalid(false);
         trackAnalyticsEvent("request_quote_submit", {
           form_location: "contact_page",
           submission_result: "success",
@@ -96,28 +136,40 @@ export function ContactForm({
       setTurnstileToken(null);
       setResetSignal((signal) => signal + 1);
     } catch {
-      setCurrentStatus(content.statusMessages.error);
+      showStatus(content.statusMessages.error);
       setTurnstileToken(null);
       setResetSignal((signal) => signal + 1);
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };
+
+  const statusMessage = currentStatus ? (
+    <p
+      key={statusVersion}
+      ref={statusRef}
+      className={`mt-5 scroll-mt-28 rounded-[10px] border px-3.5 py-3 text-sm ${getStatusToneClass(currentStatus.tone)}`}
+      tabIndex={-1}
+    >
+      {currentStatus.message}
+    </p>
+  ) : null;
+  // Anything but success means the request was not delivered.
+  const statusIsAlert =
+    currentStatus !== undefined && currentStatus.tone !== "success";
 
   return (
     <div className="scroll-mt-28 rounded-[26px] border border-line bg-[radial-gradient(circle_at_100%_100%,rgb(212_175_55/0.09),transparent_18rem),var(--color-surface)] p-5.5 shadow-panel sm:p-8.5" id="quote-form">
       <h2 className=" heading-2">{content.title}</h2>
       <p className="mt-3.5 max-w-130 text-sm leading-6 text-muted">{content.description}</p>
 
-      {currentStatus ? (
-        <div
-          className={`mt-5 rounded-[10px] border px-3.5 py-3 text-sm ${getStatusToneClass(currentStatus.tone)}`}
-          role="status"
-          aria-live="polite"
-        >
-          {currentStatus.message}
-        </div>
-      ) : null}
+      {/* Both live regions stay mounted: screen readers announce messages
+          inserted into an existing region, not regions mounted with them. */}
+      <div role="status" aria-live="polite">
+        {statusIsAlert ? null : statusMessage}
+      </div>
+      <div role="alert">{statusIsAlert ? statusMessage : null}</div>
 
       <form
         ref={formRef}
@@ -156,19 +208,38 @@ export function ContactForm({
               required
             />
           </label>
-          <label>
-            <span>{content.fields.contact.label} *</span>
-            <input
-              className="form-field"
-              name="contact"
-              type="text"
-              autoComplete="email"
-              inputMode="email"
-              maxLength={160}
-              placeholder={content.fields.contact.placeholder}
-              required
-            />
-          </label>
+          <div className="grid content-start gap-2">
+            <label>
+              <span>{content.fields.contact.label} *</span>
+              <input
+                ref={contactRef}
+                className="form-field aria-invalid:border-error"
+                name="contact"
+                type="text"
+                autoComplete="email"
+                inputMode="email"
+                maxLength={CONTACT_MAX_LENGTH}
+                placeholder={content.fields.contact.placeholder}
+                required
+                aria-invalid={contactInvalid}
+                aria-describedby={contactInvalid ? contactErrorId : undefined}
+                onBlur={(event) => {
+                  const { value } = event.currentTarget;
+                  setContactInvalid(value.trim() !== "" && !isValidContact(value));
+                }}
+                onChange={(event) => {
+                  if (contactInvalid) {
+                    setContactInvalid(!isValidContact(event.currentTarget.value));
+                  }
+                }}
+              />
+            </label>
+            {contactInvalid ? (
+              <p className="text-sm leading-5 text-error" id={contactErrorId}>
+                {content.fields.contact.error}
+              </p>
+            ) : null}
+          </div>
         </div>
 
         <div className="field-row">
@@ -278,7 +349,7 @@ export function ContactForm({
         <button
           className="button button-primary w-full"
           type="submit"
-          disabled={!turnstileToken || isSubmitting}
+          aria-disabled={!turnstileToken || isSubmitting}
         >
           <span>{isSubmitting ? content.sendingLabel : content.submitLabel}</span>
         </button>

@@ -301,7 +301,7 @@ export interface SiteContent {
       description: string;
       fields: {
         name: { label: string; placeholder: string };
-        contact: { label: string; placeholder: string };
+        contact: { label: string; placeholder: string; error: string };
         company: { label: string; placeholder: string };
         targetMarket: { label: string; placeholder: string };
         projectTypeLabel: string;
