@@ -5,6 +5,12 @@ import { getDemoCopy } from "@/content/demo-copy";
 import { requireLocale } from "@/content/localized-content";
 import { preparedGames } from "@/content/prepared-games";
 
+// Unknown games 404 before rendering, through app/global-not-found.tsx.
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return preparedGames.map((game) => ({ game: game.id }));
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -13,8 +19,9 @@ export async function generateMetadata({
   const values = await params;
   const locale = requireLocale(values.locale);
   const game = preparedGames.find((game) => game.id === values.game);
+  if (!game) notFound();
   return {
-    title: `${game?.title ?? "Aurevia Gaming"} · ${getDemoCopy(locale).title}`,
+    title: `${game.title} · ${getDemoCopy(locale).title}`,
     robots: { index: false, follow: false },
     referrer: "no-referrer",
   };

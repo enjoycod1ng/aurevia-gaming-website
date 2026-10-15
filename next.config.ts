@@ -73,6 +73,9 @@ const nextConfig: NextConfig = {
   compress: true,
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   productionBrowserSourceMaps: false,
+  // notFound() thrown during a render only reaches the client; routed 404s render
+  // app/global-not-found.tsx on the server (the root layout is [locale]).
+  experimental: { globalNotFound: true },
   images: {
     formats: ["image/webp"],
     qualities: [70, 80],
@@ -130,6 +133,16 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Cache-Control", value: "no-store" }],
       },
     ];
+  },
+  async rewrites() {
+    return {
+      // Runs after public files, so real assets are never shadowed. Any other path
+      // outside a locale (/about, /fr, /apple-touch-icon.png) would otherwise reach
+      // [locale] with an invalid locale and throw in the root layout. "_" folders are
+      // private in the App Router, so the destination never matches a route (not even
+      // /demo/<game>) and gets the routed English 404 from app/global-not-found.tsx.
+      afterFiles: [{ source: "/:first((?!(?:en|es|pt|api|_next)(?:/|$))[^/]+)/:rest*", destination: "/en/_unmatched/:first/:rest*" }],
+    };
   },
   async redirects() {
     return [

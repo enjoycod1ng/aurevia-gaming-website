@@ -8,6 +8,7 @@ import { getSiteContent, requireLocale } from "@/content/localized-content";
 import { PageStructuredData } from "@/components/page-structured-data";
 import { createPageMetadata } from "@/lib/metadata";
 
+export const dynamicParams = false;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const locale = requireLocale((await params).locale);
   return createPageMetadata(getSiteContent(locale).seo.services, locale);

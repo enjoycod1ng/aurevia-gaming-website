@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { DeveloperExamples, type ExampleLabels } from "@/components/developer-examples";
 
 type Props = { params: Promise<{ locale: string }> };
+export const dynamicParams = false;
 export async function generateMetadata({ params }: Props) {
   const locale = requireLocale((await params).locale);
   return createPageMetadata({ title: guide.labels.eyebrow[locale], description: guide.description[locale], path: "/docs", keywords: [] }, locale);

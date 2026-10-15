@@ -76,6 +76,13 @@ routes, HTML language attributes, canonicals, reciprocal hreflang links and site
 entries. The contact pages remain dynamic. Existing English paths permanently
 redirect to their `/en` equivalents.
 
+Unknown URLs return a 404 rendered on the server by `src/app/global-not-found.tsx`,
+in the language of the URL (English outside `/en`, `/es` and `/pt`). Next only
+server-renders routed 404s; `notFound()` thrown during a render sends an empty shell
+and shows `[locale]/not-found.tsx` after hydration. Statically generated pages
+therefore set `dynamicParams = false`, `next.config.ts` rewrites paths outside a
+locale to an unmatched path, and `src/proxy.ts` passes the URL's locale to the 404.
+
 Only `/` negotiates language: saved `aurevia-language` cookie, then weighted browser
 `Accept-Language`, then Cloudflare's country hint, then English. The preference
 redirect is private and uncached. Explicit language URLs always win, including

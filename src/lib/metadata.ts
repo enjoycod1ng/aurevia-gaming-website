@@ -1,8 +1,23 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { siteContent } from "@/content/site-content";
 import { locales, localizedPath, type Locale } from "@/lib/i18n";
 import type { SeoEntry } from "@/types/content";
+
+// Document-level metadata for the [locale] root layout and app/global-not-found.tsx.
+export const siteMetadata: Metadata = {
+  metadataBase: new URL(siteContent.brand.url),
+  title: { default: siteContent.brand.name, template: `%s | ${siteContent.brand.name}` },
+  applicationName: siteContent.brand.name,
+  authors: [{ name: siteContent.brand.name }], creator: siteContent.brand.name, publisher: siteContent.brand.name,
+  formatDetection: { email: false, address: false, telephone: false },
+  icons: { icon: { url: "/logo.svg", type: "image/svg+xml" } },
+  manifest: "/manifest.webmanifest",
+};
+export const siteViewport: Viewport = {
+  width: "device-width", initialScale: 1, colorScheme: "light dark",
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#faf9f6" }, { media: "(prefers-color-scheme: dark)", color: "#07090c" }],
+};
 
 const openGraphImage = {
   url: "/opengraph-image.png",
