@@ -291,6 +291,18 @@ test("workflows pin every action to a full commit SHA", () => {
   }
 });
 
+// The deploy workflows never run on pull requests, so the required Verify check
+// is the only place their mistakes can be caught before merge.
+test("the required CI check lints the workflows with checksum-pinned tools", () => {
+  const { verify } = workflowJobs("ci.yml");
+  assert.ok(verify, "ci.yml has a verify job");
+  assert.match(verify, /^ {4}name: Verify$/m);
+  assert.match(verify, /^ {10}ACTIONLINT_SHA256: [0-9a-f]{64}$/m);
+  assert.match(verify, /^ {10}SHELLCHECK_SHA256: [0-9a-f]{64}$/m);
+  assert.match(verify, /sha256sum --check --strict/);
+  assert.match(verify, /"\$tools\/actionlint" .*-shellcheck "\$tools\/shellcheck"/);
+});
+
 test("a Cloudflare range update that Nginx rejects restores the previous include", { skip }, (t) => {
   const dir = sandbox(t), bin = sandbox(t);
   const nginx = path.join(dir, "nginx");
