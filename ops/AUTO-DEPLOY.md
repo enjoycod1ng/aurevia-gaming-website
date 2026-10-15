@@ -23,8 +23,10 @@ production change is the exact code that already ran on staging:
 4. The production workflow refuses any commit that is not such a merge commit,
    whose tree differs from its staged `dev` parent, or whose parent lacks a
    successful `policy/dev-to-master` status (`scripts/verify-promotion.sh`).
-5. The production environment waits for the owner to approve the deployment,
-   then builds, deploys and health-checks the exact revision.
+   It checks this before it builds and again before it deploys.
+5. The production workflow builds the exact revision, then the production
+   environment waits for the owner to approve the deployment before it deploys
+   and health-checks that build.
 
 Workflow files can be edited on any branch, so the guards in them are defense
 in depth. The enforcing controls live in GitHub and on the VPS:
@@ -66,9 +68,9 @@ fix, merge it into `dev`, let staging verify it and promote it normally.
 
 ## One-time VPS bootstrap
 
-Run these commands from a reviewed checkout using the existing `deploy`
-account with sudo access. Do not let a GitHub Actions job overwrite the
-root-owned deployment helper.
+Run these commands from a reviewed checkout as an administrator account other
+than `deploy`, which has no general sudo access. Do not let a GitHub Actions job
+overwrite the root-owned deployment helper.
 
 ```bash
 sudo install -o root -g root -m 0755 ops/deploy-release.sh /usr/local/sbin/aurevia-deploy
@@ -129,16 +131,21 @@ environment, never as repository secrets, which every branch can read:
 - `VPS_KNOWN_HOSTS`: pinned `ssh-keyscan` output verified against the existing
   administrator connection.
 
-Configure the public build variables:
+The environments need no variables. The public build settings are compiled
+into the site, so they are not secret, and the build job has no environment to
+read variables from. They live in the `env` block at the top of each deploy
+workflow and change through a reviewed pull request like any other code:
 
-| Environment | Variable | Value |
+| Setting | `deploy-staging.yml` | `deploy-production.yml` |
 | --- | --- | --- |
-| staging | `SITE_URL` | `https://staging.aureviagaming.com` |
-| staging | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Staging Turnstile site key |
-| production | `SITE_URL` | `https://aureviagaming.com` |
-| production | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Production Turnstile site key |
-| production | `NEXT_PUBLIC_GA_ID` | Production GA4 measurement ID |
-| both | `VPS_DEPLOY_PROTOCOL` | Unset (or `gated`) once that environment's key is pinned to the gate. Set `legacy` only until then: an unset value means `gated`, and an unpinned key then fails with a hint instead of deploying |
+| `SITE_URL` | `https://staging.aureviagaming.com` | `https://aureviagaming.com` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Staging Turnstile site key | Production Turnstile site key |
+| `NEXT_PUBLIC_GA_ID` | Empty | Production GA4 measurement ID, once there is one |
+| `NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN` | Empty until the runtime origin exists ([ORIGIN-HARDENING.md](ORIGIN-HARDENING.md), step 6) | Same |
+
+The deploy job refuses to deploy while an environment variable with one of these
+names holds a different value, so a value changed in the GitHub settings is never
+ignored silently. Delete such variables, or keep them identical.
 
 Runtime-only Turnstile, webhook, Telegram and bearer secrets remain in the VPS
 environment files and are never stored in the repository.
@@ -164,10 +171,22 @@ on staging.
 
 ## Deployment and rollback
 
-The workflow builds the standalone artifact once and smoke-tests the extracted
-archive, including native image optimization, before it sends it to the VPS.
-By default `scripts/deploy-vps.sh` uses the gated protocol and streams the
-archive over one SSH connection:
+Each deploy workflow runs two jobs, so that code from npm packages never runs
+where the deploy key is:
+
+- The build job has no environment and no secrets. It installs the locked
+  dependencies, type-checks, tests, lints and builds, packages the standalone
+  archive once and smoke-tests the extracted archive, including native image
+  optimization. It uploads the archive and its checksum as a workflow artifact
+  and records the checksum as a job output. The repository is public, so anyone
+  signed in to GitHub can download that artifact: never give this job a secret.
+- The deploy job is bound to the environment and holds its secrets. It checks
+  out only the scripts it runs and never installs or runs npm packages. It
+  downloads the artifact, checks it against the checksum the build job recorded
+  and sends it to the VPS with `scripts/deploy-vps.sh`, then checks the public
+  URL with `scripts/verify-public-health.sh`.
+
+`scripts/deploy-vps.sh` streams the archive over one SSH connection:
 
 ```bash
 ssh deploy@HOST "staging COMMIT_SHA ARCHIVE_SHA256" < ARCHIVE.tar.gz
@@ -176,14 +195,15 @@ ssh deploy@HOST "staging COMMIT_SHA ARCHIVE_SHA256" < ARCHIVE.tar.gz
 The key's forced command, `/usr/local/sbin/aurevia-ssh-gate`, checks that the
 requested environment matches the one pinned in `authorized_keys`, stores the
 archive and checksum in the account's inbox and runs the helper for the pinned
-environment only. Only with `VPS_DEPLOY_PROTOCOL=legacy` does the script upload
-the archive and checksum with `scp` and call the helper over a shell session:
+environment only:
 
 ```bash
-sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/staging-NAME.tar.gz COMMIT_SHA
+sudo -n /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/staging-NAME.tar.gz COMMIT_SHA
 ```
 
-The sudo rule only accepts an archive named for the environment it deploys.
+The sudo rule only accepts an archive named for the environment it deploys. A
+key without the forced command fails with exit 127 and a hint, and nothing on
+the VPS changes.
 
 Both workflows queue deployments instead of cancelling a running one. The
 helper:
@@ -226,13 +246,11 @@ below exist, then `sudo -u aurevia-production -H pm2 ...`).
 
 ## Per-environment deploy keys
 
-Until this cutover, staging and production share one key with a shell on the
-VPS, so anything that can use the staging secrets can also deploy production.
-`scripts/deploy-vps.sh` now defaults to the gated protocol, so set
-`VPS_DEPLOY_PROTOCOL=legacy` in each GitHub environment that still uses the
-shared key; without it the deploy fails (exit 127, with a hint) and nothing on
-the VPS changes. Do the cutover from the root or administrator console, staging
-first.
+Each GitHub environment deploys with its own key, pinned to the gate, so
+anything that can use the staging secrets still cannot deploy production. No key
+has a shell on the VPS, and `scripts/deploy-vps.sh` has no other way to deploy.
+To set up the keys on a new VPS, or to replace a lost one, work from the root or
+administrator console, staging first:
 
 1. Install the gate from a reviewed checkout of `master`:
 
@@ -246,31 +264,29 @@ first.
    ssh-keygen -t ed25519 -N '' -C github-actions-staging -f aurevia-staging-deploy
    ```
 
-3. Append its public key to `/home/deploy/.ssh/authorized_keys`, pinned to the
-   gate. Every option before the key is required:
+3. Append its public key to the `authorized_keys` of the account in
+   `VPS_USER`: `/home/deploy/.ssh/authorized_keys`, or the environment's CI
+   account once it exists ([CI accounts](#ci-accounts-and-per-environment-sudo-rules)).
+   Pin it to the gate. Every option before the key is required:
 
    ```text
    restrict,command="/usr/local/sbin/aurevia-ssh-gate staging" ssh-ed25519 AAAA... github-actions-staging
    ```
 
-4. Replace `VPS_SSH_KEY` in the `staging` environment with the new private key,
-   delete the `staging` environment variable `VPS_DEPLOY_PROTOCOL` (or set it
-   to `gated`), and delete the private key file from the trusted machine.
+4. Replace `VPS_SSH_KEY` in the `staging` environment with the new private key.
 5. Re-run the latest staging deployment and confirm it reports the exact
-   revision. A failed run changes nothing on the VPS; set
-   `VPS_DEPLOY_PROTOCOL=legacy` and restore the old key to return to the legacy
-   protocol while you investigate.
-6. Repeat steps 2-5 for `production` with `-C github-actions-production` and
-   `command="/usr/local/sbin/aurevia-ssh-gate production"`. The production
-   re-run waits for the reviewer's approval.
-7. Remove the old shared key's line from `authorized_keys`. Confirm the new
-   keys have no shell:
+   revision. A failed run changes nothing on the VPS; exit 127 means the key's
+   line lacks the forced command. Then confirm the key has no shell and delete
+   the private key file from the trusted machine:
 
    ```bash
    ssh -i aurevia-staging-deploy deploy@HOST id   # prints the gate's usage and exits 1
+   rm aurevia-staging-deploy
    ```
 
-After the cutover, `legacy` support in `scripts/deploy-vps.sh` can be removed.
+6. Repeat steps 2-5 for `production` with `-C github-actions-production` and
+   `command="/usr/local/sbin/aurevia-ssh-gate production"`. The production
+   re-run waits for the reviewer's approval.
 
 ## Separate the environments on the VPS
 
@@ -397,8 +413,7 @@ line from `/etc/sudoers.d/aurevia-deploy` with
 `sudo visudo -f /etc/sudoers.d/aurevia-deploy`.
 
 Repeat for production. Afterwards `deploy` holds no deploy key and needs no
-sudo rule: delete `/etc/sudoers.d/aurevia-deploy`. The legacy protocol only
-works with `deploy`, so it is gone for good at that point.
+sudo rule: delete `/etc/sudoers.d/aurevia-deploy`.
 
 ## Key rotation
 

@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 
 import { trackAnalyticsEvent } from "@/components/analytics/analytics-consent";
+import { CheckIcon } from "@/components/check-icon";
 import { TurnstileWidget } from "@/components/security/turnstile-widget";
 import { CONTACT_MAX_LENGTH, isValidContact } from "@/lib/contact-validation";
 import type { ContactStatusMessage, SiteContent } from "@/types/content";
@@ -279,7 +280,8 @@ export function ContactForm({
                   defaultChecked={content.projectValues[index] === selectedProject}
                   required
                 />
-                <span className="flex min-h-11 items-center justify-center rounded-[10px] border border-line bg-canvas-soft px-3 py-2 text-center text-sm font-semibold leading-4 text-muted peer-checked:border-gold peer-checked:bg-gold-bright/9 peer-checked:text-gold-bright peer-focus-visible:outline-3 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-gold-bright">{projectType}</span>
+                <span className="flex min-h-11 items-center justify-center rounded-[10px] border border-line-control bg-canvas-soft px-3 py-2 text-center text-sm font-semibold leading-4 text-muted peer-checked:border-gold peer-checked:bg-gold-bright/9 peer-checked:text-gold-bright peer-focus-visible:outline-3 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-gold-bright">{projectType}</span>
+                <span className="absolute -top-1.5 -right-1.5 hidden size-4.5 place-items-center rounded-full border border-gold bg-gold text-surface peer-checked:grid" aria-hidden="true"><CheckIcon className="size-3" /></span>
               </label>
             ))}
           </div>

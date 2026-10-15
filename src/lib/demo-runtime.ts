@@ -3,13 +3,17 @@
 // cookies. Set NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN (for example
 // https://play.aureviagaming.com) once the runtime is served from its own
 // subdomain; until then the runtime stays on the site origin.
-export function demoRuntimeOrigin(siteOrigin: string): string {
+export function separateDemoRuntimeOrigin(): string | null {
   const configured = process.env.NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN?.trim();
-  if (!configured) return siteOrigin;
+  if (!configured) return null;
   const url = new URL(configured);
   if (url.protocol !== "https:" || url.origin !== configured.replace(/\/$/, ""))
     throw new Error("NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN must be a bare https origin");
   return url.origin;
+}
+
+export function demoRuntimeOrigin(siteOrigin: string): string {
+  return separateDemoRuntimeOrigin() ?? siteOrigin;
 }
 
 export function isDemoRuntimeUrl(

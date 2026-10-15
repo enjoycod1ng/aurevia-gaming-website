@@ -3,6 +3,7 @@ import { AdminWorkspace } from "@/components/admin/admin-workspace";
 import { getAdminCopy } from "@/content/admin-copy";
 import { requireLocale } from "@/content/localized-content";
 
+// Also required by src/proxy.ts's CSP nonce, which prerendered HTML cannot carry.
 export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,

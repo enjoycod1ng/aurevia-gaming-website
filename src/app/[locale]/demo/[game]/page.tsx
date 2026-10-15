@@ -5,11 +5,11 @@ import { getDemoCopy } from "@/content/demo-copy";
 import { requireLocale } from "@/content/localized-content";
 import { preparedGames } from "@/content/prepared-games";
 
-// Unknown games 404 before rendering, through app/global-not-found.tsx.
-export const dynamicParams = false;
-export function generateStaticParams() {
-  return preparedGames.map((game) => ({ game: game.id }));
-}
+// Rendered per request so Next.js can add src/proxy.ts's CSP nonce to its scripts;
+// prerendered HTML would carry no nonce and be blocked. dynamicParams = false only
+// applies to prerendered routes, so src/proxy.ts sends unknown games to the routed
+// 404 (app/global-not-found.tsx) before this page renders.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
