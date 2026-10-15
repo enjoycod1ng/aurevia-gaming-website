@@ -80,8 +80,10 @@ firewall also stops them before TLS.
 - keeps going if the SSH connection drops, and logs every run to
   `/var/log/aurevia-deploy/`; its lock lives in the root-only
   `/run/aurevia-deploy`;
-- runs the site as one PM2 cluster worker and uses `pm2 reload`, so deploys
-  don't drop requests.
+- restarts the site as one PM2 fork-mode process, like the original helper,
+  so each deploy makes it unavailable for a few seconds. PM2 7 has no
+  `--exec-mode` option; an earlier version of this helper relied on it, and
+  its restart and rollback failed on the VPS.
 
 The sudo rule now pins each environment's archive name, so install both:
 
@@ -91,9 +93,9 @@ sudo visudo -cf ops/aurevia-deploy.sudoers
 sudo install -o root -g root -m 0440 ops/aurevia-deploy.sudoers /etc/sudoers.d/aurevia-deploy
 ```
 
-The first deploy after this restarts each site once to move it from fork mode
-to cluster mode. Later deploys reload without downtime. Afterwards, `pm2 ls`
-shows `cluster` mode for `aurevia-gaming` and `aurevia-gaming-staging`.
+Re-run the latest staging deployment to test the helper before production
+uses it. Afterwards, `pm2 ls` shows `aurevia-gaming-staging` online in `fork`
+mode, and the new release directory ends in a random six-character suffix.
 
 ## 3. Per-environment deploy keys
 

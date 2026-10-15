@@ -161,6 +161,17 @@ test("the root deploy helper checks free space before unpacking", { skip }, (t) 
   assert.match(full.stderr, /Not enough free space/);
 });
 
+test("the root deploy helper starts PM2 only with options PM2 7 accepts", () => {
+  // An unknown option fails the restart and the rollback's restart alike; an
+  // earlier helper passed --exec-mode and left staging down.
+  const code = readFileSync(path.join(root, "ops/deploy-release.sh"), "utf8")
+    .split("\n").filter((line) => !line.trimStart().startsWith("#")).join("\n");
+  const start = code.match(/run_pm2 "\$revision" start (.+?)\|\| return 1/s)?.[1];
+  assert.ok(start, "restart_release starts the site with pm2 start");
+  assert.deepEqual([...start.matchAll(/(?:^|\s)--([a-z-]+)/g)].map(([, option]) => option), ["name", "cwd", "node-args", "time"]);
+  assert.doesNotMatch(code, /--exec-mode|--instances/);
+});
+
 test("release retention never prunes the live or previous release", { skip }, (t) => {
   const releases = sandbox(t);
   // Oldest first: releases from before and after the switch to mktemp names.

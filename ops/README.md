@@ -8,7 +8,7 @@ the enabled `pm2-deploy` systemd service. Staging uses port 3001. Both run the p
 
 - `aurevia-gaming.service`: systemd unit for the standalone Next.js server.
 - `Caddyfile`: domain redirect, TLS reverse proxy, compression and cache headers.
-- `deploy-release.sh`: hardened PM2 release deployment (zero-downtime cluster reload), exact-revision health
+- `deploy-release.sh`: hardened PM2 release deployment (fork-mode restart), exact-revision health
   check, automatic rollback and retention. It refuses links and unsafe paths in the archive, survives
   dropped SSH connections and logs to `/var/log/aurevia-deploy/`. Install it root-owned as
   `/usr/local/sbin/aurevia-deploy`; workflows must never overwrite it.
