@@ -49,7 +49,8 @@ webhook bearer tokens in a `NEXT_PUBLIC_` variable or in Git.
 
 `NEXT_PUBLIC_*` values are embedded during `npm run build`. Build the release
 with the production site key and GA measurement ID present; changing either
-requires a new build and deployment.
+requires a new build and deployment. GitHub Actions builds with the values in
+the `env` block at the top of `.github/workflows/deploy-production.yml`.
 
 For local development only, Cloudflare publishes these deterministic keys:
 
@@ -220,7 +221,8 @@ In Google Analytics:
 
 1. Create a GA4 property and one Web data stream for
    `https://aureviagaming.com`.
-2. Copy its `G-...` measurement ID into `NEXT_PUBLIC_GA_ID` before building.
+2. Copy its `G-...` measurement ID into `NEXT_PUBLIC_GA_ID` in
+   `.github/workflows/deploy-production.yml` before building.
 3. Keep Enhanced Measurement pageviews enabled. Next.js client-side navigation
    changes are measured automatically.
 4. Under the Web stream's data-redaction settings, enable email redaction and
