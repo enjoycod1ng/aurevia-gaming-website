@@ -148,7 +148,10 @@ names holds a different value, so a value changed in the GitHub settings is neve
 ignored silently. Delete such variables, or keep them identical.
 
 Runtime-only Turnstile, webhook, Telegram and bearer secrets remain in the VPS
-environment files and are never stored in the repository.
+environment files and are never stored in the repository. `NEXT_PUBLIC_*`
+values in those files have no effect: the browser code is compiled in GitHub
+Actions, so a GA4 measurement ID placed in `/etc/aurevia-gaming/production.env`
+never reaches the site. Set it in `deploy-production.yml` instead.
 
 ## Cloudflare staging
 
