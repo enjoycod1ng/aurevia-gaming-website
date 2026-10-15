@@ -10,14 +10,35 @@ const { NextRequest } = require("next/server");
 const { default: nextConfig } = loadModule("next.config.ts");
 const { proxy } = loadModule("src/proxy.ts");
 const { localeHeader } = loadModule("src/lib/i18n.ts");
+const { demoGameIds } = loadModule("src/content/demo-games.ts");
+const { preparedGames } = loadModule("src/content/prepared-games.ts");
 
-test("paths outside a locale are rewritten to an unmatched English path after public files", async () => {
-  const [rule] = (await nextConfig.rewrites()).afterFiles;
+// Matches a next.config.ts rewrite the way Next.js does (case-insensitive by default).
+function rewriter(rule) {
   const match = getPathMatch(rule.source, { removeUnnamedParams: true, strict: true });
   const destination = (pathname) => {
     const params = match(pathname);
     return params && prepareDestination({ appendParamsToQuery: false, destination: rule.destination, params, query: {} }).newUrl;
   };
+  return { match, destination };
+}
+
+test("unknown games are rewritten to the routed 404 before the demo page renders", async () => {
+  assert.deepEqual([...demoGameIds], preparedGames.map(({ id }) => id), "demo-games.ts lists every prepared game");
+  const [rule] = (await nextConfig.rewrites()).beforeFiles;
+  const { match, destination } = rewriter(rule);
+  assert.equal(destination("/en/demo/nope"), "/en/_unmatched/demo/nope");
+  assert.equal(destination("/pt/demo/wildframesx"), "/pt/_unmatched/demo/wildframesx");
+  assert.equal(destination("/es/demo/wild"), "/es/_unmatched/demo/wild");
+  // Known games in any case reach the page, which redirects other spellings.
+  for (const pathname of [...demoGameIds.map((id) => `/es/demo/${id}`), "/es/demo/Wildframes", "/en/demo/wildframes/extra", "/fr/demo/nope", "/en/demo"]) {
+    assert.equal(match(pathname), false, `${pathname} must keep its own routing`);
+  }
+});
+
+test("paths outside a locale are rewritten to an unmatched English path after public files", async () => {
+  const [rule] = (await nextConfig.rewrites()).afterFiles;
+  const { match, destination } = rewriter(rule);
   assert.equal(destination("/about"), "/en/_unmatched/about");
   assert.equal(destination("/fr/services"), "/en/_unmatched/fr/services");
   assert.equal(destination("/apple-touch-icon.png"), "/en/_unmatched/apple-touch-icon.png");
@@ -34,10 +55,12 @@ test("the proxy tags locale paths with the URL's locale for the global 404", () 
     assert.equal(response.headers.get("x-middleware-next"), "1", pathname);
     assert.equal(response.headers.get(`x-middleware-request-${localeHeader}`), locale, pathname);
   }
-  // Unknown games: the demo page renders per request, where notFound() would send an empty error shell.
-  for (const [pathname, destination, locale] of [["/en/demo/nope", "/en/_unmatched/demo/nope", "en"], ["/es/demo/Wildframes", "/es/_unmatched/demo/Wildframes", "es"]]) {
-    const response = proxy(new NextRequest(`https://aureviagaming.com${pathname}?ref=1`));
-    assert.equal(new URL(response.headers.get("x-middleware-rewrite")).pathname, destination, pathname);
+  // Unknown games: never a proxy rewrite (behind Nginx it became an external fetch and
+  // a 500); next.config.ts rewrites them, and the 404 keeps the site policy.
+  for (const [pathname, locale] of [["/en/demo/nope", "en"], ["/es/demo/wildframesx", "es"]]) {
+    const response = proxy(new NextRequest(`https://aureviagaming.com${pathname}?ref=1`, { headers: { "x-forwarded-proto": "https" } }));
+    assert.equal(response.headers.get("x-middleware-rewrite"), null, pathname);
+    assert.equal(response.headers.get("x-middleware-next"), "1", pathname);
     assert.equal(response.headers.get(`x-middleware-request-${localeHeader}`), locale, pathname);
     assert.equal(response.headers.get("content-security-policy"), null, `${pathname}: the 404 keeps the site policy`);
   }
