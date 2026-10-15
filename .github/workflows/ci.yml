@@ -42,3 +42,10 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Package and verify standalone release
+        shell: bash
+        run: |
+          archive="$RUNNER_TEMP/release/aurevia-gaming-$GITHUB_SHA.tar.gz"
+          npm run release:package -- "$archive"
+          npm run release:verify -- "$archive"

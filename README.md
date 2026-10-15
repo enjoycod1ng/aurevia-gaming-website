@@ -230,7 +230,10 @@ npm run release:verify -- release/candidate.tar.gz
 ```
 
 Git Bash can package a Windows build for local verification, but that artifact must not be deployed to Linux.
-GitHub Actions builds and verifies a Linux archive before uploading it to the VPS.
+GitHub Actions builds and verifies a Linux archive in a job with no environment and no secrets,
+then a separate deploy job, which holds the environment's deploy key and never runs npm, checks
+the archive's checksum and uploads it to the VPS. The public build settings (`SITE_URL` and the
+`NEXT_PUBLIC_*` values) live at the top of each deploy workflow.
 The package includes `public` and `.next/static`, which Next.js does not copy into standalone output automatically.
 
 The deployment helper takes three arguments:
@@ -239,8 +242,8 @@ The deployment helper takes three arguments:
 sudo /usr/local/sbin/aurevia-deploy staging /home/deploy/aurevia-incoming/staging-NAME.tar.gz COMMIT_SHA
 ```
 
-Use `scripts/deploy-vps.sh` or the workflow to send the archive and checksum together. The script
-uses the pinned SSH gate unless the GitHub environment sets `VPS_DEPLOY_PROTOCOL=legacy`.
+The gate (`ops/aurevia-ssh-gate.sh`) calls it with the archive that `scripts/deploy-vps.sh`
+streams over the environment's pinned SSH key, the only way the workflows deploy.
 The helper accepts only an archive named for its environment, and only regular files and
 directories inside it. It checks free disk space, unpacks as the runtime account, switches the
 release symlink and restarts the site's single PM2 process, which is unavailable for the few
