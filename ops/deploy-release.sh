@@ -284,31 +284,23 @@ run_pm2() {
     "$PM2_BIN" "${@:2}"
 }
 
-# One PM2 cluster worker: `pm2 reload` starts the new worker and waits until it
-# listens before stopping the old one, so the port never goes dark. A process
-# that is missing, or still in fork mode from older deploys, is (re)started once.
+# Restarts the site as one PM2 fork-mode process, as the original helper did:
+# the old process stops and the new one starts, so the port is closed for the
+# few seconds the health check waits through. PM2 7 has no --exec-mode option,
+# and cluster mode would run the app on the PM2 daemon's Node.js rather than
+# the login shell's, so a zero-downtime reload needs its own tested change.
 restart_release() {
-  local revision="$1" description="" exists=false
+  local revision="$1"
 
-  if description="$(run_pm2 "$revision" describe "$PROCESS_NAME" 2>/dev/null)"; then
-    exists=true
+  if run_pm2 "$revision" describe "$PROCESS_NAME" >/dev/null 2>&1; then
+    run_pm2 "$revision" delete "$PROCESS_NAME" || return 1
   fi
 
-  if [[ "$exists" == "true" ]] && grep -Eq 'exec mode[^a-z]+cluster_mode' <<<"$description"; then
-    run_pm2 "$revision" reload "$PROCESS_NAME" --update-env || return 1
-  else
-    if [[ "$exists" == "true" ]]; then
-      run_pm2 "$revision" delete "$PROCESS_NAME" || return 1
-    fi
-
-    run_pm2 "$revision" start "$CURRENT_LINK/server.js" \
-      --name "$PROCESS_NAME" \
-      --cwd "$CURRENT_LINK" \
-      --instances 1 \
-      --exec-mode cluster \
-      --node-args="--env-file=$ENV_FILE" \
-      --time || return 1
-  fi
+  run_pm2 "$revision" start "$CURRENT_LINK/server.js" \
+    --name "$PROCESS_NAME" \
+    --cwd "$CURRENT_LINK" \
+    --node-args="--env-file=$ENV_FILE" \
+    --time || return 1
 
   run_pm2 "$revision" save || return 1
 }

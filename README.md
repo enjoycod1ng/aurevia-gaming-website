@@ -243,8 +243,8 @@ Use `scripts/deploy-vps.sh` or the workflow to send the archive and checksum tog
 uses the pinned SSH gate unless the GitHub environment sets `VPS_DEPLOY_PROTOCOL=legacy`.
 The helper accepts only an archive named for its environment, and only regular files and
 directories inside it. It checks free disk space, unpacks as the runtime account, switches the
-release symlink and reloads a single PM2 cluster worker, which keeps the port listening while
-the new release starts. It checks the exact revision and environment through the origin health
+release symlink and restarts the site's single PM2 process, which is unavailable for the few
+seconds the new release takes to start. It checks the exact revision and environment through the origin health
 endpoint, rolls back automatically if startup fails and deletes the failed release. A dropped
 SSH connection does not interrupt it; each run is logged in `/var/log/aurevia-deploy/`. The
 workflow then checks the same revision through the public URL (Cloudflare and Nginx).
