@@ -61,6 +61,12 @@ test("all language versions have self canonicals and reciprocal alternates", () 
     assert.equal(metadata.alternates.canonical, `/${locale}/games`);
     for(const alternate of locales) assert.equal(metadata.alternates.languages[alternate], `/${alternate}/games`);
     assert.equal(metadata.alternates.languages["x-default"], "/en/games");
+    // Each language shares its own link-preview image, with a translated description.
+    const [image] = metadata.openGraph.images;
+    assert.equal(image.url, `/og/aurevia-gaming-${locale}.jpg`);
+    assert.ok(readFileSync(new URL(`../public${image.url}`, import.meta.url)).length > 0, image.url);
+    assert.equal(image.alt, translate("Aurevia Gaming casino game and platform development", locale));
+    assert.deepEqual(metadata.twitter.images, [image.url]);
   }
 });
 

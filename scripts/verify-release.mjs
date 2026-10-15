@@ -65,7 +65,7 @@ try {
   assert.ok(healthy, "Standalone health check timed out");
 
   const assets = new Set([
-    "/logo.svg", "/opengraph-image.png", "/favicon.ico", "/apple-touch-icon.png",
+    "/logo.svg", "/og/aurevia-gaming-en.jpg", "/og/aurevia-gaming-es.jpg", "/og/aurevia-gaming-pt.jpg", "/favicon.ico", "/apple-touch-icon.png",
     "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png",
   ]);
   let canonical;
@@ -120,6 +120,8 @@ try {
   const home = await get("/en");
   assert.match(scriptSources(home), /'unsafe-inline'/, "Prerendered pages keep the site policy");
   assert.doesNotMatch(scriptSources(home), /'nonce-/);
+  assert.equal(home.headers.get("strict-transport-security"), "max-age=31536000", "HSTS");
+  assert.equal(home.headers.get("cache-control"), "public, max-age=0, must-revalidate, no-transform", "Prerendered pages revalidate");
   await home.arrayBuffer();
   for (const asset of assets) {
     const response = await get(asset);
