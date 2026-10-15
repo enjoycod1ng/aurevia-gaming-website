@@ -29,10 +29,17 @@ test("paths outside a locale are rewritten to an unmatched English path after pu
 });
 
 test("the proxy tags locale paths with the URL's locale for the global 404", () => {
-  for (const [pathname, locale] of [["/es/not-a-page", "es"], ["/pt", "pt"], ["/en/demo/nope", "en"]]) {
+  for (const [pathname, locale] of [["/es/not-a-page", "es"], ["/pt", "pt"], ["/en/demo", "en"], ["/es/demo/wildframes", "es"]]) {
     const response = proxy(new NextRequest(`https://aureviagaming.com${pathname}`, { headers: { [localeHeader]: "pt-spoofed" } }));
     assert.equal(response.headers.get("x-middleware-next"), "1", pathname);
     assert.equal(response.headers.get(`x-middleware-request-${localeHeader}`), locale, pathname);
+  }
+  // Unknown games: the demo page renders per request, where notFound() would send an empty error shell.
+  for (const [pathname, destination, locale] of [["/en/demo/nope", "/en/_unmatched/demo/nope", "en"], ["/es/demo/Wildframes", "/es/_unmatched/demo/Wildframes", "es"]]) {
+    const response = proxy(new NextRequest(`https://aureviagaming.com${pathname}?ref=1`));
+    assert.equal(new URL(response.headers.get("x-middleware-rewrite")).pathname, destination, pathname);
+    assert.equal(response.headers.get(`x-middleware-request-${localeHeader}`), locale, pathname);
+    assert.equal(response.headers.get("content-security-policy"), null, `${pathname}: the 404 keeps the site policy`);
   }
   const negotiated = proxy(new NextRequest("https://aureviagaming.com/", { headers: { "accept-language": "es-MX" } }));
   assert.equal(negotiated.status, 307);
