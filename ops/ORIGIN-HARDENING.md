@@ -126,12 +126,14 @@ While Play'n GO runtime code runs on `aureviagaming.com`, its scripts can call
 `/api/portal/admin/*` with a signed-in admin's cookies. The iframe now has a
 `sandbox` attribute, but on the same origin that is not a security boundary.
 
+Steps 1 and 2 were completed on 2026-10-16.
+
 1. Add a proxied (orange-cloud) DNS record for `play.aureviagaming.com`.
 2. Issue its certificate and install `ops/nginx-play-runtime.conf`. It serves only
-   `/playngo-sandbox/runtime/` from the backend at `127.0.0.1:18080`, keeps the
-   Cloudflare-only rule, returns 404 for every other path (including
-   `/api/portal/` and `/playngo-sandbox/portal/`) and lets only the production
-   and staging websites frame it:
+   `/playngo-sandbox/runtime/` from the backend at `127.0.0.1:18080`, returns 404
+   for every other path (including `/api/portal/` and `/playngo-sandbox/portal/`)
+   and lets only the production and staging websites frame it. Until steps 1-3
+   above are installed it has no Cloudflare-only check, like the main site:
 
    ```bash
    # A temporary HTTP site lets Certbot complete its challenge, as for staging.
@@ -151,8 +153,16 @@ While Play'n GO runtime code runs on `aureviagaming.com`, its scripts can call
    ```
 
    Check that `https://play.aureviagaming.com/api/portal/admin/me` returns 404.
-3. Have the backend issue `launch_url` values on that origin, and allow its
-   runtime API calls from it.
+3. Have the backend issue `launch_url` values on that origin. The live backend
+   runs from `runtime-compose.json` in its current release under
+   `/opt/PlaynGo_Integration/releases/`; `PNG_RUNTIME_BASE_URL` and every
+   `<GAME>_APP_BASE_URL` start with `https://aureviagaming.com/playngo-sandbox/runtime`.
+   Back up that file, change the prefix to
+   `https://play.aureviagaming.com/playngo-sandbox/runtime`, and recreate the
+   containers with `docker compose -f runtime-compose.json up -d` from the release
+   folder. The runtime accepts calls from its own origin, so nothing else changes.
+   Do this right after step 4 reaches production: the website accepts launch URLs
+   from one origin only, so demos fail between the two deploys.
 4. Set `NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: https://play.aureviagaming.com` in
    the build settings at the top of `.github/workflows/deploy-staging.yml` and
    `deploy-production.yml`. Staging builds with it once the change reaches
