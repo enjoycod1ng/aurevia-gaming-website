@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Aurevia Gaming Play’n GO — Sandbox 1.0.1",
+    "name": "Aurevia Gaming Play’n GO — Sandbox 1.0.3",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": "Sandbox integration. Set operator_api_key privately. Use an approved return_url and your authenticated player identity. Never commit credentials."
   },

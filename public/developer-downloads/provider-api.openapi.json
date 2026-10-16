@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Aurevia Gaming Play’n GO Provider API",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "Sandbox callback-wallet integration. Simulated funds only. Game availability is assigned per operator; query the games endpoint for your enabled catalog. See the integration guide for onboarding and tested limits."
   },
   "servers": [
