@@ -309,7 +309,7 @@
                     "currency": "EUR",
                     "lang": "en",
                     "session_id": "ses_example_01",
-                    "launch_url": "https://aureviagaming.com/playngo-sandbox/runtime/wildframes/casino/ContainerLauncher?ticket=EXAMPLE_ONLY",
+                    "launch_url": "https://play.aureviagaming.com/playngo-sandbox/runtime/wildframes/casino/ContainerLauncher?ticket=EXAMPLE_ONLY",
                     "expires_at": "2026-09-11T16:01:00Z"
                   }
                 }
