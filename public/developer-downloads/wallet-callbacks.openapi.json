@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Aurevia Gaming Play’n GO Wallet Callbacks",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "Implement these four endpoints on your wallet server. Signed callbacks use exact raw request bytes; financial mutations and immutable responses must commit atomically. This sandbox uses simulated funds only."
   },
   "servers": [

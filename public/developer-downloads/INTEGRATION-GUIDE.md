@@ -1,6 +1,6 @@
 # Aurevia Gaming Play’n GO integration
 
-**Package version:** 1.0.1 — single-VPS sandbox software release.
+**Package version:** 1.0.3 — single-VPS sandbox software release.
 **Availability:** Nine games are supported in the sandbox: Wild Frames, Demon, original Honey Rush, Hugo’s Adventure, Secret of the Dead, Wheel of Mictlan, Troll Hunters 2, Legacy of Egypt and Moon Princess. Query the catalog for your operator’s assigned games. Integration clients have separate simulated wallets. Public website demos use isolated visitor accounts starting with 10,000.00 EUR; admission remains four sessions total and two per operator. EUR and English are supported. Use simulated funds only. Production client access is not enabled.
 **Wallet model:** your platform owns the player balance. Aurevia Gaming sends signed wallet callbacks during game play.
 
