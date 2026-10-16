@@ -23,7 +23,9 @@ env:
   APP_ENV: staging
   SITE_URL: https://staging.aureviagaming.com
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: 0x4AAAAAAEPEEG3a3I-GS9qC
-  NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: ""
+  # The Play'n GO runtime is framed from its own origin, never the staff portal's
+  # (ops/ORIGIN-HARDENING.md, step 6). The backend must issue launch URLs there.
+  NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN: https://play.aureviagaming.com
   NEXT_PUBLIC_GA_ID: ""
 
 jobs:

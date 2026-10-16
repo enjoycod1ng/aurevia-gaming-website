@@ -141,7 +141,7 @@ workflow and change through a reviewed pull request like any other code:
 | `SITE_URL` | `https://staging.aureviagaming.com` | `https://aureviagaming.com` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Staging Turnstile site key | Production Turnstile site key |
 | `NEXT_PUBLIC_GA_ID` | Empty | Production GA4 measurement ID, once there is one |
-| `NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN` | Empty until the runtime origin exists ([ORIGIN-HARDENING.md](ORIGIN-HARDENING.md), step 6) | Same |
+| `NEXT_PUBLIC_DEMO_RUNTIME_ORIGIN` | `https://play.aureviagaming.com` ([ORIGIN-HARDENING.md](ORIGIN-HARDENING.md), step 6) | Same |
 
 The deploy job refuses to deploy while an environment variable with one of these
 names holds a different value, so a value changed in the GitHub settings is never
