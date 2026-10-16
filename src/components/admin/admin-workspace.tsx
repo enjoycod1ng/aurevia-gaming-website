@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { AdminCopy } from "@/content/admin-copy";
 import type { Locale } from "@/lib/i18n";
 import { PortalError, portalRequest } from "@/lib/portal-client";
+import { BrandLogo } from "@/components/brand-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import {
@@ -142,15 +143,10 @@ export function AdminWorkspace({
       <header className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <Link href={`/${locale}/admin`} className="flex items-center gap-3">
-            <span
-              className="flex size-10 items-center justify-center rounded-xl border border-gold/30 bg-gold/10 font-display text-xl font-bold text-gold-bright"
-              aria-hidden="true"
-            >
-              A
-            </span>
+            <BrandLogo className="size-9 shrink-0 text-gold-bright" aria-hidden="true" />
             <span>
-              <span className="block text-sm font-extrabold tracking-[.1em]">
-                AUREVIA GAMING
+              <span className="block font-display text-sm font-bold uppercase text-gold-bright">
+                Aurevia Gaming
               </span>
               <span className="block text-xs text-muted">{copy.admin}</span>
             </span>
@@ -259,6 +255,7 @@ export function AdminWorkspace({
                   <Clients
                     catalog={catalog}
                     copy={copy}
+                    locale={locale}
                     user={user}
                     refresh={refresh}
                   />

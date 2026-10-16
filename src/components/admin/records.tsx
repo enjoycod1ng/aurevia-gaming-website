@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import type { AdminCopy } from "@/content/admin-copy";
 import type { Locale } from "@/lib/i18n";
-import { portalRequest, PortalError } from "@/lib/portal-client";
+import { portalDownload, portalRequest } from "@/lib/portal-client";
 import {
   DataTable,
   Field,
@@ -46,6 +46,7 @@ export function Records({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [filterRevision, setFilterRevision] = useState(0);
+  const [exporting, setExporting] = useState(false);
   const statuses =
     kind === "sessions"
       ? ["active", "closed"]
@@ -76,16 +77,11 @@ export function Records({
     };
   }, [kind, query, offset, revision, filterRevision, copy]);
   async function download() {
+    setExporting(true);
     try {
-      const response = await fetch(
-        `/api/portal/admin/export/${kind}?${query}`,
-        { cache: "no-store" },
+      const url = URL.createObjectURL(
+        await portalDownload(`admin/export/${kind}?${query}`),
       );
-      if (!response.ok) {
-        const result = await response.json();
-        throw new PortalError(result.error, response.status);
-      }
-      const url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
       link.href = url;
       link.download = `aurevia-${kind}.csv`;
@@ -93,6 +89,8 @@ export function Records({
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (reason) {
       setError(errorText(reason, copy));
+    } finally {
+      setExporting(false);
     }
   }
   return (
@@ -179,6 +177,7 @@ export function Records({
             type="button"
             className="button button-secondary sm:ml-auto"
             onClick={download}
+            disabled={exporting}
           >
             {copy.export} ↓
           </button>

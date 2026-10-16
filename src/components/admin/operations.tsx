@@ -176,6 +176,7 @@ export function OperationsPanel({
                 form.get("operator_session_limit"),
               ),
             });
+            action.clear();
             dialog.current?.showModal();
           }}
         >

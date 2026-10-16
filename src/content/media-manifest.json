@@ -70,11 +70,11 @@
     "bytes": 41834
   },
   "/media/games/wildframes-gameplay.webp": {
-    "src": "/media/games/wildframes-gameplay.0be751c06a3a.webp",
-    "sha256": "0be751c06a3a9504159f12c37ebefbd9b03c80dfaea3247d6fa197f4e90f48c3",
+    "src": "/media/games/wildframes-gameplay.867b373e71d7.webp",
+    "sha256": "867b373e71d751e8b18b79d2d0bd58fa9cf83486c109efc2e651a49ae2ca372e",
     "width": 1366,
     "height": 768,
-    "bytes": 122404
+    "bytes": 114186
   },
   "/media/games/wildframes.webp": {
     "src": "/media/games/wildframes.d3f131699b55.webp",

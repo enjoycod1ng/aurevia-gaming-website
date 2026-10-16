@@ -7,7 +7,8 @@ export default defineConfig([
   ...nextTypeScript,
   {
     ignores: [
-      ".next/**",
+      "**/.next/**",
+      ".claude/**",
       ".codex-tmp/**",
       "release/**",
       "dist/**",

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { CookiePreferencesButton } from "@/components/analytics/cookie-preferences-button";
 import { BrandLogo } from "@/components/brand-logo";
+import { CurrentYear } from "@/components/current-year";
 import { LanguageLinks } from "@/components/language-switcher";
 import type { SiteContent } from "@/types/content";
 import type { UiContent } from "@/content/ui-content";
@@ -44,7 +45,8 @@ export function SiteFooter({ content: siteContent, ui, locale }: { content: Site
             {siteContent.contact.telegramHandle}
           </a>
           <p className="mt-4 text-sm text-muted">
-            © {new Date().getFullYear()} {siteContent.brand.name}
+            © <CurrentYear buildYear={new Date().getFullYear()} />{" "}
+            {siteContent.brand.name}
           </p>
           <div className="mt-2.5 flex gap-3 lg:justify-end [&_button]:cursor-pointer [&_button]:border-0 [&_button]:bg-transparent [&_button]:min-h-11 [&_button]:p-0 [&_button]:text-sm [&_button]:font-medium [&_button]:text-muted [&_button:hover]:text-ink">
             <Link className="text-sm font-medium text-muted hover:text-ink" href={localizedPath("/privacy", locale)}>{ui.privacy}</Link>

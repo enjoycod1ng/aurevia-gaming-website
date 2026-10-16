@@ -98,7 +98,9 @@ export function useAction(copy: AdminCopy, onDone?: () => void) {
       setBusy(false);
     }
   }
-  return { busy, error, run };
+  // Dialogs call this when they open, so one change's error is not shown on the next.
+  const clear = () => setError("");
+  return { busy, error, run, clear };
 }
 export function Notice({
   children,
@@ -147,6 +149,20 @@ export function Field({
       {children}
     </label>
   );
+}
+// API keys and invite links are shown once, so while one is on screen its dialog
+// closes only through the explicit Close button, which clears the value first.
+// Escape is ignored, and if the browser closes the dialog anyway (Chrome lets a
+// repeated Escape through without new user activation), it reopens.
+export function oneTimeValueDialog(value: string) {
+  return {
+    onCancel: (event: React.SyntheticEvent<HTMLDialogElement>) => {
+      if (value) event.preventDefault();
+    },
+    onClose: (event: React.SyntheticEvent<HTMLDialogElement>) => {
+      if (value) event.currentTarget.showModal();
+    },
+  };
 }
 export function CopyValue({ value, copy }: { value: string; copy: AdminCopy }) {
   const [copied, setCopied] = useState(false);

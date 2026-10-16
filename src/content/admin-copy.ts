@@ -315,6 +315,11 @@ const copy = {
     "Escribe el ID del cliente para confirmar",
     "Digite o ID do cliente para confirmar",
   ],
+  confirmUsername: [
+    "Type the username to confirm",
+    "Escribe el nombre de usuario para confirmar",
+    "Digite o nome de usuário para confirmar",
+  ],
   settlementNotice: [
     "Accepted payouts and refunds continue after suspension or maintenance.",
     "Los pagos y reembolsos aceptados continúan después de suspender o activar el mantenimiento.",

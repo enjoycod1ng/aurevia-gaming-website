@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRef } from "react";
 import { useParams } from "next/navigation";
 import type { MediaAsset } from "@/types/content";
@@ -160,10 +161,11 @@ export function AnalyticsPreview({
       <figcaption className="mt-4 text-sm leading-5 text-muted">
         {image.caption}
       </figcaption>
+      {/* The full-size view is the real design screenshot, readable on small screens. */}
       <dialog
         ref={dialog}
         className="portal-dialog portal-dialog-wide"
-        aria-label={t.overview}
+        aria-label={image.previewLabel}
       >
         <div className="mb-4 flex justify-end">
           <button
@@ -173,8 +175,16 @@ export function AnalyticsPreview({
             {t.close} ×
           </button>
         </div>
-        {dashboard}
-        <p className="mt-4 text-sm text-muted">{t.sample}</p>
+        <Image
+          className="block h-auto w-full rounded-xl border border-line"
+          src={image.src}
+          alt={image.alt}
+          width={image.width}
+          height={image.height}
+          sizes="(max-width: 1151px) 100vw, 1072px"
+          quality={80}
+        />
+        <p className="mt-4 text-sm text-muted">{image.caption}</p>
       </dialog>
     </figure>
   );
